@@ -21,7 +21,7 @@ export default function DashboardHeader() {
         <p>Bem vindo, gerencie o conteúdo e informações da AMC</p>
       </div>
 
-      <time datetime={dataISO} style={{ textTransform: 'capitalize' }}>{dataFormatada.toUpperCase()}</time>
+      <time dateTime={dataISO} style={{ textTransform: 'capitalize' }}>{dataFormatada.toUpperCase()}</time>
 
     </header>
   )

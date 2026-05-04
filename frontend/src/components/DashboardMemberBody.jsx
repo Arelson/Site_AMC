@@ -3,6 +3,7 @@ import { useState } from 'react';
 import VisaoGeral from './elements/VisaoGeral';
 import GestaoConteudo from './elements/GestaoConteudo';
 import CriarPost from './elements/CriarPost';
+import EditarPost from './elements/EditarPost';
 
 
 
@@ -11,6 +12,8 @@ export default function DashboardAdminBody() {
   const [gestaoConteudo, setGestaoConteudo] = useState(false);
   const [minhaConta, setMinhaConta] = useState(false);
   const [criarPost, setCriarPost] = useState(false);
+  const [editarPost, setEditarPost] = useState(false);
+  const [postEditandoId, setPostEditandoId] = useState(null);
   const nomeCompleto = localStorage.getItem('nomeCompleto');
   const primeiroNome =nomeCompleto? nomeCompleto.split(' ')[0]: '';
   const primeiraLetra = primeiroNome.charAt(0).toUpperCase();
@@ -23,6 +26,8 @@ export default function DashboardAdminBody() {
     setGestaoConteudo(false);
     setMinhaConta(false);
     setCriarPost(false);
+    setEditarPost(false);
+    setPostEditandoId(null);
   }
 
   const handleGestaoConteudo = (e) => {
@@ -31,6 +36,8 @@ export default function DashboardAdminBody() {
     setGestaoConteudo(true);
     setMinhaConta(false);
     setCriarPost(false);
+    setEditarPost(false);
+    setPostEditandoId(null);
   }
 
   const handleMinhaConta = (e) => {
@@ -39,6 +46,8 @@ export default function DashboardAdminBody() {
     setGestaoConteudo(false);
     setMinhaConta(true);
     setCriarPost(false);
+    setEditarPost(false);
+    setPostEditandoId(null);
   }
 
   const handleCriarPost = (e) => {
@@ -47,6 +56,17 @@ export default function DashboardAdminBody() {
     setGestaoConteudo(false);
     setMinhaConta(false);
     setCriarPost(true);
+    setEditarPost(false);
+    setPostEditandoId(null);
+  }
+
+  const handleEditarPost = (id) => {
+    setVisaoGeral(false);
+    setGestaoConteudo(false);
+    setMinhaConta(false);
+    setCriarPost(false);
+    setEditarPost(true);
+    setPostEditandoId(id);
   }
 
   return (
@@ -96,8 +116,9 @@ export default function DashboardAdminBody() {
       </aside>
       <main className="dashboard-member-main">
         {visaoGeral && <VisaoGeral />} 
-        {gestaoConteudo && <GestaoConteudo handleCriarPost={handleCriarPost} />} 
-        {criarPost && <CriarPost />}    
+        {gestaoConteudo && <GestaoConteudo handleCriarPost={handleCriarPost} handleEditarPost={handleEditarPost} />} 
+        {criarPost && <CriarPost voltarParaLista={handleGestaoConteudo}/>} 
+        {editarPost && <EditarPost postId={postEditandoId} voltarParaLista={handleGestaoConteudo} />}   
       </main>
     </div>
   );

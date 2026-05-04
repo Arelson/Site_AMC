@@ -5,7 +5,7 @@ import './Login.css';
 
 export default function Login() {
   return (
-    <div claasName='page-container'>
+    <div className='page-container'>
       <Header 
         botaoAmarelo={false}
         backgroundScroll={false}
