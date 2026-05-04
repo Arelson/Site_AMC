@@ -89,3 +89,21 @@
     max-width: 100%;
     box-sizing: border-box;
 }
+
+.opcoes-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.input-extra {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s;
+}
+.input-extra:focus {
+  border-color: #648bf0;
+}

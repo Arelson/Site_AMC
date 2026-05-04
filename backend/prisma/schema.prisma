@@ -29,7 +29,9 @@ model InviteCode {
 model Post {
   id        Int      @id @default(autoincrement())
   title     String
-  content   String
+  content   String   @db.Text
+  banner    String?
+  keywords  String?
   status    String   @default("RASCUNHO")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

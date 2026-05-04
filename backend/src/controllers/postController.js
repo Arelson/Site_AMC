@@ -2,7 +2,7 @@ import prisma from "../database/prisma.js";
 
 export const createPost = async (req, res) => {
   try {
-    const { titulo, corpo } = req.body;
+    const { titulo, corpo, banner, palavrasChave } = req.body;
     const userId = req.userId;
 
     if (!titulo || !corpo) {
@@ -13,6 +13,8 @@ export const createPost = async (req, res) => {
       data: {
         title: titulo,
         content: corpo,
+        banner: banner || null,
+        keywords: palavrasChave || null,
         status: 'PUBLICADO',
         authorId: userId
       }
@@ -73,7 +75,7 @@ export const getPostById = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { titulo, corpo } = req.body;
+    const { titulo, corpo, banner, palavrasChave } = req.body;
 
     if (!titulo || !corpo) {
       return res.status(400).json({ error: 'O título e o conteúdo são obrigatórios.' });
@@ -83,7 +85,9 @@ export const updatePost = async (req, res) => {
       where: { id: Number(id) },
       data: {
         title: titulo,
-        content: corpo
+        content: corpo,
+        banner: banner || null,
+        keywords: palavrasChave || null
       }
     });
 
