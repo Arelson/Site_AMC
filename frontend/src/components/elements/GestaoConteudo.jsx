@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './GestaoConteudo.css';
 import DashboardHeader from '../utils/DashboardHeader';
+import { Link } from 'react-router-dom';
 
 
 export default function GestaoConteudo({handleCriarPost, handleEditarPost}) {
@@ -85,7 +86,15 @@ export default function GestaoConteudo({handleCriarPost, handleEditarPost}) {
             postagens.map((post) => (
               <div className='tabela-linha' key={post.id}>
                 <div className="col-info">
-                  <span className="post-titulo">{post.title}</span>
+                  <Link
+                    to={`/post/${post.id}`}
+                    target='_blank'
+                    className='post-titulo'
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    {post.title}
+                  </Link>
+                  
                   {/* O Prisma pode trazer os dados do autor usando "include". Mostramos o nome aqui. */}
                   <span className="post-autor">DR(A) {post.author?.name.toUpperCase() || 'AUTOR DESCONHECIDO'}</span>
                 </div>

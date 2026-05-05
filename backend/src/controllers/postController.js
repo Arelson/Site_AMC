@@ -59,6 +59,13 @@ export const getPostById = async (req, res) => {
     const { id } = req.params;
     const post = await prisma.post.findUnique({
       where: { id: Number(id)},
+      include:{
+        author: {
+          select: {
+            name: true
+          }
+        }
+      }
     });
     
     if (!post) {
@@ -91,7 +98,7 @@ export const updatePost = async (req, res) => {
       }
     });
 
-    return res.status(200).json({ message: 'Postagem atualizada!', post: updatePost });
+    return res.status(200).json({ message: 'Postagem atualizada!', post: updatedPost });
   } catch (error) {
       console.error('Erro ao atualizar postagem:', error);
       return res.status(500).json({ error: 'Erro interno ao atualizar a postagem.' });

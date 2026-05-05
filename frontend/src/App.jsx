@@ -6,6 +6,7 @@ import Login from './pages/Login.jsx';
 import Cadastro from './pages/Cadastro.jsx';
 import DashboardAdmin from './pages/DashboardAdmin.jsx';
 import DashboardMember from './pages/DashboardMember.jsx';
+import PostPublico from './pages/PostPublico.jsx';
 //endregion
 
 
@@ -35,6 +36,7 @@ function App() {
         {/*MARK:ROTAS PÚBLICAS */}
         <Route path="/" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/post/:id" element={<PostPublico />} />
 
         {/* ROTAS PROTEGIDAS - ADMIN */}
         <Route

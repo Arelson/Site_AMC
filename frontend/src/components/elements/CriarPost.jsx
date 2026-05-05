@@ -3,9 +3,12 @@ import React, { useState } from 'react';
 import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-import 'katex/dist/katex.min.css';
-import katex from 'katex';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css'; // ou outro tema como monokai.css
+window.hljs = hljs;
 
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
 window.katex = katex;
 
 const Size = Quill.import('formats/size');
@@ -16,6 +19,22 @@ const Font = Quill.import('formats/font');
 Font.whitelist = ['sans-serif', 'serif', 'monospace', 'roboto'];
 Quill.register(Font, true);
 
+const modules = {
+  formula: true,
+  //syntax: true,
+  toolbar: [
+    [{ 'font': Font.whitelist }],
+    [{ 'size': Size.whitelist }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', 'formula'],
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
+    [{ 'align': [] }],
+    ['link', 'image', 'video'],
+    ['clean']
+  ],
+};
 
 export default function CriarPost({ voltarParaLista }) {
   const [titulo, setTitulo] = useState('');
@@ -23,20 +42,6 @@ export default function CriarPost({ voltarParaLista }) {
   const [banner, setBanner] = useState('');
   const [palavrasChave, setPalavrasChave] = useState('');
 
-  const modules = {
-    toolbar: [
-      [{ 'font': Font.whitelist }],
-      [{ 'size': Size.whitelist }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', 'formula'],
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],
-      [{ 'align': [] }],
-      ['link', 'image', 'video'],
-      ['clean']
-    ],
-  };
 
   const handleSalvar = async () => {
     const payload = {

@@ -1,7 +1,24 @@
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+window.katex = katex;
+
+
 import './CriarPost.css';
 import React, { useState, useEffect } from 'react';
+
+
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css'; // ou outro tema como monokai.css
+window.hljs = hljs;
+
+
+
+
+
 import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+
+
 
 const Size = Quill.import('formats/size');
 Size.whitelist = ['small', 'normal', 'large', 'huge'];
@@ -11,26 +28,29 @@ const Font = Quill.import('formats/font');
 Font.whitelist = ['sans-serif', 'serif', 'monospace', 'roboto'];
 Quill.register(Font, true);
 
+const modules = {
+  formula: true,
+  syntax: true,
+  toolbar: [
+    [{ 'font': Font.whitelist }],
+    [{ 'size': Size.whitelist }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', 'formula'],
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
+    [{ 'align': [] }],
+    ['link', 'image', 'video'],
+    ['clean']
+  ],
+};
+
 export default function EditarPost({ postId, voltarParaLista }) {
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
   const [banner, setBanner] = useState('');
   const [palavrasChave, setPalavrasChave] = useState('');
 
-  const modules = {
-    toolbar: [
-      [{ 'font': Font.whitelist }],
-      [{ 'size': Size.whitelist }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block', 'formula'],
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'indent': '-1' }, { 'indent': '+1' }],
-      [{ 'align': [] }],
-      ['link', 'image', 'video'],
-      ['clean']
-    ],
-  };
 
   useEffect(() => {
     const buscarDadosDoPost = async () => {
@@ -45,6 +65,7 @@ export default function EditarPost({ postId, voltarParaLista }) {
 
         if (response.ok) {
           const post = await response.json();
+          console.log("2. Voltando do banco:", post.content);
           setTitulo(post.title);
           setConteudo(post.content);
           setBanner(post.banner || '');
@@ -63,6 +84,7 @@ export default function EditarPost({ postId, voltarParaLista }) {
   }, [postId, voltarParaLista]);
 
   const handleAtualizar = async () => {
+    console.log("1.Indo para o banco:", conteudo);
     const payload = {
       titulo,
       corpo: conteudo,
