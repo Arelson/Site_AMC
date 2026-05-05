@@ -84,6 +84,8 @@
   line-height: 1.8;
   color: #444;
 }
+
+/* Citações adaptadas para Tiptap */
 .post-conteudo-html blockquote {
   position: relative;
   font-style: italic;
@@ -104,6 +106,11 @@
   overflow-wrap: break-word;
   white-space: normal;
 }
+
+.post-conteudo-html blockquote p {
+  display: inline; /* Garante que o parágrafo do tiptap não quebre a citação */
+}
+
 .post-conteudo-html blockquote::before {
   content: '“';
   position: absolute;
@@ -125,7 +132,6 @@
   line-height: 1;
 }
 
-
 .post-conteudo-html img {
   width: 80%;
   border-radius: 15px;
@@ -134,41 +140,82 @@
   margin-left: auto;
   margin-right: auto;
 }
-.post-conteudo-html p.ql-align-center {
+
+/* Suporte para iframes (Vídeos do YouTube) */
+.post-conteudo-html iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  border: none;
+  margin: 30px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Alinhamento adaptado para o Tiptap (Ele usa styles inline) */
+.post-conteudo-html [style*="text-align: center"] {
   text-align: center;
   padding-top: 14px;
   padding-bottom: 24px;
-  font-size: 13px;
-  color: #999;
-  margin-top: -6px;
-  letter-spacing: 1px;;
+  font-size: 14px;
+  color: #777;
+  letter-spacing: 1px;
 }
-.post-conteudo-html .ql-formula {
+
+/* Fórmulas matemáticas */
+.post-conteudo-html math-inline, 
+.post-conteudo-html math-display {
   display: block;
   text-align: center;
   padding: 20px;
   background: #fcfcfc;
+  border-radius: 8px;
+  margin: 20px 0;
 }
+
+/* Bloco de Código adaptado */
+/* Bloco de Código adaptado e modernizado */
 .post-conteudo-html pre {
-  background-color: #1e1e1e;
-  color: #d4d4d4;
+  background-color: #282c34; /* Cor de fundo do atom-one-dark */
+  color: #abb2bf;
   padding: 24px;
   border-radius: 12px;
   font-family: 'Fira Code', 'Consolas', 'Monaco','Courier New', monospace;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   margin: 30px 0;
-  border: 1px solid #333;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  box-sizing: border-box;
+  overflow-x: auto;
   width: 90%;
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
+
+/* Estilizando a barra de rolagem (scrollbar) do bloco de código */
+.post-conteudo-html pre::-webkit-scrollbar {
+  height: 8px; /* Deixa a barra fininha */
+}
+.post-conteudo-html pre::-webkit-scrollbar-track {
+  background: #21252b; /* Cor do trilho da barra */
+  border-radius: 0 0 12px 12px;
+}
+.post-conteudo-html pre::-webkit-scrollbar-thumb {
+  background: #4b5363; /* Cor da barrinha de puxar */
+  border-radius: 4px;
+}
+.post-conteudo-html pre::-webkit-scrollbar-thumb:hover {
+  background: #5c6370;
+}
+
+.post-conteudo-html pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-family: inherit;
+}
+
+
+
 .post-footer {
   padding: 0 60px 40px;
   border-top: 1px solid #eee;

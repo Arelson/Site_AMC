@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import './Post.css';
+
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
-
+import hljs from 'highlight.js';
+// Tema escuro e moderno para o código:
+import 'highlight.js/styles/atom-one-dark.css'; 
 
 const calcularTempoLeitura = (conteudoHtml) => {
   if (!conteudoHtml) return 1; 
@@ -15,11 +18,11 @@ const calcularTempoLeitura = (conteudoHtml) => {
   return tempoLeitura > 0 ? tempoLeitura : 1;
 };
 
-
 export default function Post() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [erro, setErro] = useState(false);
+  const [conteudoFormatado, setConteudoFormatado] = useState('');
 
   useEffect(() => {
     const carregarPost = async () => {
@@ -29,6 +32,11 @@ export default function Post() {
         if (response.ok) {
           const data = await response.json();
           setPost(data);
+          
+          // Tratamento infalível para as fórmulas matemáticas
+          const htmlComMatematica = data.content.replace(/\$\$(.*?)\$\$/g, '<span class="math-tex" data-math="$1"></span>');
+          setConteudoFormatado(htmlComMatematica);
+
         } else {
           setErro(true);
         }
@@ -41,36 +49,32 @@ export default function Post() {
   }, [id]);
 
   useEffect(() => {
-    // Isso força o KaTeX a procurar fórmulas que o Quill salvou
-    window.katex = katex;
-  }, []);
-
-  useEffect(() => {
-    if (post) {
+    if (conteudoFormatado) {
+      // 1. Processar Blocos de Código
       if (window.hljs) {
-        const blocosDeCodigo = document.querySelectorAll('.post-conteudo-html pre');
-  
+        const blocosDeCodigo = document.querySelectorAll('.post-conteudo-html pre code');
         blocosDeCodigo.forEach((bloco) => {
-          if (bloco.getAttribute('data-language') === 'plain') {
-            bloco.removeAttribute('data-language');
-          }
-          bloco.classList.add('hljs');
+          // Limpa o estado anterior para não bugar as cores
+          delete bloco.dataset.highlighted; 
           window.hljs.highlightElement(bloco);
         });
       }
 
+      // 2. Processar Fórmulas Matemáticas
       if (katex) {
         setTimeout(() => {
-          const formulas = document.querySelectorAll('.post-conteudo-html .ql-formula');
+          const formulas = document.querySelectorAll('.math-tex, math-inline, math-display');
+          
           formulas.forEach((formulaEl) => {
-            let equacao = formulaEl.getAttribute('data-value') || formulaEl.textContent;
+            let equacao = formulaEl.getAttribute('data-math') || formulaEl.textContent;
     
             if (equacao) {
-              equacao = equacao.replace(/\uFEFF/g, '').trim();
+              equacao = equacao.replace(/\$\$/g, '').trim(); 
+              
               try {
                 katex.render(equacao, formulaEl, {
                   throwOnError: false,
-                  displayMode: true
+                  displayMode: true 
                 });
               } catch (error) {
                 console.error('Erro ao renderizar equação', error);
@@ -80,7 +84,7 @@ export default function Post() {
         }, 100); 
       }
     }
-  }, [post]);
+  }, [conteudoFormatado]);
 
   if (erro) return <div className='loading'>Postagem não encontrada.</div>;
   if (!post) return <div className='loading'>Carregando postagem...</div>;
@@ -101,10 +105,7 @@ export default function Post() {
         <header className="post-header">
           <div className="tags-header-container">
             {post.keywords && post.keywords.split(',').map((palavra, index) => {
-              // O .trim() remove espaços em branco acidentais, ex: " palavra2 " vira "palavra2"
               const palavraLimpa = palavra.trim(); 
-              
-              // Se a pessoa digitou uma vírgula a mais no final, isso evita criar um quadrado vazio
               if (!palavraLimpa) return null; 
 
               return (
@@ -118,7 +119,7 @@ export default function Post() {
 
           <div className="autor-info-box">
             <div className="autor-avatar">
-              {post.author?.name.charAt(0).toUpperCase()}
+              {post.author?.name?.charAt(0).toUpperCase()}
             </div>
             <div className="autor-detalhes">
               <strong>{post.author?.name}</strong>
@@ -133,16 +134,13 @@ export default function Post() {
 
         <div 
           className="post-conteudo-html"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: conteudoFormatado }}
         />
 
         <footer className="post-footer">
           <div className="tags-container">
             {post.keywords && post.keywords.split(',').map((palavra, index) => {
-              // O .trim() remove espaços em branco acidentais, ex: " palavra2 " vira "palavra2"
               const palavraLimpa = palavra.trim(); 
-              
-              // Se a pessoa digitou uma vírgula a mais no final, isso evita criar um quadrado vazio
               if (!palavraLimpa) return null; 
 
               return (
@@ -153,7 +151,6 @@ export default function Post() {
             })}
           </div>
         </footer>
-
       </article>
     </div>
   )
