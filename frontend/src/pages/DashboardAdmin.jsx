@@ -5,14 +5,12 @@ import './DashboardAdmin.css';
 
 export default function DashboardAdmin() {
   return (
-    <div className="page-container">
+    <div className="page-adm-container">
       <Header 
         botaoAmarelo={true}
         backgroundScroll={false} 
       />
-      <main className='main-content'>
-        <DashboardAdminBody />      
-      </main>
+      <DashboardAdminBody />      
       <Footer />
     </div>
   );

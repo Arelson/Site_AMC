@@ -116,7 +116,7 @@ export default function DashboardAdminBody() {
       </aside>
       <main className="dashboard-member-main">
         {visaoGeral && <VisaoGeral />} 
-        {gestaoConteudo && <GestaoConteudo handleCriarPost={handleCriarPost} handleEditarPost={handleEditarPost} />} 
+        {gestaoConteudo && <GestaoConteudo handleCriarPost={handleCriarPost} handleEditarPost={handleEditarPost} adm={false} />} 
         {criarPost && <CriarPost voltarParaLista={handleGestaoConteudo}/>} 
         {editarPost && <EditarPost postId={postEditandoId} voltarParaLista={handleGestaoConteudo} />}   
       </main>
