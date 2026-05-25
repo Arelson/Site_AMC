@@ -164,4 +164,216 @@
   border: none;
 }
 
+/*CONTAINER - MARK: GESTAO-INVITES */
+.invites {
+  margin-top: 32px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+}
+.invites-title {
+  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}
+.invites-table-header,
+.invites-table-content {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  align-items: center;
+  gap: 16px;
+}
+.invites-table-header {
+  padding: 0 16px 12px 16px;
+  border-bottom: 2px solid #e2e8f0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.invites-table {
+  display: flex;
+  flex-direction: column;
+}
+.invites-table p {
+  text-align: center;
+  color: #94a3b8;
+  padding: 40px 0;
+  font-size: 0.9rem;
+}
+.invites-table-content {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+};
+.invites-table-content:last-child {
+  border-bottom: none;
+}
+.invites-table-content:hover {
+  background-color: #f8fafc;
+  border-radius: 8px;
+}
+.invites-table-content-code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #334155;
+  background-color: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 6px;
+  width: fit-content;
+  letter-spacing: 1px;
+}
+.invites-table-content-status span {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+.status-disponivel {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.status-disponivel::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #15803d;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.status-utilizado {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+.invites-table-content-actions button {
+  background-color: transparent;
+  color: #ef4444;
+  border: 1px solid transparent;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+.invites-table-content-actions button:hover {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+/*CONTAINER - MARK: GESTAO-INVITES-POPUP */
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.popup-content {
+  background-color: #ffffff;
+  padding: 40px 32px;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  position: relative;
+  animation: modelFadeIn 0.25s ease-out forwards;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px) scale(0.95);}
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.popup-content h2 {
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+.popup-content p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.popup-content-code {
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 2px dashed #cbd5e1;
+}
+.popup-content-buttonClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.popup-content-buttonClose:hover {
+  background-color: #f1f5f9;
+  color: #ef4444;
+}
+.popup-content-buttonCopy {
+  background-color: #1a1b4b;
+  color: #ffffff;
+  border: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+.popup-content-buttonCopy:hover {
+  background-color: #2c2d65;
+  transform: translateY(-1px);
+}
+.popup-content-buttonCopy:active {
+  transform: translateY(1px);
+}
+.popup-content-buttonCopy.copiado {
+  background-color: #15803d;
+  pointer-events: none;
+}
 

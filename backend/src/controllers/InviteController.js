@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import prisma from "../database/prisma.js"; 
 
 export const createInvite = async (req, res) => {
   try {
@@ -36,7 +35,7 @@ export const deleteInvite = async (req, res) => {
     });
     res.status(200).json({ message: 'Código excluído com sucesso!' })
   } catch (error) {
-    res.status.json({ error: 'Erro ao excluir o código' });    
+    res.status(500).json({ error: 'Erro ao excluir o código' });    
   }
 } 
 

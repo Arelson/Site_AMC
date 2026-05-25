@@ -12,6 +12,10 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
   const [revistasEbooks, setRevistasEbooks] = useState(false);
   const [documentosPublicos, setDocumentosPublicos] = useState(false);
   const [blog, setBlog] = useState(false);
+  const [invitePopup, setInvitePopup] = useState(false);
+  const [invites, setInvites] = useState([]);
+  const [codeGenerated, setCodeGenerated] = useState('');
+  const [copy, setCopy] = useState(false);
 
   const handleExcluirPost = async (id) => {
     const confirmar = window.confirm('Tem certeza que deseja excluir esta postagem?');
@@ -35,6 +39,28 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
       console.error('Erro:', error);
     }
   };
+  
+  
+  useEffect(() => {
+    const requireInvites = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/admin/invites', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        const data = await response.json();
+        setInvites(data);
+      } catch (error) {
+        console.error('Erro ao buscar convites:', error);
+      }
+    }
+    if (adm) {
+      requireInvites();
+    }
+  }, [adm]);
+  
 
   useEffect(() => {
     const buscarPostagens = async () => {
@@ -60,6 +86,61 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     buscarPostagens();
   }, []);
 
+  const handleGeneratedCode = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/invites', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCodeGenerated(data.code);
+        setInvitePopup(true);
+        setInvites(prev => [data, ...prev]);
+      } else {
+        alert('Erro ao gerar convite');
+      }
+    } catch (error) {
+      alert('Erro ao gerar código no servidor: ', error);
+    }
+  }
+
+  const handleCopiarCodigo = async () => {
+    try {
+      await navigator.clipboard.writeText(codeGenerated);
+      setCopy(true);
+      setTimeout(() => {
+        setCopy(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Falha ao copiar:', err);
+      alert('Erro ao copiar o código.');
+    }
+  };
+
+  const handleDeleteCode = async (id) => {
+    if (!window.confirm('Tem certeza que deseja excluir este código?')) return;
+    try {
+      const response = await fetch(`http://localhost:3000/api/admin/invites/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.ok) {
+        setInvites(invites.filter(invite => invite.id !== id));
+      } else {
+        alert('Erro ao tentar excluir código no servidor.');
+      }
+    } catch (error) {
+      alert('Erro de conexão ao exluir código: ', error);
+    }
+  }
+
   const handleMembroClick = () => {
     setMembros(true);
     setNoticias(false);
@@ -67,6 +148,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     setRevistasEbooks(false);
     setDocumentosPublicos(false);
     setBlog(false);
+    setInvitePopup(false);
   }
 
   const handleNoticiaClick = () => {
@@ -76,6 +158,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     setRevistasEbooks(false);
     setDocumentosPublicos(false);
     setBlog(false);
+    setInvitePopup(false);
   }
 
   const handleEventoClick = () => {
@@ -85,6 +168,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     setRevistasEbooks(false);
     setDocumentosPublicos(false);
     setBlog(false);
+    setInvitePopup(false);
   }
 
   const handleRevistasEbooksClick = () => {
@@ -94,6 +178,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     setMembros(false);
     setDocumentosPublicos(false);
     setBlog(false);
+    setInvitePopup(false);
   }
 
   const handleDocumentosPublicosClick = () => {
@@ -103,6 +188,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     setMembros(false);
     setRevistasEbooks(false);
     setBlog(false);
+    setInvitePopup(false);
   }
 
   const handleBlogClick = () => {
@@ -112,6 +198,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     setMembros(false);
     setRevistasEbooks(false);
     setDocumentosPublicos(false);
+    setInvitePopup(false);
   }
 
   return (
@@ -245,7 +332,46 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
                 <h2>GESTÃO DE MEMBROS</h2>
                 <div>
                   <a href="#"><span>+</span>Novo Membro</a>
-                  <a href="#"><span>+</span>Novo Código de Convite</a>
+                  <a href="#" onClick={ handleGeneratedCode }><span>+</span>Novo Código de Convite</a>
+                </div>
+              </div>
+              <div className='invites'>
+                <h3 className='invites-title'>Códigos de Convite</h3>
+                <div className = 'invites-table-header'>
+                  <span>CÓDIGO</span>
+                  <span>STATUS</span>
+                  <span>AÇÃO</span>
+                </div>
+
+                <div className = 'invites-table'>
+                  {invites.length === 0 ? (
+                    <p>Nenhum código gerado ainda</p>
+                  ):(
+                    invites.map((invite) => (
+                      <div className='invites-table-content' key={invite.id}>
+                        <div className='invites-table-content-code'>{invite.code}</div>
+                        <div className='invites-table-content-status'>
+                          <span className={invite.isUsed ? 'status-utilizado' : 'status-disponivel'}> {invite.isUsed ? 'UTILIZADO' : 'DISPONÍVEL'}</span>
+                        </div>
+                        <div className='invites-table-content-actions'>
+                          <button onClick={() => handleDeleteCode(invite.id)}>EXCLUIR</button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </>
+            }
+            {invitePopup &&
+            <>
+              <div className='popup-container'>
+                <div className='popup-content'>
+                  <h2>Código Gerado!</h2>
+                  <p>Envie o código abaixo para o novo membro se cadastrar:</p>
+                  <div className='popup-content-code'>{codeGenerated}</div>
+                  <button className='popup-content-buttonClose' onClick={() => setInvitePopup(false)}>X</button>
+                  <button className={`popup-content-buttonCopy ${copy ? 'copiado' : ''}`} onClick={handleCopiarCodigo}>{copy? 'COPIADO!': `COPIAR CÓDIGO`}</button>
                 </div>
               </div>
             </>
