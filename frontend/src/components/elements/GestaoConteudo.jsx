@@ -210,7 +210,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
           <section className='gestao-conteudo-content'>
             <div className='gestao-conteudo-content-title'>
               <h1>MEU VLOG</h1>
-            </div>00
+            </div>
     
             <hr className='linha-divisoria'/>
     

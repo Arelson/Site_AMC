@@ -119,3 +119,39 @@ export const deletePost = async (req, res) => {
     return res.status(500).json({ error: 'Erro ao deletar a postagem.' });
   }
 }
+
+export const getPublicFeed = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 9; // Número de postagens por pagina
+    const skip = (page - 1) * limit; // Deslocamento para a primeira postagem da página
+
+    const posts = await prisma.post.findMany({
+      skip: skip,
+      take: limit,
+      include: {
+        author: {
+          select: {
+            name: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc' // Ordena por data de criação, do mais recente para o mais antigo
+      }
+    });
+
+    const totalPosts = await prisma.post.count();     // Contagem total de postagens para calcular o número total de páginas
+    const totalPages = Math.ceil(totalPosts / limit); // Cálculo do número total de páginas
+
+    return res.status(200).json({
+      posts,
+      totalPaginas: totalPages,
+      paginaAtual: page
+    });
+
+  } catch (error) {
+    console.error('Erro ao buscar o feed público:', error);
+    return res.status(500).json({ error: 'Erro ao carregar o feed de notícias. '});
+  }
+};
