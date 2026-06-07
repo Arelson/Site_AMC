@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import prisma from '../database/prisma.js';
 import jwt from 'jsonwebtoken';
@@ -5,6 +6,7 @@ import jwt from 'jsonwebtoken';
 export const generateInviteCode = async (req, res) => {
   try {
     const randomCode = crypto.randomBytes(4).toString('hex').toUpperCase();
+    console.log('randomCode', randomCode);
 
     const newInvite = await prisma.inviteCode.create({
       data: {

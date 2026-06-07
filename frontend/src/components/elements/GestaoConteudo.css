@@ -26,6 +26,13 @@
   justify-content: flex-start;
   width: fit-content;
 }
+.linha-divisoria {
+  border: none;
+  height: 1px;
+  background-color: #cbd5e1;
+  width: 100%;
+  margin: 10px 0;
+}
 
 /*CONTAINER - MARK: GESTAO-INVITES */
 .invites {

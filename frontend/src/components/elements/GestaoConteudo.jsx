@@ -6,6 +6,7 @@ import GestaoNoticias from '../utils/GestaoNoticias';
 import GestaoBlogMember from '../utils/GestaoBlogMember.jsx';
 
 
+
 export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPost=() => {}, adm}) {
   const [membros, setMembros] = useState(true);
   const [noticias, setNoticias] = useState(false);
@@ -40,7 +41,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     }
   }, [adm]);
   
-
+// TODO: TALVEZ EXCLUIR
   const handleGeneratedCode = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/admin/invites', {
@@ -76,6 +77,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     }
   };
 
+  // TODO: TALVEZ EXCLUIR
   const handleDeleteCode = async (id) => {
     if (!window.confirm('Tem certeza que deseja excluir este código?')) return;
     try {
@@ -171,7 +173,6 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
             <h1 onClick={handleDocumentosPublicosClick} className={`gestao-conteudo-content-title-adm-h1 ${documentosPublicos ? 'Active' : 'Inactive'}`}>DOCUMENTOS PÚBLICOS</h1>
             <h1 onClick={handleBlogClick} className={`gestao-conteudo-content-title-adm-h1 ${blog ? 'Active' : 'Inactive'}`}>BLOG</h1>
           </div>
-
           <hr className='linha-divisoria'/>
 
           <>
