@@ -8,6 +8,8 @@ import DashboardAdmin from './pages/DashboardAdmin.jsx';
 import DashboardMember from './pages/DashboardMember.jsx';
 import PostPublico from './pages/PostPublico.jsx';
 import Publicacoes from './pages/Publicacoes.jsx';
+import NoticiaPage from './pages/NoticiaPage.jsx';
+import PortalNoticias from './pages/PortalNoticias.jsx';
 //endregion
 
 
@@ -37,8 +39,10 @@ function App() {
         {/*MARK:ROTAS PÚBLICAS */}
         <Route path="/" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/post/:id" element={<PostPublico />} />
+        <Route path="/noticias" element={<PortalNoticias />} />
         <Route path="/post" element={<Publicacoes />}/>
+        <Route path="/noticia/:id" element={<NoticiaPage />} />
+        <Route path="/post/:id" element={<PostPublico />} />
 
         {/* ROTAS PROTEGIDAS - ADMIN */}
         <Route

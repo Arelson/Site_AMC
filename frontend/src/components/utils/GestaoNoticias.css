@@ -1,0 +1,116 @@
+.gestao-container {
+  width: 100%;
+  margin: 0 auto;
+  font-family: sans-serif;
+}
+
+.gestao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 15px;
+}
+
+.gestao-header h2 {
+  color: #1a1a40;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.btn-novo-registro {
+  background-color: rgb(26, 26, 64);
+  display: flex;
+  padding: 10px 20px;
+  border-radius: 20px;
+  box-shadow: -2px 2px 11px rgba(0, 0, 0, 0.2);
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.btn-novo-registro:hover {
+  background-color: #2e2e6b;
+}
+
+.gestao-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.gestao-table th {
+  background-color: #f8fafc;
+  color: #64748b;
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.gestao-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.table-titulo {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.badge-status {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-status.publicado {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge-status.rascunho {
+  background-color: #fef08a;
+  color: #a16207;
+}
+
+.table-acoes {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.table-acoes button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-acao-edit {
+  color: #3b82f6;
+}
+.btn-acao-edit:hover {
+  background-color: #eff6ff;
+}
+
+.btn-acao-delete {
+  color: #ef4444;
+}
+.btn-acao-delete:hover {
+  background-color: #fef2f2;
+}

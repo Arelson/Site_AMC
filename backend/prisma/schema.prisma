@@ -17,6 +17,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   posts     Post[]
+  news      News[]
 }
 
 model InviteCode {
@@ -35,6 +36,21 @@ model Post {
   status    String   @default("RASCUNHO")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String   // Título da Notícia
+  content   String   @db.Text // Conteúdo Rico (HTML do Tiptap)
+  banner    String?  // URL ou Base64 da Capa da Notícia
+  keywords  String?  // Armazenará a Categoria AMC (ex: CIÊNCIA) + tags extras
+  status    String   @default("RASCUNHO") // "RASCUNHO" ou "PUBLICADO"
+  createdAt DateTime @default(now()) // Usado para a regra de exclusão/expiração de 2 anos
+  updatedAt DateTime @updatedAt
+  
+  // Relacionamento com o Usuário
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
 }

@@ -1,13 +1,13 @@
 import './DashboardMemberBody.css';
 import { useState } from 'react';
-import VisaoGeral from './elements/VisaoGeral';
-import GestaoConteudo from './elements/GestaoConteudo';
-import CriarPost from './elements/CriarPost';
-import EditarPost from './elements/EditarPost';
+import VisaoGeral from './elements/VisaoGeral.jsx';
+import GestaoConteudo from './elements/GestaoConteudo.jsx';
+import CriarPost from './elements/CriarPost.jsx';
+import EditarPost from './elements/EditarPost.jsx';
 
 
 
-export default function DashboardAdminBody() {
+export default function DashboardMemberBody() {
   const [visaoGeral, setVisaoGeral] = useState(true);
   const [gestaoConteudo, setGestaoConteudo] = useState(false);
   const [minhaConta, setMinhaConta] = useState(false);

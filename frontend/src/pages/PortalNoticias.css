@@ -1,0 +1,269 @@
+/* PortalNoticias.css */
+
+.portal-container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  padding-bottom: 60px;
+}
+
+/* Header / Banner Escuro Superior */
+.portal-header {
+  background-color: rgb(26, 26, 64) ;/* Azul escuro idêntico ao da marca */
+  color: white;
+  padding: 60px 40px 100px 40px;
+  text-align: left;
+  margin-top: 80px;
+}
+
+.portal-header-conteudo {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.portal-header h1 {
+  font-family: Georgia, serif;
+  font-size: 42px;
+  margin: 0 0 15px 0;
+  font-weight: 400;
+}
+
+.portal-header p {
+  font-size: 15px;
+  color: #cbd5e1;
+  max-width: 600px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Barra de Busca e Filtros Flutuante */
+.portal-barra-controle {
+  max-width: 1200px;
+  margin: -35px auto 40px auto; /* Faz a barra flutuar sobre o banner escuro */
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.busca-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 350px;
+}
+
+.busca-input {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border: 1px solid #e2e8f0;
+  background-color: #333333; /* Fundo escuro do input igual ao print */
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.busca-input::placeholder {
+  color: #94a3b8;
+}
+
+.busca-icone {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+/* Filtros (Pills) */
+.filtros-grupo {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filtro-btn {
+  background-color: #f1f5f9;
+  border: none;
+  color: #475569;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filtro-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.filtro-btn.ativo {
+  background-color: #e2e8f0;
+  color: #0b194d;
+}
+
+/* Grid de Cards de Notícias */
+.portal-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+/* Card Individual */
+.noticia-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f1f5f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.noticia-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.card-imagem-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+}
+
+.card-imagem {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tag-destaque {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: #facc15; /* Amarelo destaque do print */
+  color: #0f172a;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.card-conteudo {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-data {
+  font-size: 12px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.card-titulo {
+  font-size: 20px;
+  color: #0b194d;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-resumo {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 25px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-botao-ler {
+  margin-top: auto;
+  background: transparent;
+  border: none;
+  color: #0b194d;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px 0;
+  border-top: 1px solid #f1f5f9;
+  width: 100%;
+  transition: color 0.2s;
+}
+
+.card-botao-ler:hover {
+  color: #3b82f6;
+}
+
+/* Paginação */
+.portal-paginacao {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 50px;
+}
+
+.paginacao-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.paginacao-btn:hover {
+  background-color: #f1f5f9;
+}
+
+.paginacao-btn.ativo {
+  background-color: #0b194d; /* Azul escuro para a página ativa */
+  color: white;
+  border-color: #0b194d;
+}
+
+/* Estados de Carregamento e Grid Vazio */
+.portal-loading, .portal-erro, .portal-vazio {
+  text-align: center;
+  padding: 80px 20px;
+  font-size: 18px;
+  color: #64748b;
+  grid-column: 1 / -1;
+}

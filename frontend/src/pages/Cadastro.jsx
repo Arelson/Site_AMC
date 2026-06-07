@@ -1,6 +1,6 @@
-import Header from "../components/layouts/Header";
-import Footer from "../components/layouts/Footer";
-import CadastroForm from "../components/CadastroForm";
+import Header from "../components/layouts/Header.jsx";
+import Footer from "../components/layouts/Footer.jsx";
+import CadastroForm from "../components/CadastroForm.jsx";
 import './Cadastro.css';
 
 export default function Cadastro() {
@@ -16,4 +16,4 @@ export default function Cadastro() {
       <Footer />
     </div>
   )
-}
+} 

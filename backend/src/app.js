@@ -5,6 +5,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import postVlogRoutes from './routes/postVlogRoutes.js';
 import inviteRoutes from './routes/inviteRoutes.js';
+import newsRoutes from './routes/newsRoutes.js';
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postVlogRoutes);
 app.use('/api/invites', inviteRoutes);
+app.use('/api/news', newsRoutes);
 
 export default app;
