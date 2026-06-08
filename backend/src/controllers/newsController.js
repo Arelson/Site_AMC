@@ -129,14 +129,13 @@ export const getPublicPortalNews = async (req, res) => {
 
 export const getAdminNews = async (req, res) => {
   try {
-    const userId = req.userId;
+    //const userId = req.userId;
 
     const dataLimite = new Date();
     dataLimite.setFullYear(dataLimite.getFullYear() - 2);
 
     const noticiasAdmin = await prisma.news.findMany({
       where: {
-        authorId: userId,
         createdAt: { gte: dataLimite }
       },
       orderBy: {

@@ -23,7 +23,7 @@ export const generateInviteCode = async (req, res) => {
 export const getInvites = async (req, res) => {
   try {
     const invites = await prisma.inviteCode.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' } 
     });
 
     res.json(invites);

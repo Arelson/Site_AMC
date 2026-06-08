@@ -190,7 +190,6 @@ export default function EditarPost({ postId, voltarParaLista }) {
         voltarParaLista({ preventDefault: () => {} });
       }
     };
-
     buscarDadosDoPost();
   }, [postId, voltarParaLista, editor]); // Refaz a injeção se o editor demorar para carregar
 

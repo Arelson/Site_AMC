@@ -107,7 +107,7 @@ export default function EditarNoticia({ postId, voltarParaLista }) {
           
           if (editor) {
             editor.commands.setContent(post.content);
-          }
+          } 
         }
       } catch (error) {
         console.error("Erro ao buscar dados:", error);

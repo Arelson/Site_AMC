@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 export const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization;  
 
   if (!authHeader) {
     return res.status(401).json({ error: 'Token não fornecido' });
@@ -9,7 +9,7 @@ export const verifyToken = (req, res, next) => {
   const [, token] = authHeader.split(' ');
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
     req.userId = decoded.id;
     req.userRole = decoded.role;
     next();

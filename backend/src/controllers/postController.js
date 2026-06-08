@@ -65,7 +65,7 @@ export const getPostById = async (req, res) => {
             name: true
           }
         }
-      }
+      } 
     });
     
     if (!post) {
