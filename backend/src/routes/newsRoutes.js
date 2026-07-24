@@ -1,6 +1,6 @@
 import express from 'express';
 import { createNews, deleteNews, getPublicPortalNews, getAdminNews, updateNews, getNewsById } from '../controllers/newsController.js';
-import { verifyToken, isAdmin } from '../middlewares/authMiddleware.js'; // Ajuste conforme seu middleware
+import { verifyToken, isAdmin } from '/home/arlison/Área de trabalho/Site AMC/Site_AMC/backend/src/middlewares/authmiddleware.js'; // Ajuste conforme seu middleware
 
 const router = express.Router();
 // 1. Rotas Públicas Fixas
