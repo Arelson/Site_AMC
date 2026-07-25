@@ -4,9 +4,10 @@ import pg from 'pg';
 import bcrypt from 'bcrypt';
 
 // 1. Configura a conexão nativa do Postgres exigida pelo Prisma 7
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL
+});
+const prisma = new PrismaClient({adapter});
 
 async function main() {
   // 2. Verifica se o admin já existe
@@ -43,5 +44,5 @@ main()
   .finally(async () => {
     // 4. Fecha as conexões do Prisma e do Pool do Postgres ao terminar
     await prisma.$disconnect();
-    await pool.end();
+    // await pool.end();
   });
