@@ -80,7 +80,7 @@ export default function Header({ botaoAmarelo = true,  backgroundScroll = true }
           <a href="#" onClick={() => navigate('/noticias') }>Notícia</a>
           <a href="#">Membros</a>
           <a href="#" onClick={() => navigate('/post')}>Publicações</a>
-          <a href="#">Eventos</a>
+          <a href="#" onClick={() => navigate('/eventos')}>Eventos</a>
         </nav>
 
         {/* BOTÃO DO PORTAL DE MEMBROS */}

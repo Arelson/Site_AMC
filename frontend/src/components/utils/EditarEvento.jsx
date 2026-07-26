@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -15,9 +15,9 @@ import {
   Link as LinkIcon, Video, Image as ImageIcon, Upload, Sigma, ArrowLeft 
 } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import './CriarNoticia.css';
+import './EditarNoticia'; 
 
-// Componente Interno: Barra de Ferramentas do Editor Tiptap
+// MenuBar (Idêntico ao do CriarEvento)
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
@@ -25,12 +25,10 @@ const MenuBar = ({ editor }) => {
     const url = window.prompt('URL do link:');
     if (url) editor.chain().focus().setLink({ href: url }).run();
   };
-
   const addVideo = () => {
     const url = window.prompt('URL do vídeo do YouTube:');
     if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run();
   };
-
   const addImageURL = () => {
     const url = window.prompt('URL da Imagem:');
     if (url) editor.chain().focus().setImage({ src: url }).run();
@@ -51,41 +49,31 @@ const MenuBar = ({ editor }) => {
           <option value="3">Título 3</option>
         </select>
       </div>
-      
       <div className="toolbar-divider" />
-      
       <div className="toolbar-group">
         <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive('bold') ? 'is-active' : ''}><Bold size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive('italic') ? 'is-active' : ''}><Italic size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={editor.isActive('underline') ? 'is-active' : ''}><UnderlineIcon size={18} /></button>
       </div>
-      
       <div className="toolbar-divider" />
-      
       <div className="toolbar-group">
         <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className={editor.isActive({ textAlign: 'left' }) ? 'is-active' : ''}><AlignLeft size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} className={editor.isActive({ textAlign: 'center' }) ? 'is-active' : ''}><AlignCenter size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} className={editor.isActive({ textAlign: 'right' }) ? 'is-active' : ''}><AlignRight size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={editor.isActive({ textAlign: 'justify' }) ? 'is-active' : ''}><AlignJustify size={18} /></button>
       </div>
-      
       <div className="toolbar-divider" />
-      
       <div className="toolbar-group">
         <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive('bulletList') ? 'is-active' : ''}><List size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive('orderedList') ? 'is-active' : ''}><ListOrdered size={18} /></button>
       </div>
-      
       <div className="toolbar-divider" />
-      
       <div className="toolbar-group">
         <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={editor.isActive('blockquote') ? 'is-active' : ''}><Quote size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={editor.isActive('codeBlock') ? 'is-active' : ''}><Code size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().insertContent('$$ $$').run()} title="Inserir Fórmula Matemática"><Sigma size={18} /></button>
       </div>
-      
       <div className="toolbar-divider" />
-      
       <div className="toolbar-group">
         <button type="button" onClick={addLink} className={editor.isActive('link') ? 'is-active' : ''}><LinkIcon size={18} /></button>
         <button type="button" onClick={addVideo}><Video size={18} /></button>
@@ -95,12 +83,14 @@ const MenuBar = ({ editor }) => {
   );
 };
 
-export default function CriarNoticia({ voltarParaLista }) {
-  const [titulo, setTitulo] = useState('');
-  const [conteudo, setConteudo] = useState('');
-  const [banner, setBanner] = useState('');
-  const [categoria, setCategoria] = useState('CIÊNCIA'); // Categoria padrão AMC
-  const [tagsExtras, setTagsExtras] = useState('');
+// ATENÇÃO: Recebemos o eventoId como propriedade para saber qual editar!
+export default function EditarEvento({ eventoId, voltarParaLista }) {
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [location, setLocation] = useState('');
+  const [banner, setBannerUrl] = useState('');
+  const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const bannerInputRef = useRef(null);
 
@@ -113,40 +103,76 @@ export default function CriarNoticia({ voltarParaLista }) {
       MathExtension.configure({ evaluation: false }),
     ],
     content: '',
-    onUpdate: ({ editor }) => setConteudo(editor.getHTML()),
+    onUpdate: ({ editor }) => setDescription(editor.getHTML()),
   });
+
+  // BUSCAR OS DADOS INICIAIS DO EVENTO
+  useEffect(() => {
+    const fetchEvento = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/events/${eventoId}`);
+        if (response.ok) {
+          const data = await response.json();
+          
+          setTitle(data.title);
+          setLocation(data.location);
+          setBannerUrl(data.banner || '');
+          setDescription(data.description || '');
+
+          // Ajuste da data: O input datetime-local precisa do formato YYYY-MM-DDTHH:mm
+          if (data.date) {
+            const formattedDate = new Date(data.date).toISOString().slice(0, 16);
+            setDate(formattedDate);
+          }
+
+          // Preenche o editor Tiptap com a descrição salva
+          if (editor && data.description) {
+            editor.commands.setContent(data.description);
+          }
+        } else {
+          alert("Erro ao buscar dados do evento.");
+          voltarParaLista();
+        }
+      } catch (error) {
+        console.error("Erro:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (eventoId) {
+      fetchEvento();
+    }
+  }, [eventoId, editor]); // Roda quando o ID ou o editor estiverem prontos
 
   const handleBannerUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => setBanner(e.target.result); // Converte para string Base64
+      reader.onload = (e) => setBannerUrl(e.target.result);
       reader.readAsDataURL(file);
     }
   };
 
-  const handlePublicarNoticia = async () => {
-    if (!titulo.trim() || !conteudo || conteudo === '<p></p>') {
-      alert("Por favor, preencha o título e o corpo da notícia.");
+  const handleAtualizarEvento = async () => {
+    if (!title.trim() || !date || !location.trim()) {
+      alert("Por favor, preencha os campos obrigatórios: Título, Data e Local.");
       return;
     }
 
-    // Formata a string final que irá para a coluna keywords: "CATEGORIA, TAG1, TAG2"
-    const palavrasChaveFinais = tagsExtras.trim() 
-      ? `${categoria}, ${tagsExtras.trim().toUpperCase()}`
-      : categoria;
-
     const payload = {
-      titulo,
-      corpo: conteudo,
+      title,
       banner,
-      palavrasChave: palavrasChaveFinais
+      description,
+      date,
+      location
     };
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/news/register', {
-        method: 'POST',
+      // USAMOS O MÉTODO PUT E ENVIAMOS O ID NA URL!
+      const response = await fetch(`http://localhost:3000/api/events/${eventoId}`, {
+        method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -155,17 +181,21 @@ export default function CriarNoticia({ voltarParaLista }) {
       }); 
 
       if (response.ok) {
-        alert('Notícia publicada com sucesso! Ela ficará ativa por 2 anos no portal da AMC.');
+        alert('Evento atualizado com sucesso!');
         voltarParaLista();
       } else {
         const err = await response.json();
-        alert(`Erro ao publicar: ${err.error}`);
+        alert(`Erro ao atualizar: ${err.error}`);
       }
     } catch (error) {
       console.error(error);
       alert('Erro ao tentar se conectar com o servidor.');
     }
   };
+
+  if (loading) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Carregando dados do evento...</div>;
+  }
 
   return (
     <div className='postagem-container'>
@@ -175,32 +205,31 @@ export default function CriarNoticia({ voltarParaLista }) {
             <button className="btn-voltar-seta" onClick={voltarParaLista}>
               <ArrowLeft size={18} /> Voltar
             </button>
-            <h1>Nova Notícia AMC</h1>
+            <h1>Editar Evento</h1>
           </div>
-          <button className='btn-publicar' onClick={handlePublicarNoticia}>Publicar Notícia</button>
+          <button className='btn-publicar' onClick={handleAtualizarEvento}>Salvar Alterações</button>
         </header>
 
         <div className='card-editor'>
-          {/* Título da Notícia */}
           <input 
             type="text" 
             className="input-titulo" 
-            placeholder="Digite o título da notícia..." 
-            value={titulo} 
-            onChange={(e) => setTitulo(e.target.value)} 
+            placeholder="Digite o título do evento..." 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)} 
+            required
           />
 
-          {/* Upload e URL do Banner */}
           <div className='opcoes-extras banner-area'>
             <input 
               type="text" 
               className="input-extra" 
-              placeholder="Cole a URL da Imagem de Capa (Banner)..." 
+              placeholder="Cole a URL do Banner do Evento..." 
               value={banner} 
-              onChange={(e) => setBanner(e.target.value)} 
+              onChange={(e) => setBannerUrl(e.target.value)} 
             />
             <button type="button" className="btn-upload-banner" onClick={() => bannerInputRef.current.click()}>
-              <Upload size={16} /> Carregar Arquivo
+              <Upload size={16} /> Trocar Imagem
             </button>
             <input 
               type="file" 
@@ -211,31 +240,33 @@ export default function CriarNoticia({ voltarParaLista }) {
             />
           </div>
 
-          {/* Configuração de Categorias AMC e Palavras-chave */}
           <div className='opcoes-extras grid-inputs'>
             <div className="input-group-field">
-              <label>Categoria Principal</label>
-              <select className="input-extra-select" value={categoria} onChange={(e) => setCategoria(e.target.value)}>
-                <option value="CIÊNCIA">CIÊNCIA</option>
-                <option value="EVENTOS">EVENTOS</option>
-                <option value="ACADEMIA">ACADEMIA</option>
-                <option value="PARCERIAS">PARCERIAS</option>
-              </select>
+              <label>Data e Hora *</label>
+              <input 
+                type="datetime-local" 
+                className="input-extra" 
+                value={date} 
+                onChange={(e) => setDate(e.target.value)} 
+                required
+              />
             </div>
+            
             <div className="input-group-field">
-              <label>Tags Complementares (Separadas por vírgula)</label>
+              <label>Local *</label>
               <input 
                 type="text" 
                 className="input-extra" 
-                placeholder="Ex: INOVAÇÃO, TECNOLOGIA, UFMA" 
-                value={tagsExtras} 
-                onChange={(e) => setTagsExtras(e.target.value)} 
+                placeholder="Ex: Auditório Central" 
+                value={location} 
+                onChange={(e) => setLocation(e.target.value)} 
+                required
               />
             </div>
           </div>
 
-          {/* Área Dinâmica do Tiptap */}
           <div className="tiptap-wrapper">
+            <h3 style={{ margin: '10px 15px', color: '#555', fontSize: '14px' }}>Descrição do Evento</h3>
             <MenuBar editor={editor} />
             <EditorContent editor={editor} className="tiptap-editor-area" />
           </div>

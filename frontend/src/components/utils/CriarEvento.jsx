@@ -15,9 +15,10 @@ import {
   Link as LinkIcon, Video, Image as ImageIcon, Upload, Sigma, ArrowLeft 
 } from 'lucide-react';
 import 'katex/dist/katex.min.css';
-import './CriarNoticia.css';
+// Supondo que você use o mesmo CSS da notícia ou tenha criado um CriarEvento.css semelhante
+import './CriarNoticia.css'; 
 
-// Componente Interno: Barra de Ferramentas do Editor Tiptap
+// Componente Interno: Barra de Ferramentas do Editor Tiptap (Mesmo da Notícia)
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
@@ -95,15 +96,18 @@ const MenuBar = ({ editor }) => {
   );
 };
 
-export default function CriarNoticia({ voltarParaLista }) {
-  const [titulo, setTitulo] = useState('');
-  const [conteudo, setConteudo] = useState('');
+export default function CriarEvento({ voltarParaLista }) {
+  // Estados para os campos do Evento baseados no schema do Prisma
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [location, setLocation] = useState('');
+//   const [capacity, setCapacity] = useState(0);
   const [banner, setBanner] = useState('');
-  const [categoria, setCategoria] = useState('CIÊNCIA'); // Categoria padrão AMC
-  const [tagsExtras, setTagsExtras] = useState('');
+  const [description, setDescription] = useState('');
 
   const bannerInputRef = useRef(null);
 
+  // Instância do Tiptap para a Descrição do Evento
   const editor = useEditor({
     extensions: [
       StarterKit, Underline, TextStyle, FontFamily,
@@ -113,53 +117,51 @@ export default function CriarNoticia({ voltarParaLista }) {
       MathExtension.configure({ evaluation: false }),
     ],
     content: '',
-    onUpdate: ({ editor }) => setConteudo(editor.getHTML()),
+    onUpdate: ({ editor }) => setDescription(editor.getHTML()),
   });
 
   const handleBannerUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => setBanner(e.target.result); // Converte para string Base64
+      reader.onload = (e) => setBannerUrl(e.target.result); // Converte para string Base64
       reader.readAsDataURL(file);
     }
   };
 
-  const handlePublicarNoticia = async () => {
-    if (!titulo.trim() || !conteudo || conteudo === '<p></p>') {
-      alert("Por favor, preencha o título e o corpo da notícia.");
+  const handlePublicarEvento = async () => {
+    // Validação básica igual à do backend
+    if (!title.trim() || !date || !location.trim()) {
+      alert("Por favor, preencha os campos obrigatórios: Título, Data e Local.");
       return;
     }
 
-    // Formata a string final que irá para a coluna keywords: "CATEGORIA, TAG1, TAG2"
-    const palavrasChaveFinais = tagsExtras.trim() 
-      ? `${categoria}, ${tagsExtras.trim().toUpperCase()}`
-      : categoria;
-
+    // O objeto deve ter as mesmas chaves que o Controller do backend espera no req.body
     const payload = {
-      titulo,
-      corpo: conteudo,
+      title,
       banner,
-      palavrasChave: palavrasChaveFinais
+      description,
+      date,
+      location,
     };
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/news/register', {
+      const response = await fetch('http://localhost:3000/api/events', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}` // Mantenha se a rota estiver protegida
         },
         body: JSON.stringify(payload)
       }); 
 
       if (response.ok) {
-        alert('Notícia publicada com sucesso! Ela ficará ativa por 2 anos no portal da AMC.');
+        alert('Evento publicado com sucesso!');
         voltarParaLista();
       } else {
         const err = await response.json();
-        alert(`Erro ao publicar: ${err.error}`);
+        alert(`Erro ao publicar: ${err.error || 'Verifique os dados enviados.'}`);
       }
     } catch (error) {
       console.error(error);
@@ -175,19 +177,20 @@ export default function CriarNoticia({ voltarParaLista }) {
             <button className="btn-voltar-seta" onClick={voltarParaLista}>
               <ArrowLeft size={18} /> Voltar
             </button>
-            <h1>Nova Notícia AMC</h1>
+            <h1>Novo Evento AMC</h1>
           </div>
-          <button className='btn-publicar' onClick={handlePublicarNoticia}>Publicar Notícia</button>
+          <button className='btn-publicar' onClick={handlePublicarEvento}>Publicar Evento</button>
         </header>
 
         <div className='card-editor'>
-          {/* Título da Notícia */}
+          {/* Título do Evento */}
           <input 
             type="text" 
             className="input-titulo" 
-            placeholder="Digite o título da notícia..." 
-            value={titulo} 
-            onChange={(e) => setTitulo(e.target.value)} 
+            placeholder="Digite o título do evento..." 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)} 
+            required
           />
 
           {/* Upload e URL do Banner */}
@@ -195,12 +198,12 @@ export default function CriarNoticia({ voltarParaLista }) {
             <input 
               type="text" 
               className="input-extra" 
-              placeholder="Cole a URL da Imagem de Capa (Banner)..." 
+              placeholder="Cole a URL do Banner do Evento..." 
               value={banner} 
-              onChange={(e) => setBanner(e.target.value)} 
+              onChange={(e) => setBannerUrl(e.target.value)} 
             />
             <button type="button" className="btn-upload-banner" onClick={() => bannerInputRef.current.click()}>
-              <Upload size={16} /> Carregar Arquivo
+              <Upload size={16} /> Carregar Imagem
             </button>
             <input 
               type="file" 
@@ -211,31 +214,36 @@ export default function CriarNoticia({ voltarParaLista }) {
             />
           </div>
 
-          {/* Configuração de Categorias AMC e Palavras-chave */}
+          {/* Dados Específicos do Evento (Data, Local, Capacidade) */}
           <div className='opcoes-extras grid-inputs'>
             <div className="input-group-field">
-              <label>Categoria Principal</label>
-              <select className="input-extra-select" value={categoria} onChange={(e) => setCategoria(e.target.value)}>
-                <option value="CIÊNCIA">CIÊNCIA</option>
-                <option value="EVENTOS">EVENTOS</option>
-                <option value="ACADEMIA">ACADEMIA</option>
-                <option value="PARCERIAS">PARCERIAS</option>
-              </select>
+              <label>Data e Hora *</label>
+              <input 
+                type="datetime-local" 
+                className="input-extra" 
+                value={date} 
+                onChange={(e) => setDate(e.target.value)} 
+                required
+              />
             </div>
+            
             <div className="input-group-field">
-              <label>Tags Complementares (Separadas por vírgula)</label>
+              <label>Local *</label>
               <input 
                 type="text" 
                 className="input-extra" 
-                placeholder="Ex: INOVAÇÃO, TECNOLOGIA, UFMA" 
-                value={tagsExtras} 
-                onChange={(e) => setTagsExtras(e.target.value)} 
+                placeholder="Ex: Auditório Central" 
+                value={location} 
+                onChange={(e) => setLocation(e.target.value)} 
+                required
               />
             </div>
+
           </div>
 
-          {/* Área Dinâmica do Tiptap */}
+          {/* Área Dinâmica do Tiptap para a Descrição */}
           <div className="tiptap-wrapper">
+            <h3 style={{ margin: '10px 15px', color: '#555', fontSize: '14px' }}>Descrição do Evento</h3>
             <MenuBar editor={editor} />
             <EditorContent editor={editor} className="tiptap-editor-area" />
           </div>

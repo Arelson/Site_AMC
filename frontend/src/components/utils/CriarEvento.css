@@ -1,0 +1,262 @@
+.postagem-container {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  padding: 30px 20px;
+  font-family: sans-serif;
+}
+
+.conteudo-principal {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header-postagem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.btn-voltar-seta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #cbd5e1;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #475569;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-voltar-seta:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.header-postagem h1 {
+  font-size: 1.6rem;
+  color: #1a1a40;
+  font-weight: 700;
+}
+
+.btn-publicar {
+  background-color: #16a34a;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-publicar:hover {
+  background-color: #15803d;
+}
+
+.card-editor {
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-titulo {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #e2e8f0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  padding: 10px 0;
+  outline: none;
+  color: #1e293b;
+}
+
+.input-titulo:focus {
+  border-bottom-color: #1a1a40;
+}
+
+.opcoes-extras {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.grid-inputs {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.input-group-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group-field label {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.input-extra {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.input-extra:focus, .input-extra-select:focus {
+  border-color: #1a1a40;
+}
+
+.input-extra-select {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+  background-color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.btn-upload-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 10px 16px;
+  border-radius: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-weight: 500;
+  color: #475569;
+}
+
+.btn-upload-banner:hover {
+  background-color: #e2e8f0;
+}
+
+/* --- Estruturação do Container Tiptap --- */
+.tiptap-wrapper {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.toolbar {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 4px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 22px;
+  background-color: #cbd5e1;
+  margin: 0 4px;
+}
+
+.toolbar button {
+  background: none;
+  border: none;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar button:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.toolbar button.is-active {
+  background-color: #e2e8f0;
+  color: #1a1a40;
+  font-weight: bold;
+}
+
+.toolbar-select {
+  border: 1px solid #cbd5e1;
+  background: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+/* Área de escrita do Tiptap */
+.tiptap-editor-area {
+  padding: 20px;
+  min-height: 350px;
+  max-height: 600px;
+  overflow-y: auto;
+  background: white;
+  outline: none;
+}
+
+.tiptap-editor-area .ProseMirror {
+  min-height: 320px;
+  outline: none;
+}
+
+/* Estilizações internas geradas pelo editor HTML */
+.ProseMirror p {
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.ProseMirror h1 { font-size: 1.8rem; margin: 15px 0 10px 0; }
+.ProseMirror h2 { font-size: 1.5rem; margin: 15px 0 10px 0; }
+.ProseMirror h3 { font-size: 1.2rem; margin: 15px 0 10px 0; }
+
+.ProseMirror blockquote {
+  border-left: 4px solid #1a1a40;
+  padding-left: 15px;
+  color: #64748b;
+  font-style: italic;
+  margin: 15px 0;
+}
+
+.ProseMirror pre {
+  background-color: #1e293b;
+  color: #f8fafc;
+  padding: 14px;
+  border-radius: 6px;
+  font-family: monospace;
+  overflow-x: auto;
+}
+
+.ProseMirror ul { list-style-type: disc; padding-left: 20px; }
+.ProseMirror ol { list-style-type: decimal; padding-left: 20px; }

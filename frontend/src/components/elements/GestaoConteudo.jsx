@@ -4,6 +4,7 @@ import DashboardHeader from '../utils/DashboardHeader';
 import { Link } from 'react-router-dom';
 import GestaoNoticias from '../utils/GestaoNoticias';
 import GestaoBlogMember from '../utils/GestaoBlogMember.jsx';
+import GestaoEventos from '../utils/GestaoEventos.jsx'
 
 
 
@@ -229,8 +230,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
             {noticias && 
             <GestaoNoticias />
             }
-            {eventos && 
-            <p>Gestão de Eventos - Em construção...</p>
+            {eventos && <GestaoEventos />
             }
             {revistasEbooks && 
             <p>Gestão de Revistas/Ebooks - Em construção...</p>
