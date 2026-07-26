@@ -196,7 +196,7 @@ export default function PortalEventos() {
 
                 <button 
                   className="card-botao-ler"
-                  onClick={() => navigate(`/evento/${evento.id}`)}
+                  onClick={() => navigate(`/eventos/${evento.id}`)}
                 >
                   Ver Detalhes do Evento
                 </button>
