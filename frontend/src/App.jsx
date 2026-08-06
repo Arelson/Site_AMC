@@ -12,6 +12,7 @@ import NoticiaPage from './pages/NoticiaPage.jsx';
 import PortalNoticias from './pages/PortalNoticias.jsx';
 import PortalEventos from './pages/PortalEventos.jsx';
 import EventPage from './pages/EventPage.jsx';
+import EventoForm from './components/EventoForm.jsx';
 //endregion
 
 
@@ -47,6 +48,7 @@ function App() {
         <Route path="/post/:id" element={<PostPublico />} />
         <Route path="/eventos" element={<PortalEventos />}/>
         <Route path="/eventos/:id" element={<EventPage />}/>
+        <Route path="/eventos/:id/inscricao" element={<EventoForm />}/>
 
         {/* ROTAS PROTEGIDAS - ADMIN */}
         <Route

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import renderMathInElement from 'katex/contrib/auto-render';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 import Header from '../components/layouts/Header.jsx';
@@ -8,7 +8,8 @@ import 'katex/dist/katex.min.css';
 import './NoticiaPage.css'; // Podemos reaproveitar o CSS base da notícia
 
 export default function EventoPage() {
-  const { id } = useParams(); 
+  const { id } = useParams();
+  const navigate = useNavigate(); 
   
   const [evento, setEvento] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ export default function EventoPage() {
 
   const handleInscricao = () => {
     // Aqui no futuro você fará um POST para o backend salvar a inscrição do usuário logado
-    alert("Inscrição realizada com sucesso! Verifique seu e-mail para mais detalhes.");
+    navigate(`/eventos/${id}/inscricao`);
     setInscrito(true);
   };
 

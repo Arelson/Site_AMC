@@ -200,7 +200,7 @@ export default function CriarEvento({ voltarParaLista }) {
               className="input-extra" 
               placeholder="Cole a URL do Banner do Evento..." 
               value={banner} 
-              onChange={(e) => setBannerUrl(e.target.value)} 
+              onChange={(e) => setBanner(e.target.value)} 
             />
             <button type="button" className="btn-upload-banner" onClick={() => bannerInputRef.current.click()}>
               <Upload size={16} /> Carregar Imagem
