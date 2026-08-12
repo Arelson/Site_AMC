@@ -115,3 +115,51 @@ export const deleteEvent = async (req, res) => {
     return res.status(500).json({ error: 'Erro interno ao deletar o evento.' });
   }
 };
+
+export const registerForEvent = async (req, res) =>{
+  try{
+    const {id} = req.params; //pega o id dos eventos na URL
+    const {nome, cpf, matricula, email, telefone} = req.body;
+
+    // Salvando no banco de dados
+    const novaInscricao = await prisma.eventRegistration.create({
+      data: {
+        nome, cpf, matricula, email, telefone, eventId: Number(id)
+      }
+    });
+
+    res.status(201).json({message: "Inscrção realizada com sucesso!", inscricao: novaInscricao });
+  } catch(error){
+    console.error(error);
+    res.status(500).json({error: "Erro ao realaizar inscrição"});
+  }
+};
+
+export const exportRegistrations = async (req, res) =>{
+  try{
+    const {id} = req.params;
+
+    // Buscando as inscrções do evento
+    const inscricoes = await prisma.eventRegistration.findMany({
+      where: {eventId: Number(id)},
+      orderBy: {createdAt: 'asc'}
+    })
+
+    let csv = "Nome;CPF;Matricula;Email;Telefone;Data de inscricao\n";
+
+    inscricoes.forEach(i => {
+      const dataFormat = new Date(i.createdAt).toLocaleString('pt-BR');
+      csv += `${i.nome};${i.cpf};${i.matricula || '-'};${i.email};${i.telefone};${dataFormat}\n`;
+    });
+
+    //Avisando o navg que é um aqv de download
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="inscritos_evento_${id}.csv"`);
+
+    //Envio
+    res.status(200).send(csv);
+  } catch(error){
+    console.error(error);
+    res.status(500).json({error: "Erro ao exporta o documento."});
+  }
+};

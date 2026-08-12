@@ -31,16 +31,20 @@ export default function EventoForms() {
     setEnviando(true);
 
     try {
-      // Futuramente, você substituirá este bloco por um fetch() (POST) para o seu backend
-      console.log("Dados enviados para o evento", id, ":", formData);
-      
-      // Simulando um tempo de carregamento da API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      alert('Inscrição realizada com sucesso! Você receberá a confirmação por e-mail.');
-      
-      // Redireciona de volta para a página do evento
-      navigate(`/evento/${id}`);
+      const resposnse = await fetch(`http://localhost:3000/api/events/${id}/register`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formData)
+      });
+
+      if(resposnse.ok){
+        alert('Inscrição relaizada');
+        // Redireciona de volta para a página do evento
+        navigate(`/evento/${id}`);
+      }else{
+        const errorData = await resposnse.json();
+        alert(`Erro: ${errorData.error}`);
+      };   
       
     } catch (error) {
       alert('Erro ao processar inscrição. Tente novamente.');

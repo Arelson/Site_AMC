@@ -118,6 +118,14 @@ export default function GestaoEventos() {
                 
                 <td className="table-acoes">
                   <button 
+                    className="btn-acao-download" 
+                    title="Baixar Lista de Inscritos (Excel)"
+                    onClick={() => window.open(`http://localhost:3000/api/events/${item.id}/export`, '_blank')}
+                    style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer' }}
+                  >
+                    ⬇️
+                  </button>
+                  <button 
                     className="btn-acao-edit" 
                     title="Editar Evento"
                     onClick={() => { 

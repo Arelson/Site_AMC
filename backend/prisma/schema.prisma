@@ -65,6 +65,23 @@ model Events {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  registrations EventRegistration[]
+}
+
+model EventRegistration {
+  id        Int @id @default(autoincrement())
+  nome      String
+  cpf       String
+  matricula String
+  email     String
+  telefone  String? 
+  
+  // Relação com o Evento (Se o evento for apagado, as inscrições somem junto)
+  eventId   Int
+  event     Events    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
 }
 
 enum Role {
