@@ -81,7 +81,7 @@ const MenuBar = ({ editor }) => {
       <div className="toolbar-group">
         <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={editor.isActive('blockquote') ? 'is-active' : ''}><Quote size={18} /></button>
         <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={editor.isActive('codeBlock') ? 'is-active' : ''}><Code size={18} /></button>
-        <button type="button" onClick={() => editor.chain().focus().insertContent('$$ $$').run()} title="Inserir Fórmula Matemática"><Sigma size={18} /></button>
+        <button type="button" onClick={() => editor.chain().focus().insertContent('$$$$').run()} title="Inserir Fórmula Matemática"><Sigma size={18} /></button>
       </div>
       
       <div className="toolbar-divider" />
@@ -110,7 +110,7 @@ export default function CriarNoticia({ voltarParaLista }) {
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Link.configure({ openOnClick: false }), Image,
       Youtube.configure({ width: 640, height: 480 }),
-      MathExtension.configure({ evaluation: false }),
+      MathExtension.configure({ evaluation: true }),
     ],
     content: '',
     onUpdate: ({ editor }) => setConteudo(editor.getHTML()),

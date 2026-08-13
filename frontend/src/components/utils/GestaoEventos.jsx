@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, DownloadIcon } from 'lucide-react';
 import CriarEvento from './CriarEvento.jsx'; 
 import EditarEvento from './EditarEvento.jsx'; 
 import './GestaoNoticias.css'; // Reutilizando o mesmo CSS para manter a consistência visual
@@ -88,7 +88,7 @@ export default function GestaoEventos() {
                 
                 <td 
                   className="table-titulo" 
-                  onClick={() => window.open(`/evento/${item.id}`, '_blank')}
+                  onClick={() => window.open(`/eventos/${item.id}`, '_blank')}
                   title="Visualizar página do evento"
                   style={{ 
                     cursor: 'pointer', 
@@ -123,7 +123,7 @@ export default function GestaoEventos() {
                     onClick={() => window.open(`http://localhost:3000/api/events/${item.id}/export`, '_blank')}
                     style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer' }}
                   >
-                    ⬇️
+                    <DownloadIcon size={18}/>
                   </button>
                   <button 
                     className="btn-acao-edit" 

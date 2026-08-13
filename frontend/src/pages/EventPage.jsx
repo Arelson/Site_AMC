@@ -5,7 +5,7 @@ import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 import Header from '../components/layouts/Header.jsx';
 import Footer from '../components/layouts/Footer.jsx';
 import 'katex/dist/katex.min.css';
-import './NoticiaPage.css'; // Podemos reaproveitar o CSS base da notícia
+import './NoticiaPage.css'; 
 
 export default function EventoPage() {
   const { id } = useParams();
@@ -96,7 +96,7 @@ export default function EventoPage() {
   const jaPassou = dataObjeto < new Date();
 
   // Lógica da Imagem
-  const urlDaImagem = evento.banner || evento.bannerUrl;
+  const urlDaImagem = evento.banner;
   const imagemParaExibir = (urlDaImagem && urlDaImagem.trim() !== "") ? urlDaImagem : DEFAULT_EVENT_IMAGE;
 
   return (
@@ -116,9 +116,11 @@ export default function EventoPage() {
             className="noticia-banner" 
             style={{ 
               width: '100%', 
-              height: '100%', 
+              height: 'auto',
+              maxHeight: '450px', 
               objectFit: 'cover',
-              filter: jaPassou ? 'grayscale(70%)' : 'none'
+              filter: jaPassou ? 'grayscale(70%)' : 'none',
+              display: 'blo'
             }}
             onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_EVENT_IMAGE; }}
           />
