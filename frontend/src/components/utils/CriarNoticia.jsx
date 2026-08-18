@@ -220,6 +220,7 @@ export default function CriarNoticia({ voltarParaLista }) {
                 <option value="EVENTOS">EVENTOS</option>
                 <option value="ACADEMIA">ACADEMIA</option>
                 <option value="PARCERIAS">PARCERIAS</option>
+                <option value="EDITAIS">EDITAIS</option>
               </select>
             </div>
             <div className="input-group-field">

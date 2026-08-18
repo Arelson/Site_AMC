@@ -19,7 +19,7 @@ export default function PortalNoticias() {
   const itensPorPagina = 6; // Quantidade de cards por página
 
   // Categorias disponíveis no cabeçalho (idêntico ao print)
-  const categorias = ['TODAS', 'CIÊNCIA', 'EVENTOS', 'ACADEMIA', 'PARCERIAS'];
+  const categorias = ['TODAS', 'CIÊNCIA', 'EVENTOS', 'ACADEMIA', 'PARCERIAS', 'EDITAIS'];
 
   useEffect(() => {
     const carregarNoticias = async () => {
@@ -44,9 +44,11 @@ export default function PortalNoticias() {
 
   // 1. Filtragem inteligente por Categoria + Barra de Pesquisa combinadas
   const noticiasFiltradas = noticias.filter((noticia) => {
+
+    const tagDaNoticia = noticia.keywords || ''
+
     const correspondeCategoria =
-      filtroAtivo === 'TODAS' ||
-      (noticia.category && noticia.category.toUpperCase() === filtroAtivo.toUpperCase());
+      filtroAtivo === 'TODAS' || tagDaNoticia.toUpperCase().split(',').map(tag => tag.trim()).includes(filtroAtivo.toUpperCase());
 
     const correspondeBusca =
       noticia.title.toLowerCase().includes(busca.toLowerCase()) ||
