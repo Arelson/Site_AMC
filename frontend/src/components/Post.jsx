@@ -91,7 +91,7 @@ export default function Post() {
 
   return (
     <div className='leitura-container'>
-      <Link to="/" className="btn-voltar">
+      <Link to="/post" className="btn-voltar">
         ← Voltar para a Home
       </Link>
 

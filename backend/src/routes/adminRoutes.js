@@ -1,5 +1,5 @@
 import express from "express";
-import { generateInviteCode, getInvites, deleteInvite, updateUser } from "../controllers/adminController.js";
+import { generateInviteCode, getInvites, deleteInvite, updateUser, getAllPostsAdmin, updatePostStatusAdmin, deletePostAdmin } from "../controllers/adminController.js";
 import { verifyToken, isAdmin} from "../middlewares/authmiddleware.js";
 
 const router = express.Router();
@@ -11,5 +11,8 @@ router.post('/invites', generateInviteCode);
 router.get('/invites', getInvites);
 router.delete('/invites/:id', deleteInvite);
 router.patch('/update', updateUser);
+router.get('/posts', isAdmin, getAllPostsAdmin);
+router.patch('/posts/:id/status', isAdmin, updatePostStatusAdmin);
+router.delete('/posts/:id', isAdmin, deletePostAdmin);
 
 export default router;

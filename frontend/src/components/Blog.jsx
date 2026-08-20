@@ -87,7 +87,7 @@ export default function Blog() {
               </p>
               <Link
                 to={`/post/${post.id}`}
-                target='_blank'
+                
                 className='btn-ver-postagem'
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
