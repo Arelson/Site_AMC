@@ -92,7 +92,7 @@ export const getAllPostsAdmin = async (req, res) => {
       include: {
         // Traz o nome e email do autor para o admin saber de quem é o post
         author: { 
-          select: { id: true, nome: true, email: true } 
+          select: { id: true, name: true, email: true } 
         } 
       },
       orderBy: { createdAt: 'desc' }

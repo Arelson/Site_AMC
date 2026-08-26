@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import GestaoNoticias from '../utils/GestaoNoticias';
 import GestaoBlogMember from '../utils/GestaoBlogMember.jsx';
 import GestaoEventos from '../utils/GestaoEventos.jsx'
+import GestaoBlogAdmin from '../utils/GestaoBlogAdm.jsx';
 
 
 
@@ -238,8 +239,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
             {documentosPublicos && 
             <p>Gestão de Documentos Públicos - Em construção...</p>
             }
-            {blog && 
-            <p>Gestão de Blog - Em construção...</p>
+            {blog && <GestaoBlogAdmin/>
             }
           </>
         </section>
