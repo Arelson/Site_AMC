@@ -4,6 +4,8 @@ import CriarNoticia from './CriarNoticia.jsx';
 import EditarNoticia from './EditarNoticia.jsx'; 
 import './GestaoNoticias.css';
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function GestaoNoticias() {
   const [noticias, setNoticias] = useState([]);
   const [telaAtual, setTelaAtual] = useState('listar'); // Estados: 'listar' | 'criar' | 'editar'
@@ -15,7 +17,7 @@ export default function GestaoNoticias() {
       const carregarNoticiasAdmin = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await fetch('http://localhost:3000/api/news/admin', {
+          const response = await fetch(`${apiURL}/api/news/admin`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (response.ok) {

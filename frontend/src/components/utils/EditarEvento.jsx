@@ -17,6 +17,7 @@ import {
 import 'katex/dist/katex.min.css';
 import './EditarNoticia'; 
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 // MenuBar (Idêntico ao do CriarEvento)
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
@@ -110,7 +111,7 @@ export default function EditarEvento({ eventoId, voltarParaLista }) {
   useEffect(() => {
     const fetchEvento = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/events/${eventoId}`);
+        const response = await fetch(`${apiURL}/api/events/${eventoId}`);
         if (response.ok) {
           const data = await response.json();
           
@@ -171,7 +172,7 @@ export default function EditarEvento({ eventoId, voltarParaLista }) {
     try {
       const token = localStorage.getItem('token');
       // USAMOS O MÉTODO PUT E ENVIAMOS O ID NA URL!
-      const response = await fetch(`http://localhost:3000/api/events/${eventoId}`, {
+      const response = await fetch(`${apiURL}/api/events/${eventoId}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

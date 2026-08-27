@@ -20,6 +20,7 @@ import {
 // Importação do arquivo de estilos (ajuste o caminho se necessário)
 import './EditarNoticia.css'; 
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
@@ -96,7 +97,7 @@ export default function EditarNoticia({ postId, voltarParaLista }) {
       if (!postId || postId === "undefined") return;
 
       try {
-        const response = await fetch(`http://localhost:3000/api/news/${postId}`);
+        const response = await fetch(`${apiURL}/api/news/${postId}`);
         if (response.ok) {
           const post = await response.json();
           setTitulo(post.title || '');
@@ -123,7 +124,7 @@ export default function EditarNoticia({ postId, voltarParaLista }) {
     }
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/news/${postId}`, {
+      const response = await fetch(`${apiURL}/api/news/${postId}`, {
         method: 'PUT',
         headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ titulo, corpo: conteudo, banner, palavrasChave, categoria }) 

@@ -4,6 +4,8 @@ import CriarEvento from './CriarEvento.jsx';
 import EditarEvento from './EditarEvento.jsx'; 
 import './GestaoNoticias.css'; // Reutilizando o mesmo CSS para manter a consistência visual
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function GestaoEventos() {
   const [eventos, setEventos] = useState([]);
   const [telaAtual, setTelaAtual] = useState('listar'); // Estados: 'listar' | 'criar' | 'editar'
@@ -14,7 +16,7 @@ export default function GestaoEventos() {
     if (telaAtual === 'listar') {
       const carregarEventos = async () => {
         try {
-          const response = await fetch('http://localhost:3000/api/events');
+          const response = await fetch(`${apiURL}/api/events`);
           if (response.ok) {
             const dados = await response.json();
             setEventos(dados);
@@ -33,7 +35,7 @@ export default function GestaoEventos() {
     
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/events/${id}`, {
+      const response = await fetch(`${apiURL}/api/events/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -120,7 +122,7 @@ export default function GestaoEventos() {
                   <button 
                     className="btn-acao-download" 
                     title="Baixar Lista de Inscritos (Excel)"
-                    onClick={() => window.open(`http://localhost:3000/api/events/${item.id}/export`, '_blank')}
+                    onClick={() => window.open(`${apiURL}/api/events/${item.id}/export`, '_blank')}
                     style={{ color: '#10b981', background: 'none', border: 'none', cursor: 'pointer' }}
                   >
                     <DownloadIcon size={18}/>

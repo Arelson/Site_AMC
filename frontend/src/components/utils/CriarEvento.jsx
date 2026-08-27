@@ -19,6 +19,7 @@ import 'katex/dist/katex.min.css';
 import './CriarNoticia.css'; 
 
 // Componente Interno: Barra de Ferramentas do Editor Tiptap (Mesmo da Notícia)
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
@@ -147,7 +148,7 @@ export default function CriarEvento({ voltarParaLista }) {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/events', {
+      const response = await fetch(`${apiURL}/api/events`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

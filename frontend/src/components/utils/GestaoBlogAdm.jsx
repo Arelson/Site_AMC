@@ -3,6 +3,8 @@ import DashboardHeader from './DashboardHeader';
 import { Link } from 'react-router-dom';
 import './GestaoBlogMember.css'; // Podemos reaproveitar o seu CSS atual
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function GestaoBlogAdmin() {
   const [todosOsPosts, setTodosOsPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ export default function GestaoBlogAdmin() {
     const buscarDadosAdmin = async () => {
       try {
         // Substitua pela rota correta que criamos no admController.js
-        const response = await fetch('http://localhost:3000/api/admin/posts', {
+        const response = await fetch(`${apiURL}/api/admin/posts`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -58,7 +60,7 @@ export default function GestaoBlogAdmin() {
   // ==========================================
   const handleMudarStatus = async (id, novoStatus) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/posts/${id}/status`, {
+      const response = await fetch(`${apiURL}/api/admin/posts/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +87,7 @@ export default function GestaoBlogAdmin() {
     if (!confirmar) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/posts/${id}`, {
+      const response = await fetch(`${apiURL}/api/admin/posts/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

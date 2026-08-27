@@ -3,6 +3,8 @@ import DashboardHeader from './DashboardHeader';
 import { Link } from 'react-router-dom';
 import './GestaoBlogMember.css';
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function GestaoBlogMember({handleCriarPost=() => {}, handleEditarPost=() => {}}) {
   const [postagens, setPostagens] = useState([]);
   const handleExcluirPost = async (id) => {
@@ -10,7 +12,7 @@ export default function GestaoBlogMember({handleCriarPost=() => {}, handleEditar
     if (!confirmar) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/posts/${id}`, {
+      const response = await fetch(`${apiURL}/api/posts/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -31,7 +33,7 @@ export default function GestaoBlogMember({handleCriarPost=() => {}, handleEditar
   useEffect(() => {
       const buscarPostagens = async () => {
         try {
-          const response = await fetch('http://localhost:3000/api/posts/reader', {
+          const response = await fetch(`${apiURL}/api/posts/reader`, {
             cache: 'no-store', 
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
