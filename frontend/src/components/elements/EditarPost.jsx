@@ -130,6 +130,7 @@ const MenuBar = ({ editor }) => {
   );
 };
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // --- COMPONENTE PRINCIPAL ---
 export default function EditarPost({ postId, voltarParaLista }) {
@@ -165,7 +166,7 @@ export default function EditarPost({ postId, voltarParaLista }) {
       if (!postId) return;
 
       try {
-        const response = await fetch(`http://localhost:3000/api/posts/${postId}`, {
+        const response = await fetch(`${apiURL}/api/posts/${postId}`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
 
@@ -212,7 +213,7 @@ export default function EditarPost({ postId, voltarParaLista }) {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/posts/${postId}`, {
+      const response = await fetch(`${apiURL}/api/posts/${postId}`, {
         method: 'PUT',
         headers: { 
           'content-type': 'application/json',

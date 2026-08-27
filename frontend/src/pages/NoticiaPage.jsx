@@ -6,6 +6,8 @@ import Footer from '../components/layouts/Footer.jsx';
 import 'katex/dist/katex.min.css'; // Importa os estilos visuais das equações
 import './NoticiaPage.css';
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function NoticiaPage() {
   const { id } = useParams(); 
   
@@ -19,7 +21,7 @@ export default function NoticiaPage() {
   useEffect(() => {
     const buscarNoticia = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/news/${id}`);
+        const response = await fetch(`${apiURL}/api/news/${id}`);
         if (response.ok) {
           const dados = await response.json();
           setNoticia(dados);

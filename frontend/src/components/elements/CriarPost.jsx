@@ -185,8 +185,9 @@ export default function CriarPost({ voltarParaLista }) {
     const payload = { titulo, corpo: conteudo, banner, palavrasChave, data: new Date().toISOString() };
 
     try {
+      const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/posts/register', {
+      const response = await fetch(`${apiURL}/api/posts/register`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(payload)

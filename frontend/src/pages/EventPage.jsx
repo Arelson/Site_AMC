@@ -7,6 +7,8 @@ import Footer from '../components/layouts/Footer.jsx';
 import 'katex/dist/katex.min.css';
 import './NoticiaPage.css'; 
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function EventoPage() {
   const { id } = useParams();
   const navigate = useNavigate(); 
@@ -25,7 +27,7 @@ export default function EventoPage() {
   useEffect(() => {
     const buscarEvento = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/events/${id}`);
+        const response = await fetch(`${apiURL}/api/events/${id}`);
         if (response.ok) {
           const dados = await response.json();
           setEvento(dados);

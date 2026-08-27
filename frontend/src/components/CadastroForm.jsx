@@ -3,6 +3,7 @@ import logoAMC from '../assets/logo_amc2.png';
 import { Link, useNavigate } from 'react-router-dom';
 import './CadastroForm.css';
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 //region DECLARACAO DE VARIAVEIS
 export default function CadastroForm() {
@@ -24,7 +25,7 @@ export default function CadastroForm() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
+      const response = await fetch(`${apiURL}/api/auth/register`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ name:nome, inviteCode:codigo, email:email, password:password })

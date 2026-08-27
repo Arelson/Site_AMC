@@ -4,6 +4,8 @@ import Header from '../components/layouts/Header.jsx';
 import Footer from '../components/layouts/Footer.jsx';
 import { User, CreditCard, FileDigit, Mail, Phone, ArrowLeft, CheckCircle } from 'lucide-react';
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function EventoForms() {
   const { id } = useParams(); // Pega o ID do evento na URL
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ export default function EventoForms() {
     setEnviando(true);
 
     try {
-      const resposnse = await fetch(`http://localhost:3000/api/events/${id}/register`, {
+      const resposnse = await fetch(`${apiURL}/api/events/${id}/register`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(formData)
@@ -48,6 +50,7 @@ export default function EventoForms() {
       
     } catch (error) {
       alert('Erro ao processar inscrição. Tente novamente.');
+      console.log(error);
     } finally {
       setEnviando(false);
     }

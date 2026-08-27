@@ -3,6 +3,7 @@ import './LoginForm.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function LoginForm() {
   //region DECLARACAO DE VARIAVEIS
@@ -15,7 +16,7 @@ export default function LoginForm() {
   const handleSubmit = async(e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const response = await fetch(`${apiURL}/api/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email, password })

@@ -7,7 +7,7 @@ import GestaoBlogMember from '../utils/GestaoBlogMember.jsx';
 import GestaoEventos from '../utils/GestaoEventos.jsx'
 import GestaoBlogAdmin from '../utils/GestaoBlogAdm.jsx';
 
-
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPost=() => {}, adm}) {
   const [membros, setMembros] = useState(true);
@@ -26,7 +26,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
   useEffect(() => {
     const requireInvites = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/admin/invites', {
+        const response = await fetch(`${apiURL}/api/admin/invites`, {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -46,7 +46,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
 // TODO: TALVEZ EXCLUIR
   const handleGeneratedCode = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/admin/invites', {
+      const response = await fetch(`${apiURL}/api/admin/invites`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -83,7 +83,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
   const handleDeleteCode = async (id) => {
     if (!window.confirm('Tem certeza que deseja excluir este código?')) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/admin/invites/${id}`, {
+      const response = await fetch(`${apiURL}/api/admin/invites/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

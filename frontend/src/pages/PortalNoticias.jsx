@@ -4,6 +4,8 @@ import Footer from '../components/layouts/Footer.jsx';
 import { useNavigate } from 'react-router-dom';
 import './PortalNoticias.css';
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function PortalNoticias() {
   const navigate = useNavigate();
 
@@ -24,7 +26,7 @@ export default function PortalNoticias() {
   useEffect(() => {
     const carregarNoticias = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/news/feed');
+        const response = await fetch(`${apiURL}/api/news/feed`);
         if (response.ok) {
           const dados = await response.json();
           setNoticias(dados.posts || []); // Ajuste para acessar a propriedade correta do JSON

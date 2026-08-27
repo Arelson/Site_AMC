@@ -3,7 +3,7 @@ import { Calendar, Play, ChevronLeft, ChevronRight } from 'lucide-react';  // Im
 import { Link } from 'react-router-dom';
 import './Blog.css';
 
-
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
@@ -15,7 +15,7 @@ export default function Blog() {
     const fetchFeed = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:3000/api/posts/feed?page=${paginaAtual}`);
+        const response = await fetch(`${apiURL}/api/posts/feed?page=${paginaAtual}`);
         if (response.ok) {
           const data = await response.json();
           setPosts(data.posts);

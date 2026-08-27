@@ -3,6 +3,7 @@ import DashboardHeader from '../utils/DashboardHeader'
 import './MinhaConta.css'
 import { Link } from 'react-router-dom'
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function MinhaConta() {
   const [email, setEmail] = useState('');
@@ -26,7 +27,7 @@ export default function MinhaConta() {
     if (password) dataForUpdate.password = password;
 
     try {
-      const response = await fetch('http://localhost:3000/api/admin/update', {
+      const response = await fetch(`${apiURL}/api/admin/update`, {
         method: 'PATCH',
         headers:{
           'content-type': 'application/json',

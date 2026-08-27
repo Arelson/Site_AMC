@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Search } from 'lucide-react'; // Ícones para deixar mais elegante
 import './PortalNoticias.css'; // Reutilizando o mesmo CSS base do portal
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function PortalEventos() {
   const navigate = useNavigate();
 
@@ -25,7 +27,7 @@ export default function PortalEventos() {
   useEffect(() => {
     const carregarEventos = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/events');
+        const response = await fetch(`${apiURL}/api/events`);
         if (response.ok) {
           const dados = await response.json();
           // O Prisma retorna os dados mais recentes primeiro devido ao orderBy 'asc' no backend

@@ -18,6 +18,8 @@ const calcularTempoLeitura = (conteudoHtml) => {
   return tempoLeitura > 0 ? tempoLeitura : 1;
 };
 
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function Post() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
@@ -27,7 +29,7 @@ export default function Post() {
   useEffect(() => {
     const carregarPost = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/posts/${id}`);
+        const response = await fetch(`${apiURL}/api/posts/${id}`);
 
         if (response.ok) {
           const data = await response.json();

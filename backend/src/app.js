@@ -10,7 +10,11 @@ import eventRoutes from './routes/eventRoutes.js'
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://site-amc-2lym.onrender.com',
+  }),
+);
 
 app.use(express.json());
 app.use(express.json({ limit: '50mb' }));
