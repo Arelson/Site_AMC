@@ -80,7 +80,7 @@
   padding: 16px;
   border-bottom: 1px solid #f1f5f9;
   transition: all 0.2s ease;
-};
+}
 .invites-table-content:last-child {
   border-bottom: none;
 }
