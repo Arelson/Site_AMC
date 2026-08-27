@@ -42,7 +42,7 @@ export default function EventoForms() {
       if(resposnse.ok){
         alert('Inscrição relaizada');
         // Redireciona de volta para a página do evento
-        navigate(`/evento/${id}`);
+        navigate(`${apiURL}/evento/${id}`);
       }else{
         const errorData = await resposnse.json();
         alert(`Erro: ${errorData.error}`);
