@@ -12,12 +12,35 @@ model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
-  password  String   
+  password  String
   role      Role     @default(MEMBER) // Voltamos a usar o enum
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   posts     Post[]
   news      News[]
+  member    Member?
+}
+
+model Member {
+  id              Int     @id @default(autoincrement())
+  name            String
+  email           String?
+  cargo           String?
+  bio             String?
+  linkLattes      String?
+  cadeiraOcupacao String?
+
+  // A MÁGICA 1: Relação 1-para-1 com o Usuário
+  // O @unique garante que um Usuário não tenha dois perfis de Membro
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id])
+
+  // A MÁGICA 2: Auto-relacionamento (O patrono é outro Membro)
+  patronoId Int?
+  patrono   Member? @relation("PatronoHistorico", fields: [patronoId], references: [id])
+
+  // O Prisma exige declarar a lista inversa (quem tem esse membro como patrono)
+  afilhados Member[] @relation("PatronoHistorico")
 }
 
 model InviteCode {
@@ -42,26 +65,26 @@ model Post {
 
 model News {
   id        Int      @id @default(autoincrement())
-  title     String   // Título da Notícia
+  title     String // Título da Notícia
   content   String   @db.Text // Conteúdo Rico (HTML do Tiptap)
-  banner    String?  // URL ou Base64 da Capa da Notícia
-  keywords  String?  // Armazenará a Categoria AMC (ex: CIÊNCIA) + tags extras
+  banner    String? // URL ou Base64 da Capa da Notícia
+  keywords  String? // Armazenará a Categoria AMC (ex: CIÊNCIA) + tags extras
   status    String   @default("RASCUNHO") // "RASCUNHO" ou "PUBLICADO"
   createdAt DateTime @default(now()) // Usado para a regra de exclusão/expiração de 2 anos
   updatedAt DateTime @updatedAt
-  
+
   // Relacionamento com o Usuário
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
 }
 
 model Events {
-  id Int @id @default(autoincrement())
-  title String
-  banner String?
+  id          Int      @id @default(autoincrement())
+  title       String
+  banner      String?
   description String
-  date DateTime
-  location String
+  date        DateTime
+  location    String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,17 +93,17 @@ model Events {
 }
 
 model EventRegistration {
-  id        Int @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   nome      String
   cpf       String
   matricula String
   email     String
-  telefone  String? 
-  
+  telefone  String?
+
   // Relação com o Evento (Se o evento for apagado, as inscrições somem junto)
-  eventId   Int
-  event     Events    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  
+  eventId Int
+  event   Events @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
 }
 

@@ -4,6 +4,8 @@ import VisaoGeral from './elements/VisaoGeral.jsx';
 import GestaoConteudo from './elements/GestaoConteudo.jsx';
 import CriarPost from './elements/CriarPost.jsx';
 import EditarPost from './elements/EditarPost.jsx';
+import MembroConta from './elements/MembroConta.jsx';
+import MinhaConta from './elements/MembroConta.jsx';
 
 
 
@@ -118,7 +120,8 @@ export default function DashboardMemberBody() {
         {visaoGeral && <VisaoGeral />} 
         {gestaoConteudo && <GestaoConteudo handleCriarPost={handleCriarPost} handleEditarPost={handleEditarPost} adm={false} />} 
         {criarPost && <CriarPost voltarParaLista={handleGestaoConteudo}/>} 
-        {editarPost && <EditarPost postId={postEditandoId} voltarParaLista={handleGestaoConteudo} />}   
+        {editarPost && <EditarPost postId={postEditandoId} voltarParaLista={handleGestaoConteudo} />}
+        {minhaConta && <MinhaConta/>}
       </main>
     </div>
   );

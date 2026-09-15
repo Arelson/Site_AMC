@@ -1,5 +1,5 @@
 import express  from "express";
-import { register, login, getMe } from "../controllers/authController.js";
+import { register, login, getMe, updateProfile, getProfile } from "../controllers/authController.js";
 import { verifyToken } from "../middlewares/authmiddleware.js";
 
 const router = express.Router();
@@ -10,4 +10,7 @@ router.post('/login', login);
 
 //Rotas protegidas (o middleware entra antes do controller)
 router.get('/me', verifyToken, getMe);
+router.get('/profile', verifyToken, getProfile);
+router.patch('/profile', verifyToken, updateProfile);
+
 export default router;

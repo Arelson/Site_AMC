@@ -9,10 +9,11 @@ import newsRoutes from './routes/newsRoutes.js';
 import eventRoutes from './routes/eventRoutes.js'
 
 const app = express();
+const origin = 'http://localhost:5173'
 
 app.use(
   cors({
-    origin: 'https://site-amc-2lym.onrender.com',
+    origin: `${origin}`,
   }),
 );
 

@@ -16,3 +16,5 @@ export const getAllUsers = async (req, res) => {
     return res.status(500).json({ error: 'Erro ao buscar a lista de usuários' });
   }
 }
+
+

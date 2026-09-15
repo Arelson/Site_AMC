@@ -48,9 +48,15 @@ export const register = async (req, res) => {
           name,
           email,
           password: hashedPassword,
-          role: 'MEMBER'  
-        }
-      })
+          role: "MEMBER",
+          member: {
+            create: {
+              name: name,
+              email: email
+            },
+          },
+        },
+      });
 
       await tx.inviteCode.update({
         where: { id: validCode.id },
@@ -130,3 +136,59 @@ export const getMe = async (req, res) => {
     return res.status(500).json({ error: 'Erro interno do servidor' });    
   }
 }
+
+export const updateProfile = async (req, res) => {
+  try {
+    // req.userId vem do seu middleware de JWT
+    const { name, cargo, cadeiraOcupacao, linkLattes, bio } = req.body;
+
+    // Usamos upsert: Atualiza se existir, Cria se der algum erro no passado e não existir
+    const updatedMember = await prisma.member.upsert({
+      where: { userId: req.userId },
+      update: {
+        name,
+        cargo,
+        cadeiraOcupacao,
+        linkLattes,
+        bio,
+      },
+      create: {
+        userId: req.userId,
+        name: name || "Membro",
+        cargo,
+        cadeiraOcupacao,
+        linkLattes,
+        bio,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Perfil atualizado com sucesso!",
+      member: updatedMember,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Erro interno ao atualizar o perfil." });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  try {
+    const member = await prisma.member.findUnique({
+      where: { userId: req.userId },
+    });
+
+    if (!member) {
+      return res
+        .status(404)
+        .json({ error: "Perfil de membro não encontrado." });
+    }
+
+    return res.status(200).json(member);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno ao buscar o perfil." });
+  }
+};
