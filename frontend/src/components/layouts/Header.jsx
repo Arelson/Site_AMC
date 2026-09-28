@@ -78,7 +78,7 @@ export default function Header({ botaoAmarelo = true,  backgroundScroll = true }
           <a href="#">Inicio</a>
           <a href="#">A academia</a>
           <a href="#" onClick={() => navigate('/noticias') }>Notícia</a>
-          <a href="#">Membros</a>
+          <a href="#" onClick={() => navigate('/members')}>Membros</a>
           <a href="#" onClick={() => navigate('/post')}>Publicações</a>
           <a href="#" onClick={() => navigate('/eventos')}>Eventos</a>
         </nav>

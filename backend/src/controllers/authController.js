@@ -192,3 +192,17 @@ export const getProfile = async (req, res) => {
     return res.status(500).json({ error: "Erro interno ao buscar o perfil." });
   }
 };
+
+export const getAllMembers = async (req, res) => {
+  try {
+    const membros = await prisma.member.findMany({
+      orderBy: {
+        name: "asc", // Traz os membros em ordem alfabética
+      },
+    });
+    return res.status(200).json(membros);
+  } catch (error) {
+    console.error("Erro ao buscar equipe:", error);
+    return res.status(500).json({ error: "Erro interno ao buscar membros." });
+  }
+};

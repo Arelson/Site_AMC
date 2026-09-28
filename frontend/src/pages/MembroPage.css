@@ -1,0 +1,247 @@
+/* Container Base */
+.equipe-portal-container {
+    background-color: #f9f9fb;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+/* Header Hero */
+.equipe-header-hero {
+    background-color: rgb(26, 26, 64);
+    /* Cor escura institucional */
+    color: #fff;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.equipe-header-conteudo h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+}
+
+.equipe-header-conteudo p {
+    font-size: 1.1rem;
+    color: #cbd5e0;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Barra de Controle (Busca e Filtros) */
+.equipe-barra-controle {
+    max-width: 1200px;
+    margin: -30px auto 40px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.equipe-busca-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.equipe-busca-icone {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #888;
+}
+
+.equipe-busca-input {
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.equipe-busca-input:focus {
+    border-color: #f0b400;
+    /* Use a cor de destaque do seu tema */
+}
+
+/* Filtros */
+.equipe-filtros-grupo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.equipe-filtro-btn {
+    background: #f1f5f9;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.equipe-filtro-btn:hover {
+    background: #e2e8f0;
+}
+
+.equipe-filtro-btn.ativo {
+    background: #f0b400;
+    /* Cor amarela ativa */
+    color: #fff;
+}
+
+/* Grid de Membros */
+.equipe-grid {
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+/* Card Individual */
+.equipe-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.equipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.equipe-foto-placeholder,
+.equipe-card-foto img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    object-fit: cover;
+    border: 3px solid #f1f5f9;
+}
+
+.equipe-foto-placeholder {
+    background-color: #f0b400;
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.equipe-card-nome {
+    font-size: 1.25rem;
+    color: #1a202c;
+    margin-bottom: 5px;
+}
+
+.equipe-card-cargo {
+    font-size: 0.95rem;
+    color: #718096;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.equipe-card-cadeira {
+    display: inline-block;
+    font-size: 0.8rem;
+    background: #edf2f7;
+    color: #4a5568;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+/* Botões do Card */
+.equipe-card-acoes {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.equipe-btn-lattes,
+.equipe-btn-perfil {
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+}
+
+.equipe-btn-lattes {
+    background: #0056b3;
+    color: #fff;
+}
+
+.equipe-btn-perfil {
+    background: #f0b400;
+    color: #fff;
+}
+
+.equipe-btn-lattes:hover,
+.equipe-btn-perfil:hover {
+    opacity: 0.85;
+}
+
+/* Paginação */
+.equipe-paginacao {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 60px;
+}
+
+.equipe-paginacao-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    font-weight: bold;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.equipe-paginacao-btn:hover {
+    background: #f1f5f9;
+}
+
+.equipe-paginacao-btn.ativo {
+    background: #1a202c;
+    color: #fff;
+    border-color: #1a202c;
+}
+
+/* Mensagens de Feedback */
+.equipe-loading,
+.equipe-erro,
+.equipe-vazio {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    font-size: 1.1rem;
+    color: #718096;
+}
+
+.equipe-erro {
+    color: #e53e3e;
+}
