@@ -160,7 +160,7 @@ export default function PortalEquipe() {
                   {/* Futuramente você pode criar uma página dedicada para exibir o perfil completo */}
                   <button 
                     className="equipe-btn-perfil"
-                    onClick={() => navigate(`/membro/${membro.id}`)}
+                    onClick={() => navigate(`/members/${membro.id}`)}
                   >
                     Ver Perfil
                   </button>

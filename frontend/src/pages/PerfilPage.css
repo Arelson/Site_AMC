@@ -1,0 +1,277 @@
+.perfil-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f9f9fb;
+}
+
+.perfil-conteudo-principal {
+    flex: 1;
+    /* Empurra o footer para o final */
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfil-container {
+    max-width: 1000px;
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    overflow: hidden;
+}
+
+/* Coluna da Foto */
+.perfil-sidebar {
+    width: 300px;
+    background-color: #0b194d;
+    /* Fundo escuro para destacar a foto */
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.perfil-foto-grande {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfil-foto-grande img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.perfil-foto-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #f0b400;
+    color: #fff;
+    font-size: 5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-lattes-grande {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: opacity 0.3s;
+}
+
+.btn-lattes-grande:hover {
+    opacity: 0.85;
+}
+
+/* Coluna do Conteúdo (Direita) */
+.perfil-detalhes {
+    flex: 1;
+    padding: 40px 50px;
+}
+
+.btn-voltar-simples {
+    background: none;
+    border: none;
+    color: #718096;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+    padding: 0;
+    transition: color 0.3s;
+}
+
+.btn-voltar-simples:hover {
+    color: #1a202c;
+    text-decoration: underline;
+}
+
+.perfil-nome {
+    font-size: 2.5rem;
+    color: #0b194d;
+    margin-bottom: 15px;
+}
+
+.perfil-badges {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.badge-cargo,
+.badge-cadeira {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.badge-cargo {
+    background-color: #f0b400;
+    /* Cor principal */
+    color: #fff;
+}
+
+.badge-cadeira {
+    background-color: #e2e8f0;
+    color: #4a5568;
+}
+
+.perfil-bio-container h2 {
+    font-size: 1.4rem;
+    color: #2d3748;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.perfil-bio-texto {
+    font-size: 1.1rem;
+    color: #4a5568;
+    line-height: 1.8;
+    white-space: pre-line;
+    /* Respeita as quebras de linha que o usuário digitou */
+}
+
+.perfil-bio-vazia {
+    color: #a0aec0;
+    font-style: italic;
+}
+
+/* Mensagens de Carregamento e Erro */
+.perfil-mensagem {
+    text-align: center;
+    padding: 100px 20px;
+    font-size: 1.2rem;
+    flex: 1;
+}
+
+/* Responsividade para Celulares */
+@media (max-width: 768px) {
+    .perfil-container {
+        flex-direction: column;
+    }
+
+    .perfil-sidebar {
+        width: 100%;
+        padding: 30px 20px;
+    }
+
+    .perfil-detalhes {
+        padding: 30px 20px;
+    }
+}
+
+/* ==========================================================================
+   SEÇÃO DE PUBLICAÇÕES DO BLOG (PERFIL)
+   ========================================================================== */
+
+.membro-blog-section {
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid #e2e8f0;
+    /* Linha sutil separando a bio dos posts */
+}
+
+.membro-blog-section-titulo {
+    font-size: 24px;
+    color: #0b194d;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+/* Grid que se ajusta sozinho (2 colunas no PC, 1 no celular) */
+.membro-blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+/* Estilo do Cartão da Publicação */
+.membro-blog-card {
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.membro-blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.membro-blog-card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.membro-blog-card-conteudo {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* Faz o botão sempre ficar preso no fundo do cartão */
+}
+
+.membro-blog-card-data {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.membro-blog-card-titulo {
+    font-size: 18px;
+    color: #1e293b;
+    line-height: 1.4;
+    margin: 0 0 20px 0;
+    font-weight: 700;
+}
+
+.membro-blog-card-btn {
+    margin-top: auto;
+    /* Empurra o botão pro final */
+    background: none;
+    border: none;
+    color: #eab308;
+    /* Amarelo da AMC */
+    font-weight: 700;
+    font-size: 14px;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.3s;
+}
+
+.membro-blog-card-btn:hover {
+    color: #ca9a04;
+}

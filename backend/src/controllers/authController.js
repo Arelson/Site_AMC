@@ -206,3 +206,34 @@ export const getAllMembers = async (req, res) => {
     return res.status(500).json({ error: "Erro interno ao buscar membros." });
   }
 };
+
+// Busca UM membro específico pelo ID
+export const getMemberById = async (req, res) => {
+  try {
+    const { id } = req.params; // Pega o ID que vem na URL
+
+    const membro = await prisma.member.findUnique({
+      where: { 
+        id: Number(id)// Certifique-se de converter para número, caso seu ID seja Int
+      },
+      include: {
+        user: {
+          include: {
+            posts: {
+              orderBy:{createdAt: 'desc'}
+            }
+          }
+        }
+      }
+    });
+
+    if (!membro) {
+      return res.status(404).json({ error: "Membro não encontrado." });
+    }
+
+    return res.status(200).json(membro);
+  } catch (error) {
+    console.error("Erro ao buscar perfil do membro:", error);
+    return res.status(500).json({ error: "Erro interno ao buscar perfil." });
+  }
+};
