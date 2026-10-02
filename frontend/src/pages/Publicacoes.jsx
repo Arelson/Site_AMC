@@ -35,7 +35,7 @@ export default function Publicacoes() {
       <div className="publicacoes-container">
         <div className="publicacoes-ct-banner">
           <h1>Produção Intelectual</h1>
-          <p>Acesse nosso repositório de revistas, e-books e as publicações no vlog de nossos acadêmicos</p>
+          <p>Acesse nosso repositório de revistas, e-books e as publicações no Blog de nossos acadêmicos</p>
         </div>
         <div className="publicacoes-ct-content">
           <aside className="publicacoes-ct-content-aside">

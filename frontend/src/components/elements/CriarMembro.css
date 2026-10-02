@@ -1,0 +1,106 @@
+.form-admin-interno {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+
+.form-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.form-admin-header h2 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.btn-voltar {
+    background: #e2e8f0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #475569;
+}
+
+.btn-voltar:hover {
+    background: #cbd5e1;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-grupo-duplo {
+    display: flex;
+    gap: 20px;
+}
+
+.form-grupo-duplo .form-grupo {
+    flex: 1;
+}
+
+.form-grupo label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-grupo input,
+.form-grupo textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.admin-btn-salvar {
+    background-color: #f0b400;
+    /* Cor padrão do projeto */
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.mensagem-alerta {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.sucesso {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.erro {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.loading {
+    background-color: #e2e3e5;
+    color: #383d41;
+}

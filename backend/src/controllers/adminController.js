@@ -147,3 +147,30 @@ export const deletePostAdmin = async (req, res) => {
     return res.status(500).json({ error: 'Erro ao excluir a publicação.' });
   }
 };
+
+export const criarMembroAdmin = async (req, res) => {
+  try {
+    const { name, cargo, cadeiraOcupacao, linkLattes, bio } = req.body;
+
+    // O único campo estritamente obrigatório para o card existir é o nome
+    if (!name) {
+      return res.status(400).json({ error: "O nome do membro é obrigatório." });
+    }
+
+    // Cria o membro diretamente na tabela Member (sem atrelar a um User)
+    const novoMembro = await prisma.member.create({
+      data: {
+        name,
+        cargo: cargo || null,
+        cadeiraOcupacao: cadeiraOcupacao || null,
+        linkLattes: linkLattes || null,
+        bio: bio || null,
+      },
+    });
+
+    return res.status(201).json(novoMembro);
+  } catch (error) {
+    console.error("Erro ao criar membro pelo admin:", error);
+    return res.status(500).json({ error: "Erro interno ao cadastrar membro." });
+  }
+};

@@ -102,7 +102,7 @@ export default function PortalEventos() {
       />
       
       {/* Cabeçalho do Portal */}
-      <header className="portal-header" style={{ backgroundColor: '#1e3a8a' }}> {/* Um tom de azul para diferenciar um pouco */}
+      <header className="portal-header" style={{ backgroundColor: 'rgb(26, 26, 64)' }}> {/* Um tom de azul para diferenciar um pouco */}
         <div className="portal-header-conteudo">
           <h1>Agenda de Eventos</h1>
           <p>Participe dos nossos encontros, palestras, congressos e reuniões científicas.</p>

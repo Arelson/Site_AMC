@@ -6,6 +6,7 @@ import GestaoNoticias from '../utils/GestaoNoticias';
 import GestaoBlogMember from '../utils/GestaoBlogMember.jsx';
 import GestaoEventos from '../utils/GestaoEventos.jsx'
 import GestaoBlogAdmin from '../utils/GestaoBlogAdm.jsx';
+import FormCriarMembro from './CriarMembro.jsx';
 
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -20,6 +21,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
   const [invites, setInvites] = useState([]);
   const [codeGenerated, setCodeGenerated] = useState('');
   const [copy, setCopy] = useState(false);
+  const [criandoMembro, setCriandoMembro] = useState(false);
 
   
   
@@ -108,6 +110,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
     setDocumentosPublicos(false);
     setBlog(false);
     setInvitePopup(false);
+    setCriandoMembro(false);
   }
 
   const handleNoticiaClick = () => {
@@ -178,43 +181,51 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
           <hr className='linha-divisoria'/>
 
           <>
-            {membros && 
-            <>
-              <div className='gestao-conteudo-content-addvlog'>
-                <h2>GESTÃO DE MEMBROS</h2>
-                <div>
-                  <a href="#"><span>+</span>Novo Membro</a>
-                  <a href="#" onClick={ handleGeneratedCode }><span>+</span>Novo Código de Convite</a>
-                </div>
-              </div>
-              <div className='invites'>
-                <h3 className='invites-title'>Códigos de Convite</h3>
-                <div className = 'invites-table-header'>
-                  <span>CÓDIGO</span>
-                  <span>STATUS</span>
-                  <span>AÇÃO</span>
-                </div>
-
-                <div className = 'invites-table'>
-                  {invites.length === 0 ? (
-                    <p>Nenhum código gerado ainda</p>
-                  ):(
-                    invites.map((invite) => (
-                      <div className='invites-table-content' key={invite.id}>
-                        <div className='invites-table-content-code'>{invite.code}</div>
-                        <div className='invites-table-content-status'>
-                          <span className={invite.isUsed ? 'status-utilizado' : 'status-disponivel'}> {invite.isUsed ? 'UTILIZADO' : 'DISPONÍVEL'}</span>
-                        </div>
-                        <div className='invites-table-content-actions'>
-                          <button onClick={() => handleDeleteCode(invite.id)}>EXCLUIR</button>
+            {membros && (
+              criandoMembro ? (
+                // Mostra o formulário e passa a função para voltar
+                <FormCriarMembro onVoltar={() => setCriandoMembro(false)} />
+              ) : (
+                    <>
+                      <div className='gestao-conteudo-content-addvlog'>
+                        <h2>GESTÃO DE MEMBROS</h2>
+                        <div>
+                          <a href="#" onClick={(e) => { e.preventDefault(); setCriandoMembro(true); }}>
+                            <span>+</span>Novo Membro
+                          </a>
+                          <a href="#" onClick={(e) => { e.preventDefault(); handleGeneratedCode(); }}><span>+</span>Novo Código de Convite</a>
                         </div>
                       </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </>
-            }
+                      <div className='invites'>
+                        <h3 className='invites-title'>Códigos de Convite</h3>
+                        <div className = 'invites-table-header'>
+                          <span>CÓDIGO</span>
+                          <span>STATUS</span>
+                          <span>AÇÃO</span>
+                        </div>
+
+                        <div className = 'invites-table'>
+                          {invites.length === 0 ? (
+                            <p>Nenhum código gerado ainda</p>
+                          ):(
+                            invites.map((invite) => (
+                              <div className='invites-table-content' key={invite.id}>
+                                <div className='invites-table-content-code'>{invite.code}</div>
+                                <div className='invites-table-content-status'>
+                                  <span className={invite.isUsed ? 'status-utilizado' : 'status-disponivel'}> {invite.isUsed ? 'UTILIZADO' : 'DISPONÍVEL'}</span>
+                                </div>
+                                <div className='invites-table-content-actions'>
+                                  <button onClick={() => handleDeleteCode(invite.id)}>EXCLUIR</button>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </>
+                )
+              )
+              }
             {invitePopup &&
             <>
               <div className='popup-container'>
