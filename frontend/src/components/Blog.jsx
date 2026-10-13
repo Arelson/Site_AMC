@@ -11,11 +11,16 @@ export default function Blog() {
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  // Estados de Filtros e Busca
+  const [busca, setBusca] = useState('');
+  const [buscaAplicada, setBuscaAplicada] = useState(''); // Guarda o termo só quando aperta Enter
+  const [filtroAtivo] = useState('TODAS');
+
   useEffect(() => {
     const fetchFeed = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${apiURL}/api/posts/feed?page=${paginaAtual}`);
+        const response = await fetch(`${apiURL}/api/posts/feed?page=${paginaAtual}&search=${buscaAplicada}&category=${filtroAtivo}`);
         if (response.ok) {
           const data = await response.json();
           setPosts(data.posts);
@@ -28,7 +33,7 @@ export default function Blog() {
       }
     };
     fetchFeed();
-  }, [paginaAtual]);
+  }, [paginaAtual, filtroAtivo, buscaAplicada]);
 
   const removerHtmlParaResumo = (html, maxLength = 100) => {
     if (!html) return '';   // Se o HTML estiver vazio, retorne uma string vazia
@@ -44,12 +49,35 @@ export default function Blog() {
   if (loading) {
     return <div className='loading-blog'>Carregando feed...</div>;
   }
+
+  const lidarComTeclaBusca = (e) => {
+    if (e.key === 'Enter') {
+      setBuscaAplicada(busca);
+      setPaginaAtual(1);
+    }
+  };
+  
   return (
     <div className ='feed-blog-container'>
       <div className='feed-blog-header'>
         <h2>Feed do Blog</h2>
         <div className='linha-decorativa'></div>
       </div>
+
+      <section className="portal-barra-controle">
+        <div className="busca-wrapper">
+          <span className="busca-icone">🔍</span>
+          <input
+            type="text"
+            className="busca-input"
+            placeholder="Pesquisar e apertar Enter..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            onKeyDown={lidarComTeclaBusca} /* Aciona a busca no backend ao apertar Enter */
+          />
+        </div>
+        </section>
+
       <div className='feed-blog-grid'>
         {posts.map((post) => (
           <div key={post.id} className='blog-card'>
