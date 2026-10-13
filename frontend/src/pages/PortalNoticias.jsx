@@ -14,22 +14,30 @@ export default function PortalNoticias() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
 
-  // Estados de Filtros, Busca e Paginação
+  // Estados de Filtros e Busca
   const [busca, setBusca] = useState('');
+  const [buscaAplicada, setBuscaAplicada] = useState(''); // Guarda o termo só quando aperta Enter
   const [filtroAtivo, setFiltroAtivo] = useState('TODAS');
+  
+  // Paginação controlada pela API
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const itensPorPagina = 6; // Quantidade de cards por página
+  const [totalPaginas, setTotalPaginas] = useState(1); // Vem do backend agora!
 
-  // Categorias disponíveis no cabeçalho (idêntico ao print)
   const categorias = ['TODAS', 'CIÊNCIA', 'EVENTOS', 'ACADEMIA', 'PARCERIAS', 'EDITAIS'];
 
+  // Refatorado: O useEffect agora "escuta" a Página, o Filtro e a Busca
   useEffect(() => {
     const carregarNoticias = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(`${apiURL}/api/news/feed`);
+        // Constrói a URL passando as variáveis para o backend do Postgres trabalhar
+        const url = `${apiURL}/api/news/feed?page=${paginaAtual}&search=${buscaAplicada}&category=${filtroAtivo}`;
+        
+        const response = await fetch(url);
         if (response.ok) {
           const dados = await response.json();
-          setNoticias(dados.posts || []); // Ajuste para acessar a propriedade correta do JSON
+          setNoticias(dados.posts || []);
+          setTotalPaginas(dados.totalPaginas || 1); // Salva o total de páginas que o banco calculou
         } else {
           setErro('Não foi possível carregar o feed de notícias.');
         }
@@ -42,41 +50,22 @@ export default function PortalNoticias() {
     };
 
     carregarNoticias();
-  }, []);
+  }, [paginaAtual, filtroAtivo, buscaAplicada]); // Recarrega se qualquer um desses 3 mudar
 
-  // 1. Filtragem inteligente por Categoria + Barra de Pesquisa combinadas
-  const noticiasFiltradas = noticias.filter((noticia) => {
-
-    const tagDaNoticia = noticia.keywords || ''
-
-    const correspondeCategoria =
-      filtroAtivo === 'TODAS' || tagDaNoticia.toUpperCase().split(',').map(tag => tag.trim()).includes(filtroAtivo.toUpperCase());
-
-    const correspondeBusca =
-      noticia.title.toLowerCase().includes(busca.toLowerCase()) ||
-      (noticia.content && noticia.content.toLowerCase().includes(busca.toLowerCase()));
-
-    return correspondeCategoria && correspondeBusca;
-  });
-
-  // 2. Cálculos matemáticos da Paginação dinâmica
-  const totalPaginas = Math.ceil(noticiasFiltradas.length / itensPorPagina);
-  const indiceUltimoItem = paginaAtual * itensPorPagina;
-  const indicePrimeiroItem = indiceUltimoItem - itensPorPagina;
-  const noticiasExibidas = noticiasFiltradas.slice(indicePrimeiroItem, indiceUltimoItem);
-
-  // Reseta para a página 1 toda vez que o usuário altera um filtro ou busca
+  // Handlers
   const lidarComMudancaFiltro = (categoria) => {
     setFiltroAtivo(categoria);
-    setPaginaAtual(1);
+    setPaginaAtual(1); // Volta pra página 1 ao trocar de categoria
   };
 
-  const lidarComMudancaBusca = (e) => {
-    setBusca(e.target.value);
-    setPaginaAtual(1);
+  // Dispara a busca no banco apenas quando o usuário apertar Enter (evita travar o servidor a cada letra digitada)
+  const lidarComTeclaBusca = (e) => {
+    if (e.key === 'Enter') {
+      setBuscaAplicada(busca);
+      setPaginaAtual(1);
+    }
   };
 
-  // Helper para remover tags HTML do resumo/snippet do texto gerado pelo Tiptap
   const removerTagsHTML = (html) => {
     if (!html) return '';
     return html.replace(/<[^>]*>/g, '');
@@ -84,12 +73,8 @@ export default function PortalNoticias() {
 
   return (
     <div className="portal-container">
-
-      <Header
-        botaoAmarelo={false}
-        backgroundScroll={false} 
-      />
-      {/* Cabeçalho do Portal */}
+      <Header botaoAmarelo={false} backgroundScroll={false} />
+      
       <header className="portal-header">
         <div className="portal-header-conteudo">
           <h1>Portal de Notícias</h1>
@@ -97,16 +82,16 @@ export default function PortalNoticias() {
         </div>
       </header>
 
-      {/* Controle Central Flutuante: Input + Filtros */}
       <section className="portal-barra-controle">
         <div className="busca-wrapper">
           <span className="busca-icone">🔍</span>
           <input
             type="text"
             className="busca-input"
-            placeholder="Pesquisar notícias..."
+            placeholder="Pesquisar e apertar Enter..."
             value={busca}
-            onChange={lidarComMudancaBusca}
+            onChange={(e) => setBusca(e.target.value)}
+            onKeyDown={lidarComTeclaBusca} /* Aciona a busca no backend ao apertar Enter */
           />
         </div>
 
@@ -123,26 +108,22 @@ export default function PortalNoticias() {
         </div>
       </section>
 
-      {/* Grid Principal de Conteúdo */}
       <main className="portal-grid">
         {loading && <div className="portal-loading">Carregando portal de notícias...</div>}
-        
         {erro && <div className="portal-erro">{erro}</div>}
 
-        {!loading && !erro && noticiasExibidas.length === 0 && (
+        {/* Como o backend já filtrou, usamos a lista 'noticias' diretamente */}
+        {!loading && !erro && noticias.length === 0 && (
           <div className="portal-vazio">Nenhuma notícia encontrada para os critérios selecionados.</div>
         )}
 
-        {!loading && !erro && noticiasExibidas.map((noticia) => {
-          // Formata a data de criação (Ex: 12 Mar 2026)
+        {!loading && !erro && noticias.map((noticia) => {
           const dataCard = new Date(noticia.createdAt).toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
+            day: '2-digit', month: 'short', year: 'numeric',
           });
 
           return (
-            <article key={noticia.id || noticia._id} className="noticia-card">
+            <article key={noticia.id} className="noticia-card">
               <div className="card-imagem-wrapper">
                 <img 
                   src={noticia.banner || 'https://via.placeholder.com/400x220'} 
@@ -153,19 +134,12 @@ export default function PortalNoticias() {
               </div>
 
               <div className="card-conteudo">
-                <div className="card-data">
-                  📅 {dataCard}
-                </div>
-                
+                <div className="card-data">📅 {dataCard}</div>
                 <h2 className="card-titulo">{noticia.title}</h2>
-                
-                <p className="card-resumo">
-                  {removerTagsHTML(noticia.content)}
-                </p>
-
+                <p className="card-resumo">{removerTagsHTML(noticia.content)}</p>
                 <button 
                   className="card-botao-ler"
-                  onClick={() => navigate(`/noticia/${noticia.id || noticia._id}`)}
+                  onClick={() => navigate(`/noticia/${noticia.id}`)}
                 >
                   Ler Notícia Completa
                 </button>
@@ -175,7 +149,6 @@ export default function PortalNoticias() {
         })}
       </main>
 
-      {/* Paginação Estilizada */}
       {!loading && !erro && totalPaginas > 1 && (
         <nav className="portal-paginacao">
           {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((numeroPagina) => (
@@ -189,7 +162,6 @@ export default function PortalNoticias() {
           ))}
         </nav>
       )}
-
     </div>
   );
 }
