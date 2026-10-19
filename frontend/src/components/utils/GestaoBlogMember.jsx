@@ -56,16 +56,10 @@ export default function GestaoBlogMember({handleCriarPost=() => {}, handleEditar
 
   return(
     <div className='gestao-conteudo'>
-          <DashboardHeader />
           <section className='gestao-conteudo-content'>
-            <div className='gestao-conteudo-content-title'>
-              <h1>MEU BLOG</h1>
-            </div>
-    
-            <hr className='linha-divisoria'/>
     
             <div className='gestao-conteudo-content-addvlog'>
-              <h2>GESTÃO DE POSTAGENS DE VLOG</h2>
+              <h2>GESTÃO DE POSTAGENS DE BLOG</h2>
               <a href="#" onClick={handleCriarPost}><span>+ </span>Novo Registro</a>
             </div>
     

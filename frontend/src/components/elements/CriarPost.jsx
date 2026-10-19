@@ -209,7 +209,7 @@ export default function CriarPost({ voltarParaLista }) {
     <div className='postagem-container'>
       <main className='conteudo-principal'>
         <header className='header-postagem'>
-          <h1>Nova Postagem de Vlog</h1>
+          <h1>Nova Postagem de Blog</h1>
           <button className='btn-publicar' onClick={handleSalvar}>Publicar Post</button>
         </header>
 

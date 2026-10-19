@@ -19,6 +19,7 @@ model User {
   updatedAt DateTime @updatedAt
   posts     Post[]
   news      News[]
+  articles  Article[]
   member    Member?
 }
 
@@ -62,6 +63,26 @@ model Post {
   updatedAt DateTime @updatedAt
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String   // Título do Artigo / Revista
+  abstract    String   @db.Text // O Resumo (Abstract) do documento
+  
+  // Salvamos apenas o texto de onde o PDF está guardado
+  pdfUrl      String   // Exemplo: "/uploads/pdfs/170584939-artigo-ia.pdf"
+  
+  coverImage  String?  // Imagem de capa da revista/artigo (opcional)
+  keywords    String?  // Para o nosso motor de Busca Avançada achar o artigo
+  status      String   @default("RASCUNHO")
+  
+  // Relação de quem postou/escreveu o artigo
+  authorId    Int
+  author      User     @relation(fields: [authorId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model News {

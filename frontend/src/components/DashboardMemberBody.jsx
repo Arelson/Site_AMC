@@ -6,6 +6,7 @@ import CriarPost from './elements/CriarPost.jsx';
 import EditarPost from './elements/EditarPost.jsx';
 import MembroConta from './elements/MembroConta.jsx';
 import MinhaConta from './elements/MembroConta.jsx';
+import CriarArtigo from './elements/CriarArtigo.jsx';
 
 
 
@@ -16,6 +17,8 @@ export default function DashboardMemberBody() {
   const [criarPost, setCriarPost] = useState(false);
   const [editarPost, setEditarPost] = useState(false);
   const [postEditandoId, setPostEditandoId] = useState(null);
+  const [criarArtigo, setCriarArtigo] = useState(false);
+
   const nomeCompleto = localStorage.getItem('nomeCompleto');
   const primeiroNome =nomeCompleto? nomeCompleto.split(' ')[0]: '';
   const primeiraLetra = primeiroNome.charAt(0).toUpperCase();
@@ -23,42 +26,58 @@ export default function DashboardMemberBody() {
 
 
   const handleVisaoGeral = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setVisaoGeral(true);
     setGestaoConteudo(false);
     setMinhaConta(false);
     setCriarPost(false);
     setEditarPost(false);
+    setCriarArtigo(false);
     setPostEditandoId(null);
+    
   }
 
   const handleGestaoConteudo = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setVisaoGeral(false);
     setGestaoConteudo(true);
     setMinhaConta(false);
     setCriarPost(false);
     setEditarPost(false);
+    setCriarArtigo(false);
     setPostEditandoId(null);
   }
 
   const handleMinhaConta = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setVisaoGeral(false);
     setGestaoConteudo(false);
     setMinhaConta(true);
     setCriarPost(false);
     setEditarPost(false);
+    setCriarArtigo(false);
     setPostEditandoId(null);
   }
 
   const handleCriarPost = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setVisaoGeral(false);
     setGestaoConteudo(false);
     setMinhaConta(false);
     setCriarPost(true);
     setEditarPost(false);
+    setCriarArtigo(false);
+    setPostEditandoId(null);
+  }
+
+  const handleCriarArtigo = (e) => {
+    if (e) e.preventDefault();
+    setVisaoGeral(false);
+    setGestaoConteudo(false);
+    setMinhaConta(false);
+    setCriarPost(false);
+    setEditarPost(false);
+    setCriarArtigo(true);
     setPostEditandoId(null);
   }
 
@@ -68,6 +87,7 @@ export default function DashboardMemberBody() {
     setMinhaConta(false);
     setCriarPost(false);
     setEditarPost(true);
+    setCriarArtigo(false);
     setPostEditandoId(id);
   }
 
@@ -118,9 +138,15 @@ export default function DashboardMemberBody() {
       </aside>
       <main className="dashboard-member-main">
         {visaoGeral && <VisaoGeral />} 
-        {gestaoConteudo && <GestaoConteudo handleCriarPost={handleCriarPost} handleEditarPost={handleEditarPost} adm={false} />} 
-        {criarPost && <CriarPost voltarParaLista={handleGestaoConteudo}/>} 
+        {gestaoConteudo && <GestaoConteudo
+          handleCriarPost={handleCriarPost}
+          handleEditarPost={handleEditarPost}
+          handleCriarArtigo={handleCriarArtigo}
+          adm={false} />} 
+        
+        {criarPost && <CriarPost voltarParaLista={handleGestaoConteudo} />} 
         {editarPost && <EditarPost postId={postEditandoId} voltarParaLista={handleGestaoConteudo} />}
+        {criarArtigo && <CriarArtigo voltarParalista={handleGestaoConteudo}/>}
         {minhaConta && <MinhaConta/>}
       </main>
     </div>

@@ -6,11 +6,17 @@ import GestaoNoticias from '../utils/GestaoNoticias';
 import GestaoBlogMember from '../utils/GestaoBlogMember.jsx';
 import GestaoEventos from '../utils/GestaoEventos.jsx'
 import GestaoBlogAdmin from '../utils/GestaoBlogAdm.jsx';
+import GestaoArtigosMember from '../utils/GestaoArtigoMember.jsx';
 import FormCriarMembro from './CriarMembro.jsx';
 
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPost=() => {}, adm}) {
+export default function GestaoConteudo({
+  handleCriarPost = () => { },
+  handleEditarPost = () => { },
+  handleCriarArtigo = () => { },
+  handleEditarArtigo = () => { }, adm }) {
+  
   const [membros, setMembros] = useState(true);
   const [noticias, setNoticias] = useState(false);
   const [eventos, setEventos] = useState(false);
@@ -22,7 +28,7 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
   const [codeGenerated, setCodeGenerated] = useState('');
   const [copy, setCopy] = useState(false);
   const [criandoMembro, setCriandoMembro] = useState(false);
-
+  const [abaMembro, setAbaMembro] = useState('BLOG');
   
   
   useEffect(() => {
@@ -165,7 +171,43 @@ export default function GestaoConteudo({handleCriarPost=() => {}, handleEditarPo
 
   return (
     <>
-      {!adm && <GestaoBlogMember handleCriarPost={handleCriarPost} handleEditarPost={handleEditarPost} adm />}
+      {!adm && (
+        <div className='gestao-conteudo'>
+          <DashboardHeader />
+
+          <section className='gestao-conteudo-content'>
+
+            <div className='gestao-conteudo-content-title-adm'>
+              <h1
+                onClick={() => setAbaMembro('BLOG')}
+                className={`gestao-conteudo-content-title-adm-h1 ${abaMembro === 'BLOG' ? 'Active': 'Inactive'}`}
+              >MEU BLOG</h1>
+
+              <h1
+                onClick={() => setAbaMembro('ARTIGO')}
+                className={`gestao-conteudo-content-title-adm-h1 ${abaMembro === 'ARTIGO' ? 'Active': 'Inactive'}`}
+              >
+                MEUS ARTIGOS
+              </h1>
+            </div>
+
+            <hr className='linha-divisoria' />
+            
+            {abaMembro === 'BLOG' && (
+              <GestaoBlogMember
+                handleCriarPost={handleCriarPost}
+                handleEditarPost={handleEditarPost}
+              />
+            )}
+            {abaMembro === 'ARTIGO' && (
+              <GestaoArtigosMember
+                handleCriarArtigo={handleCriarArtigo}
+                handleEditarArtigo={handleEditarArtigo}
+              />
+            )}
+          </section>
+        </div>
+      )}
       {adm &&
       <div className='gestao-conteudo'>
         <DashboardHeader />
