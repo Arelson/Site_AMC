@@ -48,6 +48,12 @@ export default function CadastroForm() {
   }
 //endregion 
 
+const bloquearAcao = (e) => {
+    e.preventDefault(); 
+    // Se quiser, você pode colocar um alert("Ação não permitida!"); aqui, 
+    // mas a prática moderna recomenda apenas bloquear silenciosamente.
+  };
+
   return (
     <div className='login-card-white'>
       <div className='page-titles'>
@@ -113,6 +119,10 @@ export default function CadastroForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+
+              onCopy={bloquearAcao}
+              onCut={bloquearAcao}
+              onPaste={bloquearAcao}
             />
             <button 
               type="button" 
@@ -134,7 +144,7 @@ export default function CadastroForm() {
           <div className='input-wrapper'>
             <span className='input-icon'>🔐</span>
             <input 
-              type="password" 
+              type={mostrarSenha ? "text" : "password"} 
               id='confirm-password' 
               placeholder='Repita sua senha' 
               required

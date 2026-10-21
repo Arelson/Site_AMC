@@ -44,6 +44,10 @@ export default function LoginForm() {
   }
   //endregion
 
+  const bloquearAcao = (e) => {
+    e.preventDefault(); 
+  };
+
   //region RETURN
   return (
     <div className='login-card-white'>
@@ -83,6 +87,10 @@ export default function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+
+              onPaste={bloquearAcao}
+              onCut={bloquearAcao}
+              onCopy={bloquearAcao}
             />
 
             <button 
