@@ -76,7 +76,7 @@ export default function Blog() {
             onKeyDown={lidarComTeclaBusca} /* Aciona a busca no backend ao apertar Enter */
           />
         </div>
-        </section>
+      </section>
 
       <div className='feed-blog-grid'>
         {posts.map((post) => (
@@ -90,7 +90,7 @@ export default function Blog() {
                   e.target.src = 'https://placehold.co/400x220/e2e8f0/1a1a40?text=AMC';
                 }}
               />
-            </div>
+      </div>
             
             <div className='blog-card-body'>
               <div className='blog-author-area'>
