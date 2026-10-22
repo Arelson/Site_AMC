@@ -15,6 +15,7 @@ import EventPage from './pages/EventPage.jsx';
 import MembroPage from './pages/MembroPage.jsx';
 import EventoForm from './components/EventoForm.jsx';
 import PerfilPage from './pages/PerfilPage.jsx'
+import Articles from './pages/ArtigoPublico.jsx'
 //endregion
 
 
@@ -52,7 +53,8 @@ function App() {
         <Route path="/eventos/:id" element={<EventPage />}/>
         <Route path="/eventos/:id/inscricao" element={<EventoForm />} />
         <Route path="/members" element={<MembroPage />} />
-        <Route path="/members/:id" element={ <PerfilPage/>} />
+        <Route path="/members/:id" element={<PerfilPage />} />
+        <Route path='/artigo/:id' element={<Articles />} />
 
         {/* ROTAS PROTEGIDAS - ADMIN */}
         <Route

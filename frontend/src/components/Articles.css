@@ -1,0 +1,258 @@
+.leitura-container {
+  background-color: #f9f9f9;
+  padding: 40px;
+  min-height: 100vh;
+}
+
+
+.btn-voltar {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.post-artigo {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.pdf-viewer-container {
+  width: 100%;
+  height: 450px;
+  min-height: 800px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  background-color: #e2e8f0
+}
+.pdf-iframe{
+  border: none; 
+  display: block;
+  flex-grow: 1
+}
+
+.post-capa img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+}
+.post-header {
+  padding: 40px 60px 20px;
+}
+.tags-header-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.categoria-tag-azul {
+  background-color: rgb(26, 26, 64);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  width: fit-content;
+}
+.post-header h1 {
+  font-size: 42px;
+  color: rgb(26, 26, 64);
+  line-height: 1.2;
+  margin-bottom: 30px;
+  font-family: 'Georgia', serif;
+}
+.autor-info-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.autor-avatar {
+  width: 50px;
+  height: 50px;
+  background: #eee;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #999;
+}
+.autor-detalhes strong {
+  display: block;
+  font-size: 16px;
+  color: #333;
+}
+.autor-detalhes span {
+  font-size: 12px;
+  color: #999;
+}
+.post-conteudo-html {
+  padding: 20px 60px 40px;
+  font-size: 18px;
+  line-height: 1.8;
+  color: #444;
+}
+
+/* Citações adaptadas para Tiptap */
+.post-conteudo-html blockquote {
+  position: relative;
+  font-style: italic;
+  font-size: 24px;
+  color:#666;
+  text-align: center;
+  max-width: 90%;
+  margin: 50px auto;
+  padding: 40px 60px;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  border-radius: 16px;
+  background-image: linear-gradient(#f1c40f,#f1c40f);
+  background-size: 5px 100%;
+  background-position: left center;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.post-conteudo-html blockquote p {
+  display: inline; /* Garante que o parágrafo do tiptap não quebre a citação */
+}
+
+.post-conteudo-html blockquote::before {
+  content: '“';
+  position: absolute;
+  left: 25px;
+  top: 10px;
+  font-size: 90px;
+  color: #d1d5db;
+  font-family: 'Georgia', serif;
+  line-height: 1;
+}
+.post-conteudo-html blockquote::after {
+  content: '”';
+  position: absolute;
+  right: 25px;
+  bottom: -30px;
+  font-size: 90px;
+  color: #d1d5db;
+  font-family: 'Georgia', serif;
+  line-height: 1;
+}
+
+.post-conteudo-html img {
+  width: 80%;
+  border-radius: 15px;
+  margin-top: 30px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Suporte para iframes (Vídeos do YouTube) */
+.post-conteudo-html iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  border: none;
+  margin: 30px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Alinhamento adaptado para o Tiptap (Ele usa styles inline) */
+.post-conteudo-html [style*="text-align: center"] {
+  text-align: center;
+  padding-top: 14px;
+  padding-bottom: 24px;
+  font-size: 14px;
+  color: #777;
+  letter-spacing: 1px;
+}
+
+/* Fórmulas matemáticas */
+.post-conteudo-html math-inline, 
+.post-conteudo-html math-display {
+  display: block;
+  text-align: center;
+  padding: 20px;
+  background: #fcfcfc;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+/* Bloco de Código adaptado */
+/* Bloco de Código adaptado e modernizado */
+.post-conteudo-html pre {
+  background-color: #282c34; /* Cor de fundo do atom-one-dark */
+  color: #abb2bf;
+  padding: 24px;
+  border-radius: 12px;
+  font-family: 'Fira Code', 'Consolas', 'Monaco','Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 30px 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  width: 90%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Estilizando a barra de rolagem (scrollbar) do bloco de código */
+.post-conteudo-html pre::-webkit-scrollbar {
+  height: 8px; /* Deixa a barra fininha */
+}
+.post-conteudo-html pre::-webkit-scrollbar-track {
+  background: #21252b; /* Cor do trilho da barra */
+  border-radius: 0 0 12px 12px;
+}
+.post-conteudo-html pre::-webkit-scrollbar-thumb {
+  background: #4b5363; /* Cor da barrinha de puxar */
+  border-radius: 4px;
+}
+.post-conteudo-html pre::-webkit-scrollbar-thumb:hover {
+  background: #5c6370;
+}
+
+.post-conteudo-html pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-family: inherit;
+}
+
+.post-footer {
+  padding: 0 60px 40px;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+}
+.tags-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+.tag-item {
+  font-size: 12px;
+  font-weight: bold;
+  color: #bbb;
+  cursor: pointer;
+}
+.tag-item:hover {
+  color: #f1c40f;
+}
+
+

@@ -89,7 +89,7 @@ export default function GestaoArtigosMember({ handleCriarArtigo = () => { }, han
                             <div className="tabela-linha" key={artigo.id}>
                                 <div className="col-info">
                                     <Link
-                                        to={`/article/${artigo.id}`}
+                                        to={`/artigo/${artigo.id}`}
                                         target="_blank"
                                         className="post-titulo"
                                         style={{textDecoration:'none', color:'inherit'}}
