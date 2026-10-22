@@ -2,6 +2,10 @@ import prisma from '../database/prisma.js';
 import { fromPath } from 'pdf2pic';
 import path, { format } from 'path';
 import fs from 'fs';
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const criarArtigo = async (req, res) => {
     try {
@@ -139,5 +143,92 @@ export const getArtigoById = async (req, res) => {
     } catch (err) {
         console.error('Erro ao buscar o artigo', erro);
         return res.status(500).json({ error: 'Erro interno no sevidor' });
+    }
+}
+
+export const updateArticle = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, abstract, keywords } = req.body;
+
+        const pdfUrlA = await prisma.article.findUnique({
+            where: { id: Number(id) }
+        });
+
+
+        let pdfUrlF = pdfUrlA.pdfUrl;
+        let articleD = false;
+
+        if (req.file) {
+            pdfUrlF = `/uploads/articles/${req.file.filename}`;
+            articleD = true;
+        }
+
+        
+        if (!title || !pdfUrlF || !keywords) {
+            return res.status(400).json({ error: 'São obrigatorios titulo, palavras chave e o documento' });
+        }
+
+        const updatedArticle = await prisma.article.update({
+            where: { id: Number(id) },
+            data: {
+                title: title,
+                abstract: abstract,
+                pdfUrl: pdfUrlF,
+                keywords: keywords
+            }
+        });
+
+        if (articleD && pdfUrlA.pdfUrl) {
+            const urlLimpa = pdfUrlA.pdfUrl.replace(/^\//, '');
+            const pathFA = path.resolve(__dirname, '..', '..', '..', urlLimpa);
+
+            if (fs.existsSync(pathFA)) {
+                fs.unlinkSync(pathFA);
+                console.log('Pdf deletado')
+            }
+        }
+
+        return res.status(200).json({
+            message: 'Artigo atualizado',
+            artigo: updateArticle
+        });
+
+    } catch (error) {
+        console.error("Erro ao atualizar o artigo:", error);
+        return res
+        .status(500)
+        .json({ error: "Erro interno ao atualizar a artigo." });
+    }
+}
+
+export const deleteArticle = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const artigoUrl = await prisma.article.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (artigoUrl.pdfUrl) {
+            const urlLimpa = artigoUrl.pdfUrl.replace(/^\//, '');
+            const pathF = path.resolve(__dirname, '..', '..', '..', urlLimpa);
+            console.log(pathF);
+
+            if (fs.existsSync(pathF)) {
+                fs.unlinkSync(pathF);
+                console.log("Fui deletado")
+            }
+        }
+
+        const artigo = await prisma.article.delete({
+            where: { id: Number(id) },
+        });
+
+        return res.status(200).json({ message: 'Artigo delatado com sucesso' });
+    } catch (error) {
+        console.error('Erro ao deletar o artigo', error);
+
+        return res.status(200).json({ error: 'Error interno ao deletar o artigo' });
     }
 }
