@@ -23,7 +23,7 @@ export const criarArtigo = async (req, res) => {
         const caminhoFisicoPdf = pdfFile.path;
 
         const nomeBase = path.parse(pdfFile.filename).name;
-        const pastaDestinoImagens = path.resolve("../uploads/imagens/");
+        const pastaDestinoImagens = path.resolve(__dirname, '..', '..', '..', 'uploads', 'images');
 
         if (!fs.existsSync(pastaDestinoImagens)) {
           fs.mkdirSync(pastaDestinoImagens, { recursive: true });

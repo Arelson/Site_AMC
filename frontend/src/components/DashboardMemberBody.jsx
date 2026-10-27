@@ -7,6 +7,7 @@ import EditarPost from './elements/EditarPost.jsx';
 import MembroConta from './elements/MembroConta.jsx';
 import MinhaConta from './elements/MembroConta.jsx';
 import CriarArtigo from './elements/CriarArtigo.jsx';
+import EditarArtigo from './elements/EditarArtigo.jsx';
 
 
 
@@ -81,6 +82,10 @@ export default function DashboardMemberBody() {
     setPostEditandoId(null);
   }
 
+  const handleEditaArtigo = (e) =>{
+    
+  }
+
   const handleEditarPost = (id) => {
     setVisaoGeral(false);
     setGestaoConteudo(false);
@@ -147,6 +152,7 @@ export default function DashboardMemberBody() {
         {criarPost && <CriarPost voltarParaLista={handleGestaoConteudo} />} 
         {editarPost && <EditarPost postId={postEditandoId} voltarParaLista={handleGestaoConteudo} />}
         {criarArtigo && <CriarArtigo voltarParalista={handleGestaoConteudo}/>}
+        {EditarArtigo && <EditarArtigo voltarParaLista={handleEdi}/>}
         {minhaConta && <MinhaConta/>}
       </main>
     </div>
