@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/', verifyToken, uploadPdf.single('pdf'), criarArtigo);
 router.put('/:id', verifyToken, uploadPdf.single('pdf'), updateArticle);
-router.get("/reader", verifyToken, listarArtigos);
+router.get("/reader", listarArtigos);
 router.get('/:id', getArtigoById);
 router.delete('/:id', verifyToken, deleteArticle);
 

@@ -1,6 +1,7 @@
 import Header from "../components/layouts/Header";
 import Footer from "../components/layouts/Footer";
 import Blog from "../components/Blog";
+import ArtigosFeed from "../components/ArtigosFeed";
 import { useState } from "react";
 import './Publicacoes.css';
 
@@ -66,7 +67,7 @@ export default function Publicacoes() {
           <main className="publicacoes-ct-content-main">
             {blog && <Blog />}
             {revistas && <p>Revistas</p>}
-            {artigos && <p>Artigos</p>}
+            {artigos && <ArtigosFeed />}
           </main>
         </div>
       </div>
