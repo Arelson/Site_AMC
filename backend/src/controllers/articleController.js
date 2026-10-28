@@ -159,58 +159,103 @@ export const updateArticle = async (req, res) => {
     const { id } = req.params;
     const { title, abstract, keywords } = req.body;
 
-    const pdfUrlA = await prisma.article.findUnique({
+    // 1. Busca os dados antigos do banco antes de sobrescrever
+    const artigoAntigo = await prisma.article.findUnique({
       where: { id: Number(id) },
     });
 
-    let pdfUrlF = pdfUrlA.pdfUrl;
-    let articleD = false;
+    if (!artigoAntigo) {
+      return res.status(404).json({ error: "Artigo não encontrado." });
+    }
 
+    // Variáveis que vão para o banco (por padrão, mantêm as antigas)
+    let pdfUrlFinal = artigoAntigo.pdfUrl;
+    let coverUrlFinal = artigoAntigo.coverImage;
+    let gerouNovoArquivo = false;
+
+    // 2. SE O USUÁRIO MANDOU UM NOVO PDF, GERA TUDO NOVO
     if (req.file) {
-      pdfUrlF = `/uploads/articles/${req.file.filename}`;
-      articleD = true;
+      gerouNovoArquivo = true;
+      pdfUrlFinal = `/uploads/articles/${req.file.filename}`;
+      const caminhoFisicoPdf = req.file.path; // Onde o multer salvou o novo PDF
+
+      const nomeBase = path.parse(req.file.filename).name;
+      const pastaDestinoImagens = path.resolve(__dirname, "..", "..", '..', "uploads", "imagens");
+
+      // Se a pasta de imagens não existir, cria na hora
+      if (!fs.existsSync(pastaDestinoImagens)) {
+        fs.mkdirSync(pastaDestinoImagens, { recursive: true });
+      }
+
+      const opcoesConversao = {
+        density: 150,
+        saveFilename: nomeBase,
+        savePath: pastaDestinoImagens,
+        format: "jpg",
+        width: 800,
+        height: 1131
+      };
+
+      const conversor = fromPath(caminhoFisicoPdf, opcoesConversao);
+
+      try {
+        console.log('Extraindo a nova capa do PDF...');
+        const resultado = await conversor(1);
+        coverUrlFinal = `/uploads/imagens/${resultado.name}`;
+        console.log('Nova capa gerada:', coverUrlFinal);
+      } catch (e) {
+        console.error("Erro ao extrair a nova imagem de capa", e);
+      }
     }
 
-    if (!title || !pdfUrlF || !keywords) {
-      return res
-        .status(400)
-        .json({
-          error: "São obrigatorios titulo, palavras chave e o documento",
-        });
+    if (!title || !pdfUrlFinal || !keywords) {
+      return res.status(400).json({ error: "São obrigatórios título, palavras-chave e o documento" });
     }
 
+    // 3. ATUALIZA O BANCO DE DADOS
     const updatedArticle = await prisma.article.update({
       where: { id: Number(id) },
       data: {
         title: title,
         abstract: abstract,
-        pdfUrl: pdfUrlF,
+        pdfUrl: pdfUrlFinal,
+        coverImage: coverUrlFinal, // Salva a capa nova!
         keywords: keywords,
       },
     });
 
-    if (articleD && pdfUrlA.pdfUrl) {
-      const urlLimpa = pdfUrlA.pdfUrl.replace(/^\//, ""); // vira "uploads/articles/xxx.pdf"
+    if (gerouNovoArquivo) {
+      
+      // 4.1 Deletar PDF Antigo
+      if (artigoAntigo.pdfUrl) {
+        const urlLimpaPdf = artigoAntigo.pdfUrl.replace(/^\//, "");
+        const pathAntigoPdf = path.resolve(__dirname, "..", "..", '..', urlLimpaPdf);
+        
+        if (fs.existsSync(pathAntigoPdf)) {
+          fs.unlinkSync(pathAntigoPdf);
+          console.log("🗑️ PDF antigo deletado do servidor.");
+        }
+      }
 
-      // CORREÇÃO 3: Caminho exato. Se este arquivo está em /backend/controllers/, usa apenas DOIS '..'
-      // Backend/controllers/ -> volta pra Backend/ -> volta pra raiz do projeto -> entra em uploads
-      const pathFA = path.resolve(__dirname, "..", "..", urlLimpa);
-
-      if (fs.existsSync(pathFA)) {
-        fs.unlinkSync(pathFA);
-        console.log("Pdf deletado");
+      if (artigoAntigo.coverImage) {
+        const urlLimpaImg = artigoAntigo.coverImage.replace(/^\//, "");
+        const pathAntigoImg = path.resolve(__dirname, "..", "..", '..', urlLimpaImg);
+        
+        if (fs.existsSync(pathAntigoImg)) {
+          fs.unlinkSync(pathAntigoImg);
+          console.log("🗑️ Imagem de capa antiga deletada do servidor.");
+        }
       }
     }
 
     return res.status(200).json({
-      message: "Artigo atualizado",
-      artigo: updatedArticle, // CORREÇÃO 2: Variável certa retornada!
+      message: "Artigo atualizado com sucesso",
+      artigo: updatedArticle,
     });
+
   } catch (error) {
     console.error("Erro ao atualizar o artigo:", error);
-    return res
-      .status(500)
-      .json({ error: "Erro interno ao atualizar a artigo." });
+    return res.status(500).json({ error: "Erro interno ao atualizar o artigo." });
   }
 };
 
@@ -225,12 +270,22 @@ export const deleteArticle = async (req, res) => {
     if (artigoUrl.pdfUrl) {
       const urlLimpa = artigoUrl.pdfUrl.replace(/^\//, "");
       // CORREÇÃO 3 (Mesmo ajuste do path):
-      const pathF = path.resolve(__dirname, "..", "..", urlLimpa);
+      const pathF = path.resolve(__dirname, "..", "..", '..', urlLimpa);
       console.log(pathF);
 
       if (fs.existsSync(pathF)) {
         fs.unlinkSync(pathF);
-        console.log("Fui deletado");
+        console.log("🗑️ PDF antigo deletado do servidor.");
+      }
+    }
+
+    if (artigoUrl.coverImage) {
+      const urlLimpaImg = artigoUrl.coverImage.replace(/^\//, "");
+      const pathAntigoImg = path.resolve(__dirname, "..", "..", '..', urlLimpaImg);
+
+      if (fs.existsSync(pathAntigoImg)) {
+        fs.unlinkSync(pathAntigoImg);
+        console.log("🗑️ Imagem de capa antiga deletada do servidor.");
       }
     }
 

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import './CriarPost.css'
 
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-export default function EditarArtigo({artigoId, handlevoltar}){
+export default function EditarArtigo({artigoId}){
     const [title, setTitle] = useState('');
     const [abstract, setAbstract ] = useState('');
     const [keywords, setKeywords] = useState('');
@@ -12,6 +13,12 @@ export default function EditarArtigo({artigoId, handlevoltar}){
 
     const [loading, setLoading] = useState(true);
     const [salvando, setSalvando] = useState(false);
+
+    const navigate = useNavigate();
+
+    const handlevoltar = () => {
+        navigate('/post');
+    }
 
     useEffect(()=>{
         const carregaArtigo = async () =>{
@@ -42,7 +49,7 @@ export default function EditarArtigo({artigoId, handlevoltar}){
         };
 
         if(artigoId) carregaArtigo();
-    }, [artigoId, handlevoltar]);
+    }, [artigoId]);
 
     const handleAtualizar = async (e) =>{
         e.preventDefault();
@@ -81,6 +88,8 @@ export default function EditarArtigo({artigoId, handlevoltar}){
             setSalvando(false);
         }
     };
+
+    
 
     if (loading){
         return <div style={{padding: '40px', textAlign: 'center'}}>Carregando dados do artigo...</div>;

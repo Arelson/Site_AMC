@@ -19,6 +19,8 @@ export default function DashboardMemberBody() {
   const [editarPost, setEditarPost] = useState(false);
   const [postEditandoId, setPostEditandoId] = useState(null);
   const [criarArtigo, setCriarArtigo] = useState(false);
+  const [editarArtigo, setEditarArtigo] = useState(false);
+  const [EditandoArtigoID, setEditandoArtigo] = useState(null);
 
   const nomeCompleto = localStorage.getItem('nomeCompleto');
   const primeiroNome =nomeCompleto? nomeCompleto.split(' ')[0]: '';
@@ -34,7 +36,9 @@ export default function DashboardMemberBody() {
     setCriarPost(false);
     setEditarPost(false);
     setCriarArtigo(false);
+    setEditarArtigo(false);
     setPostEditandoId(null);
+    setEditandoArtigo(null);
     
   }
 
@@ -46,7 +50,9 @@ export default function DashboardMemberBody() {
     setCriarPost(false);
     setEditarPost(false);
     setCriarArtigo(false);
+    setEditarArtigo(false);
     setPostEditandoId(null);
+    setEditandoArtigo(null);
   }
 
   const handleMinhaConta = (e) => {
@@ -57,7 +63,9 @@ export default function DashboardMemberBody() {
     setCriarPost(false);
     setEditarPost(false);
     setCriarArtigo(false);
+    setEditarArtigo(false);
     setPostEditandoId(null);
+    setEditandoArtigo(null);
   }
 
   const handleCriarPost = (e) => {
@@ -68,7 +76,9 @@ export default function DashboardMemberBody() {
     setCriarPost(true);
     setEditarPost(false);
     setCriarArtigo(false);
+    setEditarArtigo(false);
     setPostEditandoId(null);
+    setEditandoArtigo(null);
   }
 
   const handleCriarArtigo = (e) => {
@@ -79,11 +89,21 @@ export default function DashboardMemberBody() {
     setCriarPost(false);
     setEditarPost(false);
     setCriarArtigo(true);
+    setEditarArtigo(false);
     setPostEditandoId(null);
+    setEditandoArtigo(null);
   }
 
-  const handleEditaArtigo = (e) =>{
-    
+  const handleEditarArtigo = (id) =>{
+    setVisaoGeral(false);
+    setGestaoConteudo(false);
+    setMinhaConta(false);
+    setCriarPost(false);
+    setEditarPost(false);
+    setCriarArtigo(false);
+    setEditarArtigo(true);
+    setPostEditandoId(null);
+    setEditandoArtigo(id);
   }
 
   const handleEditarPost = (id) => {
@@ -93,7 +113,9 @@ export default function DashboardMemberBody() {
     setCriarPost(false);
     setEditarPost(true);
     setCriarArtigo(false);
+    setEditarArtigo(false);
     setPostEditandoId(id);
+    setEditandoArtigo(null);
   }
 
   return (
@@ -147,12 +169,13 @@ export default function DashboardMemberBody() {
           handleCriarPost={handleCriarPost}
           handleEditarPost={handleEditarPost}
           handleCriarArtigo={handleCriarArtigo}
+          handleEditarArtigo={handleEditarArtigo}
           adm={false} />} 
         
         {criarPost && <CriarPost voltarParaLista={handleGestaoConteudo} />} 
         {editarPost && <EditarPost postId={postEditandoId} voltarParaLista={handleGestaoConteudo} />}
         {criarArtigo && <CriarArtigo voltarParalista={handleGestaoConteudo}/>}
-        {EditarArtigo && <EditarArtigo voltarParaLista={handleEdi}/>}
+        {editarArtigo && <EditarArtigo artigoId={EditandoArtigoID} voltarParaLista={handleEditarArtigo}/>}
         {minhaConta && <MinhaConta/>}
       </main>
     </div>
