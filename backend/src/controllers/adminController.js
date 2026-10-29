@@ -152,12 +152,16 @@ export const criarMembroAdmin = async (req, res) => {
   try {
     const { name, cargo, cadeiraOcupacao, linkLattes, bio } = req.body;
 
-    // O único campo estritamente obrigatório para o card existir é o nome
     if (!name) {
       return res.status(400).json({ error: "O nome do membro é obrigatório." });
     }
 
-    // Cria o membro diretamente na tabela Member (sem atrelar a um User)
+    // Se o Admin enviou uma foto, nós guardamos o caminho. Se não, fica null.
+    let avatarUrlDb = null;
+    if (req.file) {
+      avatarUrlDb = `/uploads/images/avatars/${req.file.filename}`;
+    }
+
     const novoMembro = await prisma.member.create({
       data: {
         name,
@@ -165,6 +169,7 @@ export const criarMembroAdmin = async (req, res) => {
         cadeiraOcupacao: cadeiraOcupacao || null,
         linkLattes: linkLattes || null,
         bio: bio || null,
+        avatarUrl: avatarUrlDb, // 👈 Salva na tabela Member
       },
     });
 
@@ -172,5 +177,63 @@ export const criarMembroAdmin = async (req, res) => {
   } catch (error) {
     console.error("Erro ao criar membro pelo admin:", error);
     return res.status(500).json({ error: "Erro interno ao cadastrar membro." });
+  }
+};
+
+export const atualizarMembroAdmin = async (req, res) => {
+  try {
+    const { id } = req.params; // ID do membro (na url: /api/members/:id)
+    const { name, cargo, cadeiraOcupacao, linkLattes, bio } = req.body;
+
+    const membroAntigo = await prisma.member.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!membroAntigo) {
+      return res.status(404).json({ error: "Membro não encontrado." });
+    }
+
+    let avatarUrlFinal = membroAntigo.avatarUrl;
+    let deletarFotoVelha = false;
+
+    // Se o Admin mandou uma foto NOVA para substituir
+    if (req.file) {
+      avatarUrlFinal = `/uploads/images/avatars/${req.file.filename}`;
+      deletarFotoVelha = true;
+    }
+
+    // Atualiza os dados no banco
+    const membroAtualizado = await prisma.member.update({
+      where: { id: Number(id) },
+      data: {
+        name: name || membroAntigo.name,
+        cargo: cargo || null,
+        cadeiraOcupacao: cadeiraOcupacao || null,
+        linkLattes: linkLattes || null,
+        bio: bio || null,
+        avatarUrl: avatarUrlFinal
+      }
+    });
+
+    // FAXINA FÍSICA: Se substituiu a foto, deleta a antiga
+    if (deletarFotoVelha && membroAntigo.avatarUrl) {
+      const urlLimpa = membroAntigo.avatarUrl.replace(/^\//, ''); 
+      // Ajuste os ".." conforme a profundidade da sua pasta controller
+      const pathAntigo = path.resolve(__dirname, '..', '..', urlLimpa);
+      
+      if (fs.existsSync(pathAntigo)) {
+        fs.unlinkSync(pathAntigo);
+        console.log('🗑️ Avatar antigo do membro deletado!');
+      }
+    }
+
+    return res.status(200).json({
+      message: 'Membro atualizado com sucesso!',
+      membro: membroAtualizado
+    });
+
+  } catch (error) {
+    console.error("Erro ao atualizar membro pelo admin:", error);
+    return res.status(500).json({ error: "Erro interno ao atualizar membro." });
   }
 };

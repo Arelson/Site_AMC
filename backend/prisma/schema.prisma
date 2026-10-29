@@ -14,6 +14,7 @@ model User {
   name      String
   email     String   @unique
   password  String
+  avatarUrl String?
   role      Role     @default(MEMBER) // Voltamos a usar o enum
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -31,6 +32,7 @@ model Member {
   bio             String?
   linkLattes      String?
   cadeiraOcupacao String?
+  avatarUrl       String?
 
   // A MÁGICA 1: Relação 1-para-1 com o Usuário
   // O @unique garante que um Usuário não tenha dois perfis de Membro

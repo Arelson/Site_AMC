@@ -1,6 +1,7 @@
 import express from "express";
-import { generateInviteCode, getInvites, deleteInvite, updateUser, getAllPostsAdmin, updatePostStatusAdmin, deletePostAdmin, criarMembroAdmin } from "../controllers/adminController.js";
+import { generateInviteCode, getInvites, deleteInvite, updateUser, getAllPostsAdmin, updatePostStatusAdmin, deletePostAdmin, criarMembroAdmin, atualizarMembroAdmin } from "../controllers/adminController.js";
 import { verifyToken, isAdmin} from "../middlewares/authmiddleware.js";
+import { uploadAvatar } from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.patch('/update', updateUser);
 router.get('/posts', isAdmin, getAllPostsAdmin);
 router.patch('/posts/:id/status', isAdmin, updatePostStatusAdmin);
 router.delete('/posts/:id', isAdmin, deletePostAdmin);
-router.post('/members', isAdmin, criarMembroAdmin)
+router.post('/members', isAdmin, uploadAvatar.single('foto'), criarMembroAdmin);
+router.patch('/members', isAdmin, uploadAvatar.single('foto'), atualizarMembroAdmin);
 
 export default router;
