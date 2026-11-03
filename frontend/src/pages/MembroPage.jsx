@@ -133,8 +133,9 @@ export default function PortalEquipe() {
               
               <div className="equipe-card-foto">
                 {/* Se o membro não tiver foto cadastrada, mostra a primeira letra do nome */}
-                {membro.fotoPerfil && membro.fotoPerfil !== 'default.png' ? (
-                  <img src={`/uploads/${membro.fotoPerfil}`} alt={`Foto de ${membro.name}`} />
+                {membro.user?.avatarUrl ? (
+                  <img src={`${apiURL}${membro.user?.avatarUrl}`} 
+                      alt={`Foto de ${membro.name}`} />
                 ) : (
                   <div className="equipe-foto-placeholder">
                     {membro.name.charAt(0).toUpperCase()}

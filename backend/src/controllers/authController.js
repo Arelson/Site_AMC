@@ -205,6 +205,11 @@ export const getAllMembers = async (req, res) => {
       orderBy: {
         name: "asc", // Traz os membros em ordem alfabética
       },
+      include: {
+        user: {
+          select: { avatarUrl: true },
+        },
+      },
     });
     return res.status(200).json(membros);
   } catch (error) {

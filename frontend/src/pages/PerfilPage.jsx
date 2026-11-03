@@ -71,8 +71,8 @@ export default function MembroPage() {
             {/* Coluna Esquerda: Foto e Links */}
             <aside className="perfil-sidebar">
                 <div className="perfil-foto-grande">
-                {membro.fotoPerfil && membro.fotoPerfil !== 'default.png' ? (
-                    <img src={`/uploads/${membro.fotoPerfil}`} alt={`Foto de ${membro.name}`} />
+                {membro.user?.avatarUrl && membro.avatarUrl !== 'default.png' ? (
+                    <img src={`${apiURL}${membro.user?.avatarUrl}`} alt={`Foto de ${membro.name}`}  />
                 ) : (
                     <div className="perfil-foto-placeholder">
                     {membro.name.charAt(0).toUpperCase()}

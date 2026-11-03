@@ -125,8 +125,8 @@
 
 .equipe-foto-placeholder,
 .equipe-card-foto img {
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     margin: 0 auto 15px;
     object-fit: cover;
