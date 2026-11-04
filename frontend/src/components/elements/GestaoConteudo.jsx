@@ -15,21 +15,29 @@ export default function GestaoConteudo({
   handleCriarPost = () => { },
   handleEditarPost = () => { },
   handleCriarArtigo = () => { },
-  handleEditarArtigo = () => { }, adm }) {
+  handleEditarArtigo = () => { }, 
+  adm 
+}) {
   
+  // Estados Principais de Navegação
   const [membros, setMembros] = useState(true);
   const [noticias, setNoticias] = useState(false);
   const [eventos, setEventos] = useState(false);
   const [revistasEbooks, setRevistasEbooks] = useState(false);
   const [documentosPublicos, setDocumentosPublicos] = useState(false);
   const [blog, setBlog] = useState(false);
+  
+  // Estados da Gestão de Membros (Admin)
   const [invitePopup, setInvitePopup] = useState(false);
   const [invites, setInvites] = useState([]);
   const [codeGenerated, setCodeGenerated] = useState('');
   const [copy, setCopy] = useState(false);
   const [criandoMembro, setCriandoMembro] = useState(false);
-  const [abaMembro, setAbaMembro] = useState('BLOG');
   
+  // Novos Estados para a reorganização
+  const [abaMembro, setAbaMembro] = useState('BLOG'); // Abas do Membro Comum
+  const [abaMembrosAdmin, setAbaMembrosAdmin] = useState('REGISTRADOS'); // Abas do Admin ('REGISTRADOS' ou 'CODIGOS')
+  const [membrosLista, setMembrosLista] = useState([]); // Guarda a lista de membros do banco
   
   useEffect(() => {
     const requireInvites = async () => {
@@ -46,12 +54,26 @@ export default function GestaoConteudo({
         console.error('Erro ao buscar convites:', error);
       }
     }
+
+    // NOVA FUNÇÃO: Busca os membros cadastrados para preencher a tabela
+    const requireMembers = async () => {
+      try {
+        const response = await fetch(`${apiURL}/api/auth/members`);
+        if (response.ok) {
+          const data = await response.json();
+          setMembrosLista(data);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar membros:', error);
+      }
+    }
+
     if (adm) {
       requireInvites();
+      requireMembers();
     }
   }, [adm]);
   
-// TODO: TALVEZ EXCLUIR
   const handleGeneratedCode = async () => {
     try {
       const response = await fetch(`${apiURL}/api/admin/invites`, {
@@ -66,6 +88,7 @@ export default function GestaoConteudo({
         setCodeGenerated(data.code);
         setInvitePopup(true);
         setInvites(prev => [data, ...prev]);
+        setAbaMembrosAdmin('CODIGOS'); // Já muda pra aba de códigos pra ele ver na lista
       } else {
         alert('Erro ao gerar convite');
       }
@@ -87,7 +110,6 @@ export default function GestaoConteudo({
     }
   };
 
-  // TODO: TALVEZ EXCLUIR
   const handleDeleteCode = async (id) => {
     if (!window.confirm('Tem certeza que deseja excluir este código?')) return;
     try {
@@ -108,6 +130,7 @@ export default function GestaoConteudo({
     }
   }
 
+  // Funções de Navegação Principal
   const handleMembroClick = () => {
     setMembros(true);
     setNoticias(false);
@@ -120,57 +143,40 @@ export default function GestaoConteudo({
   }
 
   const handleNoticiaClick = () => {
-    setNoticias(true);
-    setMembros(false);
-    setEventos(false);
-    setRevistasEbooks(false);
-    setDocumentosPublicos(false);
-    setBlog(false);
+    setNoticias(true); setMembros(false); setEventos(false);
+    setRevistasEbooks(false); setDocumentosPublicos(false); setBlog(false);
     setInvitePopup(false);
   }
 
   const handleEventoClick = () => {
-    setEventos(true);
-    setNoticias(false);
-    setMembros(false);
-    setRevistasEbooks(false);
-    setDocumentosPublicos(false);
-    setBlog(false);
+    setEventos(true); setNoticias(false); setMembros(false);
+    setRevistasEbooks(false); setDocumentosPublicos(false); setBlog(false);
     setInvitePopup(false);
   }
 
   const handleRevistasEbooksClick = () => {
-    setRevistasEbooks(true);
-    setNoticias(false);
-    setEventos(false);
-    setMembros(false);
-    setDocumentosPublicos(false);
-    setBlog(false);
+    setRevistasEbooks(true); setNoticias(false); setEventos(false);
+    setMembros(false); setDocumentosPublicos(false); setBlog(false);
     setInvitePopup(false);
   }
 
   const handleDocumentosPublicosClick = () => {
-    setDocumentosPublicos(true);
-    setNoticias(false);
-    setEventos(false);
-    setMembros(false);
-    setRevistasEbooks(false);
-    setBlog(false);
+    setDocumentosPublicos(true); setNoticias(false); setEventos(false);
+    setMembros(false); setRevistasEbooks(false); setBlog(false);
     setInvitePopup(false);
   }
 
   const handleBlogClick = () => {
-    setBlog(true);
-    setNoticias(false);
-    setEventos(false);
-    setMembros(false);
-    setRevistasEbooks(false);
-    setDocumentosPublicos(false);
+    setBlog(true); setNoticias(false); setEventos(false);
+    setMembros(false); setRevistasEbooks(false); setDocumentosPublicos(false);
     setInvitePopup(false);
   }
 
   return (
     <>
+      {/* ==================================================== */}
+      {/* ================= PAINEL DO MEMBRO ================= */}
+      {/* ==================================================== */}
       {!adm && (
         <div className='gestao-conteudo'>
           <DashboardHeader />
@@ -194,20 +200,19 @@ export default function GestaoConteudo({
             <hr className='linha-divisoria' />
             
             {abaMembro === 'BLOG' && (
-              <GestaoBlogMember
-                handleCriarPost={handleCriarPost}
-                handleEditarPost={handleEditarPost}
-              />
+              <GestaoBlogMember handleCriarPost={handleCriarPost} handleEditarPost={handleEditarPost} />
             )}
             {abaMembro === 'ARTIGO' && (
-              <GestaoArtigosMember
-                handleCriarArtigo={handleCriarArtigo}
-                handleEditarArtigo={handleEditarArtigo}
-              />
+              <GestaoArtigosMember handleCriarArtigo={handleCriarArtigo} handleEditarArtigo={handleEditarArtigo} />
             )}
           </section>
         </div>
       )}
+
+
+      {/* ==================================================== */}
+      {/* ================= PAINEL DO ADMIN ================== */}
+      {/* ==================================================== */}
       {adm &&
       <div className='gestao-conteudo'>
         <DashboardHeader />
@@ -223,51 +228,116 @@ export default function GestaoConteudo({
           <hr className='linha-divisoria'/>
 
           <>
+            {/* GESTÃO DE MEMBROS ATIVA */}
             {membros && (
               criandoMembro ? (
                 // Mostra o formulário e passa a função para voltar
                 <FormCriarMembro onVoltar={() => setCriandoMembro(false)} />
               ) : (
-                    <>
-                      <div className='gestao-conteudo-content-addvlog'>
-                        <h2>GESTÃO DE MEMBROS</h2>
-                        <div>
-                          <a href="#" onClick={(e) => { e.preventDefault(); setCriandoMembro(true); }}>
-                            <span>+</span>Novo Membro
-                          </a>
-                          <a href="#" onClick={(e) => { e.preventDefault(); handleGeneratedCode(); }}><span>+</span>Novo Código de Convite</a>
-                        </div>
-                      </div>
-                      <div className='invites'>
-                        <h3 className='invites-title'>Códigos de Convite</h3>
-                        <div className = 'invites-table-header'>
-                          <span>CÓDIGO</span>
-                          <span>STATUS</span>
-                          <span>AÇÃO</span>
-                        </div>
+                <>
+                  <div className='gestao-conteudo-content-addvlog'>
+                    <h2>GESTÃO DE MEMBROS</h2>
+                    <div>
+                      <a href="#" onClick={(e) => { e.preventDefault(); setCriandoMembro(true); }}>
+                        <span>+</span>Novo Membro
+                      </a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleGeneratedCode(); }}>
+                        <span>+</span>Novo Código de Convite
+                      </a>
+                    </div>
+                  </div>
 
-                        <div className = 'invites-table'>
-                          {invites.length === 0 ? (
-                            <p>Nenhum código gerado ainda</p>
-                          ):(
-                            invites.map((invite) => (
-                              <div className='invites-table-content' key={invite.id}>
-                                <div className='invites-table-content-code'>{invite.code}</div>
-                                <div className='invites-table-content-status'>
-                                  <span className={invite.isUsed ? 'status-utilizado' : 'status-disponivel'}> {invite.isUsed ? 'UTILIZADO' : 'DISPONÍVEL'}</span>
-                                </div>
-                                <div className='invites-table-content-actions'>
-                                  <button onClick={() => handleDeleteCode(invite.id)}>EXCLUIR</button>
-                                </div>
-                              </div>
-                            ))
-                          )}
-                        </div>
+                  {/* SUB-ABAS DA GESTÃO DE MEMBROS (Reaproveitando seu CSS) */}
+                  <div className='gestao-conteudo-content-title-adm' style={{ marginTop: '20px', marginBottom: '10px' }}>
+                    <h1 
+                      onClick={() => setAbaMembrosAdmin('REGISTRADOS')} 
+                      className={`gestao-conteudo-content-title-adm-h1 ${abaMembrosAdmin === 'REGISTRADOS' ? 'Active' : 'Inactive'}`} 
+                      style={{ fontSize: '15px' }}
+                    >
+                      MEMBROS REGISTRADOS
+                    </h1>
+                    <h1 
+                      onClick={() => setAbaMembrosAdmin('CODIGOS')} 
+                      className={`gestao-conteudo-content-title-adm-h1 ${abaMembrosAdmin === 'CODIGOS' ? 'Active' : 'Inactive'}`} 
+                      style={{ fontSize: '15px' }}
+                    >
+                      CÓDIGOS DE CONVITE
+                    </h1>
+                  </div>
+
+                  {/* ================= ABA: MEMBROS REGISTRADOS ================= */}
+                  {abaMembrosAdmin === 'REGISTRADOS' && (
+                    <div className='invites'>
+                      <h3 className='invites-title'>Lista de Membros Atuais</h3>
+                      
+                      {/* Grid de 4 colunas (adaptado inline do seu CSS) */}
+                      <div className='invites-table-header' style={{ gridTemplateColumns: '2fr 2fr 2fr 1fr' }}>
+                        <span>NOME / DR(A).</span>
+                        <span>CARGO / POSIÇÃO</span>
+                        <span>E-MAIL</span>
+                        <span>AÇÕES</span>
                       </div>
-                    </>
-                )
+
+                      <div className='invites-table'>
+                        {membrosLista.length === 0 ? (
+                          <p style={{ padding: '20px', textAlign: 'center', color: '#666' }}>Nenhum membro encontrado.</p>
+                        ) : (
+                          membrosLista.map((membro) => (
+                            <div className='invites-table-content' key={membro.id} style={{ gridTemplateColumns: '2fr 2fr 2fr 1fr' }}>
+                              <div className='invites-table-content-code' style={{ fontWeight: 'bold' }}>{membro.name}</div>
+                              <div className='invites-table-content-status' style={{ color: '#555' }}>
+                                {membro.cargo || 'Membro'}
+                              </div>
+                              <div style={{ fontSize: '14px', color: '#666', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {membro.email || (membro.user && membro.user.email) || 'Sem e-mail'}
+                              </div>
+                              <div className='invites-table-content-actions'>
+                                <button style={{ backgroundColor: '#0056b3' }}>EDITAR</button>
+                                {/* <button style={{ backgroundColor: '#dc3545', marginLeft: '5px' }}>EXCLUIR</button> */}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ================= ABA: CÓDIGOS DE CONVITE ================= */}
+                  {abaMembrosAdmin === 'CODIGOS' && (
+                    <div className='invites'>
+                      <h3 className='invites-title'>Códigos de Convite</h3>
+                      <div className = 'invites-table-header'>
+                        <span>CÓDIGO</span>
+                        <span>STATUS</span>
+                        <span>AÇÃO</span>
+                      </div>
+
+                      <div className = 'invites-table'>
+                        {invites.length === 0 ? (
+                          <p style={{ padding: '20px', textAlign: 'center', color: '#666' }}>Nenhum código gerado ainda</p>
+                        ):(
+                          invites.map((invite) => (
+                            <div className='invites-table-content' key={invite.id}>
+                              <div className='invites-table-content-code'>{invite.code}</div>
+                              <div className='invites-table-content-status'>
+                                <span className={invite.isUsed ? 'status-utilizado' : 'status-disponivel'}> 
+                                  {invite.isUsed ? 'UTILIZADO' : 'DISPONÍVEL'}
+                                </span>
+                              </div>
+                              <div className='invites-table-content-actions'>
+                                <button onClick={() => handleDeleteCode(invite.id)}>EXCLUIR</button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
               )
-              }
+            )}
+
+            {/* MODAL DE CÓDIGO GERADO */}
             {invitePopup &&
             <>
               <div className='popup-container'>
@@ -281,19 +351,13 @@ export default function GestaoConteudo({
               </div>
             </>
             }
-            {noticias && 
-            <GestaoNoticias />
-            }
-            {eventos && <GestaoEventos />
-            }
-            {revistasEbooks && 
-            <p>Gestão de Revistas/Ebooks - Em construção...</p>
-            }
-            {documentosPublicos && 
-            <p>Gestão de Documentos Públicos - Em construção...</p>
-            }
-            {blog && <GestaoBlogAdmin/>
-            }
+
+            {/* RESTANTE DAS ABAS */}
+            {noticias && <GestaoNoticias />}
+            {eventos && <GestaoEventos />}
+            {revistasEbooks && <p>Gestão de Revistas/Ebooks - Em construção...</p>}
+            {documentosPublicos && <p>Gestão de Documentos Públicos - Em construção...</p>}
+            {blog && <GestaoBlogAdmin/>}
           </>
         </section>
       </div>
