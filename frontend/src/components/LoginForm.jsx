@@ -31,7 +31,7 @@ export default function LoginForm() {
         if (data.user.role === 'ADMIN') {
           navigate('/dashboard/admin');
         } else if (data.user.role === 'MEMBER') {
-          navigate('/dashboard/member');
+          navigate(`/dashboard/member/${data.user.id}`);
         } else {
           alert('Você não tem permissão para acessar esse portal');
         }

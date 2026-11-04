@@ -68,7 +68,7 @@ function App() {
 
         {/* ROTAS PROTEGIDAS - MEMBER */}
         <Route
-          path="/dashboard/member"
+          path="/dashboard/member/:id"
           element={
             <ProtectedRoutes roleExigido="MEMBER">
               <DashboardMember />

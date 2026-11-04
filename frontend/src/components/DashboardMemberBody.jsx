@@ -1,5 +1,5 @@
 import './DashboardMemberBody.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import VisaoGeral from './elements/VisaoGeral.jsx';
 import GestaoConteudo from './elements/GestaoConteudo.jsx';
 import CriarPost from './elements/CriarPost.jsx';
@@ -8,8 +8,9 @@ import MembroConta from './elements/MembroConta.jsx';
 import MinhaConta from './elements/MembroConta.jsx';
 import CriarArtigo from './elements/CriarArtigo.jsx';
 import EditarArtigo from './elements/EditarArtigo.jsx';
+import { useParams } from 'react-router-dom';
 
-
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export default function DashboardMemberBody() {
   const [visaoGeral, setVisaoGeral] = useState(true);
@@ -21,11 +22,38 @@ export default function DashboardMemberBody() {
   const [criarArtigo, setCriarArtigo] = useState(false);
   const [editarArtigo, setEditarArtigo] = useState(false);
   const [EditandoArtigoID, setEditandoArtigo] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const { id } = useParams();
 
   const nomeCompleto = localStorage.getItem('nomeCompleto');
   const primeiroNome =nomeCompleto? nomeCompleto.split(' ')[0]: '';
   const primeiraLetra = primeiroNome.charAt(0).toUpperCase();
-  const ultimoNome =nomeCompleto? nomeCompleto.split(' ')[nomeCompleto.split(' ').length - 1]: '';  
+  const ultimoNome = nomeCompleto ? nomeCompleto.split(' ')[nomeCompleto.split(' ').length - 1] : '';  
+  
+  useEffect(() => {
+    const dadosUser = async () => {
+      try {
+        const response = await fetch(`${apiURL}/api/users/me/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (response.ok) {
+          const dados = await response.json();
+
+          if (dados.avatarUrl) {
+            setAvatarUrl(dados.avatarUrl);
+          }
+        }
+
+      } catch (error) {
+        console.error("Erro ao buscar a foto do usuario.", error);
+      }
+    };
+
+    dadosUser();
+  }, [id])
 
 
   const handleVisaoGeral = (e) => {
@@ -123,7 +151,9 @@ export default function DashboardMemberBody() {
       <aside className="dashboard-member-aside">
         <div className="dashboard-member-aside-title">
           <div className="dashboard-member-aside-title-logo">
-            {primeiraLetra}
+            {avatarUrl ? (
+              <img src={`${apiURL}${avatarUrl}`} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (primeiraLetra)}
           </div>
           <div className='dashboard-member-aside-title-content'>
             <strong className="dashboard-member-aside-title-content-name">Dr(a) {primeiroNome} {ultimoNome}</strong>
@@ -146,7 +176,7 @@ export default function DashboardMemberBody() {
               <path d="M4 8h16"></path>
               <path d="M8 14h8"></path>
               <path d="M8 18h8"></path>
-            </svg>            
+            </svg>             
             <p className='dashboard-member-aside-nav-geral'>Gestão de Conteúdo</p>
             <p className='dashboard-member-aside-nav-resp'>Conteúdo</p>
           </a>
