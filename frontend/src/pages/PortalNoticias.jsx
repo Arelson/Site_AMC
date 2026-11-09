@@ -118,7 +118,19 @@ export default function PortalNoticias() {
         )}
 
         {!loading && !erro && noticias.map((noticia) => {
-          const dataCard = new Date(noticia.createdAt).toLocaleDateString('pt-BR', {
+          // Converte a data do banco para objeto Date do JavaScript
+          const dataCriacao = new Date(noticia.createdAt);
+          const hoje = new Date();
+          
+          // Calcula a diferença em milissegundos
+          const diferencaTempo = hoje.getTime() - dataCriacao.getTime();
+          // Converte a diferença de milissegundos para dias
+          const diferencaDias = Math.floor(diferencaTempo / (1000 * 3600 * 24));
+          
+          // Lógica: Se a notícia foi criada a 30 dias ou menos, é destaque!
+          const ehDestaque = diferencaDias <= 30;
+
+          const dataCard = dataCriacao.toLocaleDateString('pt-BR', {
             day: '2-digit', month: 'short', year: 'numeric',
           });
 
@@ -130,7 +142,12 @@ export default function PortalNoticias() {
                   alt={noticia.title} 
                   className="card-imagem"
                 />
-                <span className="tag-destaque">Destaque</span>
+                {/* Renderização Condicional: Só aparece se 'ehDestaque' for true */}
+                {ehDestaque && (
+                  <span className="tag-destaque" style={{ backgroundColor: '#eab308' }}>
+                    Recente
+                  </span>
+                )}
               </div>
 
               <div className="card-conteudo">

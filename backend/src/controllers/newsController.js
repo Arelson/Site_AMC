@@ -242,3 +242,38 @@ export const getNewsById = async (req, res) => {
       .json({ error: "Erro interno ao processar a requisição." });
   }
 };
+
+export const updateStatusNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const statusValidos = ["PUBLICADO", "RASCUNHO", "OCULTO"];
+    if (!statusValidos.includes(status)) {
+      return res.status(400).json({ error: "Status inválido para notícia." });
+    }
+
+    const noticiaExiste = await prisma.news.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!noticiaExiste) {
+      return res
+        .status(404)
+        .json({ error: "Notícia não encontrada no banco de dados." });
+    }
+
+    const noticiaAtualizada = await prisma.news.update({
+      where: { id: Number(id) },
+      data: { status },
+    });
+
+    return res.status(200).json({
+      message: "Status atualizado com sucesso!",
+      noticia: noticiaAtualizada,
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar status da notícia:", error);
+    return res.status(500).json({ error: "Erro interno no servidor." });
+  }
+}
