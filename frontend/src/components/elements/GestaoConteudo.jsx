@@ -8,6 +8,7 @@ import GestaoEventos from '../utils/GestaoEventos.jsx'
 import GestaoBlogAdmin from '../utils/GestaoBlogAdm.jsx';
 import GestaoArtigosMember from '../utils/GestaoArtigoMember.jsx';
 import FormCriarMembro from './CriarMembro.jsx';
+import FormEditarMembro from './EditarMembro.jsx';
 
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -33,6 +34,7 @@ export default function GestaoConteudo({
   const [codeGenerated, setCodeGenerated] = useState('');
   const [copy, setCopy] = useState(false);
   const [criandoMembro, setCriandoMembro] = useState(false);
+  const [EditandoMembroId, setEditandoMembrosId] = useState(null)
   
   // Novos Estados para a reorganização
   const [abaMembro, setAbaMembro] = useState('BLOG'); // Abas do Membro Comum
@@ -130,6 +132,31 @@ export default function GestaoConteudo({
     }
   }
 
+  const handleDeleteMember = async (id) => {
+    if (!window.confirm("Tem certeza que deseja deletar esse membro?")) return;
+
+    try {
+      const response = await fetch(`${apiURL}/api/admin/member/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+
+      if (response.ok) {
+        alert('Membro deletado com sucesso')
+        setMembrosLista(membrosLista.filter(membro => membro.id !== id))
+      } else {
+        const erroData = await response.json()
+        alert(`Error: ${erroData.error},  Erro ao deletar`)
+      }
+      
+    } catch (error) {
+      console.error("Erro ao deletar o membro", error);
+      alert('Erro interno');
+    }
+  }
+
   // Funções de Navegação Principal
   const handleMembroClick = () => {
     setMembros(true);
@@ -213,25 +240,28 @@ export default function GestaoConteudo({
       {/* ==================================================== */}
       {/* ================= PAINEL DO ADMIN ================== */}
       {/* ==================================================== */}
-      {adm &&
-      <div className='gestao-conteudo'>
-        <DashboardHeader />
-        <section className='gestao-conteudo-content'>
-          <div className='gestao-conteudo-content-title-adm'>
-            <h1 onClick={handleMembroClick} className={`gestao-conteudo-content-title-adm-h1 ${membros ? 'Active' : 'Inactive'}`}>MEMBROS</h1>
-            <h1 onClick={handleNoticiaClick} className={`gestao-conteudo-content-title-adm-h1 ${noticias ? 'Active' : 'Inactive'}`}>NOTÍCIAS</h1>
-            <h1 onClick={handleEventoClick} className={`gestao-conteudo-content-title-adm-h1 ${eventos ? 'Active' : 'Inactive'}`}>EVENTOS</h1>
-            <h1 onClick={handleRevistasEbooksClick} className={`gestao-conteudo-content-title-adm-h1 ${revistasEbooks ? 'Active' : 'Inactive'}`}>REVISTAS/EBOOKS</h1>
-            <h1 onClick={handleDocumentosPublicosClick} className={`gestao-conteudo-content-title-adm-h1 ${documentosPublicos ? 'Active' : 'Inactive'}`}>DOCUMENTOS PÚBLICOS</h1>
-            <h1 onClick={handleBlogClick} className={`gestao-conteudo-content-title-adm-h1 ${blog ? 'Active' : 'Inactive'}`}>BLOG</h1>
-          </div>
-          <hr className='linha-divisoria'/>
+      {adm && (
+        <div className='gestao-conteudo'>
+          <DashboardHeader />
+          <section className='gestao-conteudo-content'>
+            <div className='gestao-conteudo-content-title-adm'>
+              <h1 onClick={handleMembroClick} className={`gestao-conteudo-content-title-adm-h1 ${membros ? 'Active' : 'Inactive'}`}>MEMBROS</h1>
+              <h1 onClick={handleNoticiaClick} className={`gestao-conteudo-content-title-adm-h1 ${noticias ? 'Active' : 'Inactive'}`}>NOTÍCIAS</h1>
+              <h1 onClick={handleEventoClick} className={`gestao-conteudo-content-title-adm-h1 ${eventos ? 'Active' : 'Inactive'}`}>EVENTOS</h1>
+              <h1 onClick={handleRevistasEbooksClick} className={`gestao-conteudo-content-title-adm-h1 ${revistasEbooks ? 'Active' : 'Inactive'}`}>REVISTAS/EBOOKS</h1>
+              <h1 onClick={handleDocumentosPublicosClick} className={`gestao-conteudo-content-title-adm-h1 ${documentosPublicos ? 'Active' : 'Inactive'}`}>DOCUMENTOS PÚBLICOS</h1>
+              <h1 onClick={handleBlogClick} className={`gestao-conteudo-content-title-adm-h1 ${blog ? 'Active' : 'Inactive'}`}>BLOG</h1>
+            </div>
+            <hr className='linha-divisoria'/>
 
-          <>
-            {/* GESTÃO DE MEMBROS ATIVA */}
+            {/* ================= ABA DE MEMBROS ================= */}
             {membros && (
-              criandoMembro ? (
-                // Mostra o formulário e passa a função para voltar
+              EditandoMembroId ? (
+                <FormEditarMembro 
+                  membroId={EditandoMembroId}
+                  onVoltar={() => setEditandoMembrosId(null)} 
+                />
+              ) : criandoMembro ? (
                 <FormCriarMembro onVoltar={() => setCriandoMembro(false)} />
               ) : (
                 <>
@@ -247,7 +277,6 @@ export default function GestaoConteudo({
                     </div>
                   </div>
 
-                  {/* SUB-ABAS DA GESTÃO DE MEMBROS (Reaproveitando seu CSS) */}
                   <div className='gestao-conteudo-content-title-adm' style={{ marginTop: '20px', marginBottom: '10px' }}>
                     <h1 
                       onClick={() => setAbaMembrosAdmin('REGISTRADOS')} 
@@ -265,12 +294,10 @@ export default function GestaoConteudo({
                     </h1>
                   </div>
 
-                  {/* ================= ABA: MEMBROS REGISTRADOS ================= */}
                   {abaMembrosAdmin === 'REGISTRADOS' && (
                     <div className='invites'>
                       <h3 className='invites-title'>Lista de Membros Atuais</h3>
                       
-                      {/* Grid de 4 colunas (adaptado inline do seu CSS) */}
                       <div className='invites-table-header' style={{ gridTemplateColumns: '2fr 2fr 2fr 1fr' }}>
                         <span>NOME / DR(A).</span>
                         <span>CARGO / POSIÇÃO</span>
@@ -292,8 +319,18 @@ export default function GestaoConteudo({
                                 {membro.email || (membro.user && membro.user.email) || 'Sem e-mail'}
                               </div>
                               <div className='invites-table-content-actions'>
-                                <button style={{ backgroundColor: '#0056b3' }}>EDITAR</button>
-                                {/* <button style={{ backgroundColor: '#dc3545', marginLeft: '5px' }}>EXCLUIR</button> */}
+                                <button 
+                                  style={{ backgroundColor: '#0056b3', display:'flex' }} 
+                                  onClick={() => setEditandoMembrosId(membro.id)}
+                                >
+                                  EDITAR
+                                </button>
+                                <button 
+                                  style={{ backgroundColor: '#f9003b' , color: '#ffff', display:'flex'}} 
+                                  onClick={() => handleDeleteMember(membro.id)}
+                                >
+                                  EXCLUIR
+                                </button>
                               </div>
                             </div>
                           ))
@@ -302,7 +339,6 @@ export default function GestaoConteudo({
                     </div>
                   )}
 
-                  {/* ================= ABA: CÓDIGOS DE CONVITE ================= */}
                   {abaMembrosAdmin === 'CODIGOS' && (
                     <div className='invites'>
                       <h3 className='invites-title'>Códigos de Convite</h3>
@@ -333,35 +369,32 @@ export default function GestaoConteudo({
                       </div>
                     </div>
                   )}
+
+                  {invitePopup && (
+                    <div className='popup-container'>
+                      <div className='popup-content'>
+                        <h2>Código Gerado!</h2>
+                        <p>Envie o código abaixo para o novo membro se cadastrar: </p>
+                        <div className='popup-content-code'>{codeGenerated}</div>
+                        <button className='popup-content-buttonClose' onClick={() => setInvitePopup(false)}>X</button>
+                        <button className={`popup-content-buttonCopy ${copy ? 'copiado' : ''}`} onClick={handleCopiarCodigo}>{copy? 'COPIADO!': `COPIAR CÓDIGO` }</button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )
             )}
 
-            {/* MODAL DE CÓDIGO GERADO */}
-            {invitePopup &&
-            <>
-              <div className='popup-container'>
-                <div className='popup-content'>
-                  <h2>Código Gerado!</h2>
-                  <p>Envie o código abaixo para o novo membro se cadastrar:</p>
-                  <div className='popup-content-code'>{codeGenerated}</div>
-                  <button className='popup-content-buttonClose' onClick={() => setInvitePopup(false)}>X</button>
-                  <button className={`popup-content-buttonCopy ${copy ? 'copiado' : ''}`} onClick={handleCopiarCodigo}>{copy? 'COPIADO!': `COPIAR CÓDIGO`}</button>
-                </div>
-              </div>
-            </>
-            }
-
-            {/* RESTANTE DAS ABAS */}
+            {/* ================= OUTRAS ABAS (Isoladas fora de "membros") ================= */}
             {noticias && <GestaoNoticias />}
             {eventos && <GestaoEventos />}
-            {revistasEbooks && <p>Gestão de Revistas/Ebooks - Em construção...</p>}
-            {documentosPublicos && <p>Gestão de Documentos Públicos - Em construção...</p>}
-            {blog && <GestaoBlogAdmin/>}
-          </>
-        </section>
-      </div>
-      }
+            {revistasEbooks && <p style={{ padding: '20px' }}>Gestão de Revistas/Ebooks - Em construção...</p>}
+            {documentosPublicos && <p style={{ padding: '20px' }}>Gestão de Documentos Públicos - Em construção...</p>}
+            {blog && <GestaoBlogAdmin />}
+
+          </section>
+        </div>
+      )}
     </>
   );
 }

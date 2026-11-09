@@ -133,8 +133,8 @@ export default function PortalEquipe() {
               
               <div className="equipe-card-foto">
                 {/* Se o membro não tiver foto cadastrada, mostra a primeira letra do nome */}
-                {membro.user?.avatarUrl ? (
-                  <img src={`${apiURL}${membro.user?.avatarUrl}`} 
+                {membro.user?.avatarUrl || membro.avatarUrl ? (
+                  <img src={`${apiURL}${membro.user?.avatarUrl || membro.avatarUrl}`} 
                       alt={`Foto de ${membro.name}`} />
                 ) : (
                   <div className="equipe-foto-placeholder">

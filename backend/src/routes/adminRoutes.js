@@ -1,5 +1,5 @@
 import express from "express";
-import { generateInviteCode, getInvites, deleteInvite, updateUser, getAllPostsAdmin, updatePostStatusAdmin, deletePostAdmin, criarMembroAdmin, atualizarMembroAdmin } from "../controllers/adminController.js";
+import { generateInviteCode, getInvites, deleteInvite, updateUser, getAllPostsAdmin, updatePostStatusAdmin, deletePostAdmin, criarMembroAdmin, atualizarMembroAdmin, deleteMember } from "../controllers/adminController.js";
 import { verifyToken, isAdmin} from "../middlewares/authmiddleware.js";
 import { uploadAvatar } from "../middlewares/uploadMiddleware.js";
 
@@ -16,6 +16,7 @@ router.get('/posts', isAdmin, getAllPostsAdmin);
 router.patch('/posts/:id/status', isAdmin, updatePostStatusAdmin);
 router.delete('/posts/:id', isAdmin, deletePostAdmin);
 router.post('/members', isAdmin, uploadAvatar.single('foto'), criarMembroAdmin);
-router.patch('/members', isAdmin, uploadAvatar.single('foto'), atualizarMembroAdmin);
+router.patch('/members/:id', isAdmin, uploadAvatar.single('foto'), atualizarMembroAdmin);
+router.delete('/member/:id',isAdmin, verifyToken, deleteMember);
 
 export default router;

@@ -237,3 +237,18 @@ export const atualizarMembroAdmin = async (req, res) => {
     return res.status(500).json({ error: "Erro interno ao atualizar membro." });
   }
 };
+
+export const deleteMember = async (req, res) => {
+  const { id } = req.params;
+  console.log(req.body)
+  try {
+    const member = await prisma.member.delete({
+      where: {id:Number(id)},
+    })
+
+    return res.status(200).json({mensagem: "Membro deletado com sucesso!"})
+  } catch (error) {
+    console.error("Erro ao deletar membro", error);
+    return res.status(500).json({error:"Erro no servidor"})
+  }
+}
