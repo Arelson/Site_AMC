@@ -11,7 +11,7 @@ import articleRoutes from './routes/articleRoutes.js'
 import path from 'path';
 
 const app = express();
-const origin = import.meta.env.CORS_LINK
+const origin = process.env.CORS_LINK
 
 app.use(
   cors({
