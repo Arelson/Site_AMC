@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import prisma from '../database/prisma.js';
+import { logAction } from '../utils/logger.js';
 import jwt from 'jsonwebtoken';
 
 export const generateInviteCode = async (req, res) => {
@@ -14,6 +15,16 @@ export const generateInviteCode = async (req, res) => {
         isUsed: false
       }
     })
+
+    await logAction(
+      req.userId,
+      'CREATE',
+      'InviteCode',
+      newInvite.id,
+      {title: 'Novo convite criado'}
+    )
+
+
     return res.status(201).json(newInvite);
   } catch (error) {
     return res.status(500).json({ error: 'Erro ao gerar código de convite.'});
@@ -39,6 +50,14 @@ export const deleteInvite = async (req, res) => {
     await prisma.inviteCode.delete({
       where: { id: Number(req.params.id) }
     });
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'InviteCode',
+      {title: 'Convite deletado'}
+    )
+
     return res.status(200).json({ message: 'Código excluído com sucesso!' })
   } catch (error) {
     console.error(error);
@@ -122,6 +141,14 @@ export const updatePostStatusAdmin = async (req, res) => {
       data: { status }
     });
 
+    await logAction(
+      req.userId,
+      'UPDATE',
+      'Post',
+      postAtualizado.id,
+      {title: `Estatus atualizado para: ${status}`}
+    )
+
     return res.status(200).json({ 
       message: `Status atualizado para ${status} com sucesso!`, 
       post: postAtualizado 
@@ -140,6 +167,13 @@ export const deletePostAdmin = async (req, res) => {
     await prisma.post.delete({
       where: { id: Number(id) }
     });
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'Post',
+      {title: 'Post deletado'}
+    )
     
     return res.status(200).json({ message: 'Publicação excluída com sucesso!' });
   } catch (error) {
@@ -172,6 +206,14 @@ export const criarMembroAdmin = async (req, res) => {
         avatarUrl: avatarUrlDb, // 👈 Salva na tabela Member
       },
     });
+
+    await logAction(
+      req.userId,
+      'CREATE',
+      'Member',
+      novoMembro.id,
+      {title: 'Membro criado'}
+    )
 
     return res.status(201).json(novoMembro);
   } catch (error) {
@@ -227,6 +269,14 @@ export const atualizarMembroAdmin = async (req, res) => {
       }
     }
 
+    await logAction(
+      req.userId,
+      'UPDATE',
+      'Membro',
+      membroAtualizado.id,
+      {title: 'Membro atualizado'}
+    )
+
     return res.status(200).json({
       message: 'Membro atualizado com sucesso!',
       membro: membroAtualizado
@@ -245,6 +295,13 @@ export const deleteMember = async (req, res) => {
     const member = await prisma.member.delete({
       where: {id:Number(id)},
     })
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'Membro',
+      {title: 'Membro deletado'}
+    )
 
     return res.status(200).json({mensagem: "Membro deletado com sucesso!"})
   } catch (error) {
