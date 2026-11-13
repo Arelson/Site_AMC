@@ -1,0 +1,17 @@
+name: Deploy to VPS
+on:
+  push:
+    branches: [ main ] # Altere para master se for o caso
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executar script no VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: root
+          key: ${{ secrets.VPS_KEY }}
+          port: 22022
+          script: /var/www/amc-portal/deploy.sh
