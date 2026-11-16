@@ -86,6 +86,8 @@ export default function NoticiaPage() {
   const inicialAutor = nomeAutor && typeof nomeAutor === 'string' 
     ? nomeAutor.charAt(0).toUpperCase() 
     : 'A';
+  
+  const urlPdf = `${apiURL}${noticia.pdfUrl}`;
 
   return (
     <>
@@ -97,7 +99,11 @@ export default function NoticiaPage() {
         
         {/* Banner Principal */}
         {noticia.banner && (
-          <img src={noticia.banner} alt="Capa da notícia" className="noticia-banner" />
+          <img src={!noticia.banner 
+      ? 'https://via.placeholder.com/400x220' 
+      : noticia.banner.startsWith('http') 
+        ? noticia.banner 
+        : `${apiURL}${noticia.banner}`} alt="Capa da notícia" className="noticia-banner" />
         )}
 
         {/* Tags / Palavras Chave */}
@@ -130,6 +136,21 @@ export default function NoticiaPage() {
           className="noticia-conteudo-html"
           dangerouslySetInnerHTML={{ __html: noticia.content }} 
         />
+
+        {noticia.pdfUrl && (
+          <>
+          <h3 style={{ color: '#0f172a', marginBottom: '15px' }}>Documento Completo</h3>
+            <div className="pdf-viewer-container">
+                <iframe className="pdf-iframe"
+                    src={`${urlPdf}#view=FitH`}                                                         
+                    width="100%" 
+                    height="100%" 
+                    title="Visualizador do Artigo"
+                    allowFullScreen
+                    />
+            </div>
+          </>
+        )}
         
       </main>
       <Footer />
