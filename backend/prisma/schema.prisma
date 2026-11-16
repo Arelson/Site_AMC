@@ -92,6 +92,7 @@ model News {
   title     String // Título da Notícia
   content   String   @db.Text // Conteúdo Rico (HTML do Tiptap)
   banner    String? // URL ou Base64 da Capa da Notícia
+  pdfUrl    String?
   keywords  String? // Armazenará a Categoria AMC (ex: CIÊNCIA) + tags extras
   status    String   @default("RASCUNHO") // "RASCUNHO" ou "PUBLICADO"
   createdAt DateTime @default(now()) // Usado para a regra de exclusão/expiração de 2 anos

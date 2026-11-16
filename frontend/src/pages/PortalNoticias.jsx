@@ -138,7 +138,11 @@ export default function PortalNoticias() {
             <article key={noticia.id} className="noticia-card">
               <div className="card-imagem-wrapper">
                 <img 
-                  src={noticia.banner || 'https://via.placeholder.com/400x220'} 
+                  src={!noticia.banner 
+                        ? 'https://via.placeholder.com/400x220' 
+                        : noticia.banner.startsWith('http') 
+                          ? noticia.banner 
+                      : `${apiURL}${noticia.banner }`} 
                   alt={noticia.title} 
                   className="card-imagem"
                 />

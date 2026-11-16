@@ -1,25 +1,66 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import prisma from "../database/prisma.js";
+
+// Configuração para encontrar a pasta raiz do backend e apagar arquivos físicos
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Função auxiliar para deletar arquivos físicos e economizar espaço no VPS
+const apagarArquivoFisico = (caminhoRelativo) => {
+
+  if (!caminhoRelativo || !caminhoRelativo.startsWith("/uploads")) return;
+  
+  if (!caminhoRelativo) return;
+  try {
+    // Remove a barra inicial se existir (Ex: "/uploads/news/arquivo.jpg" vira "uploads/news/arquivo.jpg")
+    const urlLimpa = caminhoRelativo.replace(/^\//, "");
+    const caminhoAbsoluto = path.resolve(__dirname, "..", urlLimpa);
+
+    if (fs.existsSync(caminhoAbsoluto)) {
+      fs.unlinkSync(caminhoAbsoluto);
+      console.log(`🗑️ Arquivo apagado do servidor: ${caminhoAbsoluto}`);
+    }
+  } catch (error) {
+    console.error(`Erro ao tentar apagar o arquivo ${caminhoRelativo}:`, error);
+  }
+};
 
 export const createNews = async (req, res) => {
   try {
-    const { titulo, corpo, banner, palavrasChave } = req.body;
+    // 1. Recebe também o bannerUrl (caso o admin tenha colado um link)
+    const { titulo, corpo, palavrasChave, bannerUrl } = req.body;
     const userId = req.userId;
 
-    // Validação básica obrigatória
-    if (!titulo || !corpo) {
+    if (!titulo || !corpo || corpo === "<p></p>") {
       return res
         .status(400)
         .json({ error: "O título e o conteúdo da notícia são obrigatórios." });
     }
 
-    // Salvando exclusivamente na tabela News
+    // 2. Começa assumindo a URL digitada (se houver) ou null (se for apenas texto do Tiptap)
+    let bannerPath = bannerUrl ? bannerUrl.trim() : null;
+    let pdfPath = null;
+
+    // 3. Se o admin subiu um arquivo físico, o arquivo tem prioridade e sobrescreve
+    if (req.files) {
+      if (req.files.banner && req.files.banner.length > 0) {
+        bannerPath = `/uploads/news/${req.files.banner[0].filename}`;
+      }
+      if (req.files.pdf && req.files.pdf.length > 0) {
+        pdfPath = `/uploads/news/${req.files.pdf[0].filename}`;
+      }
+    }
+
     const novaNoticia = await prisma.news.create({
       data: {
         title: titulo,
         content: corpo,
-        banner: banner || null,
+        banner: bannerPath,
+        pdfUrl: pdfPath,
         keywords: palavrasChave || null,
-        status: "PUBLICADO", // Já entra ativa no portal
+        status: "PUBLICADO",
         authorId: userId,
       },
     });
@@ -42,6 +83,21 @@ export const deleteNews = async (req, res) => {
     if (isNaN(newsId)) {
       return res.status(400).json({ error: "ID de notícia inválido." });
     }
+
+    // 1. Busca a notícia antes para pegar os caminhos dos arquivos
+    const noticia = await prisma.news.findUnique({ where: { id: newsId } });
+
+    if (!noticia) {
+      return res
+        .status(404)
+        .json({ error: "Notícia não encontrada ou já excluída." });
+    }
+
+    // 2. Faxina física: apaga a foto e o PDF do HD do servidor
+    apagarArquivoFisico(noticia.banner);
+    apagarArquivoFisico(noticia.pdfUrl);
+
+    // 3. Exclui o registro do banco de dados
     await prisma.news.delete({
       where: { id: newsId },
     });
@@ -51,17 +107,70 @@ export const deleteNews = async (req, res) => {
     });
   } catch (error) {
     console.error("Erro ao deletar notícia:", error);
-
-    // Tratamento caso o registro já não exista no banco
-    if (error.code === "P2025") {
-      return res
-        .status(404)
-        .json({ error: "Notícia não encontrada ou já excluída." });
-    }
-
     return res
       .status(500)
       .json({ error: "Falha interna ao tentar deletar o registro." });
+  }
+};
+
+export const updateNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, corpo, palavrasChave } = req.body;
+    const newsId = Number(id);
+
+    if (isNaN(newsId)) return res.status(400).json({ error: "ID inválido." });
+    if (!titulo || !corpo || corpo === "<p></p>") {
+      return res
+        .status(400)
+        .json({ error: "O título e o conteúdo não podem ficar vazios." });
+    }
+
+    // 1. Busca a notícia antiga para resgatar os arquivos atuais
+    const noticiaAntiga = await prisma.news.findUnique({
+      where: { id: newsId },
+    });
+    if (!noticiaAntiga) {
+      return res.status(404).json({ error: "Notícia não encontrada." });
+    }
+
+    // Inicia os caminhos com o que já existe no banco
+    let bannerPath = noticiaAntiga.banner;
+    let pdfPath = noticiaAntiga.pdfUrl;
+
+    // 2. Se um NOVO banner for enviado, apaga o velho e substitui pelo novo
+    if (req.files && req.files.banner && req.files.banner.length > 0) {
+      if (noticiaAntiga.banner) apagarArquivoFisico(noticiaAntiga.banner);
+      bannerPath = `/uploads/news/${req.files.banner[0].filename}`;
+    }
+
+    // 3. Se um NOVO PDF for enviado, apaga o velho e substitui pelo novo
+    if (req.files && req.files.pdf && req.files.pdf.length > 0) {
+      if (noticiaAntiga.pdfUrl) apagarArquivoFisico(noticiaAntiga.pdfUrl);
+      pdfPath = `/uploads/news/${req.files.pdf[0].filename}`;
+    }
+
+    // 4. Atualiza no Prisma
+    const noticiaAtualizada = await prisma.news.update({
+      where: { id: newsId },
+      data: {
+        title: titulo,
+        content: corpo,
+        banner: bannerPath,
+        pdfUrl: pdfPath,
+        keywords: palavrasChave || null,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Notícia atualizada com sucesso!",
+      news: noticiaAtualizada,
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar notícia:", error);
+    return res
+      .status(500)
+      .json({ error: "Erro interno do servidor ao processar a atualização." });
   }
 };
 
@@ -71,23 +180,19 @@ export const getPublicPortalNews = async (req, res) => {
     const search = req.query.search || "";
     const category = req.query.category || "TODAS";
 
-    const limit = 9; // Grid estruturado 3x3 para o frontend
+    const limit = 9;
     const skip = (page - 1) * limit;
 
-    // APLICANDO A REGRA DOS 2 ANOS:
     const dataLimite = new Date();
     dataLimite.setFullYear(dataLimite.getFullYear() - 2);
 
-    // Constrói o objeto de critérios/filtros dinâmicos do Prisma
     const filtrosWhere = {
-      createdAt: { gte: dataLimite }, // Apenas registros cujo createdAt seja maior ou igual à data limite
-      status: "PUBLICADO", // Apenas notícias que não estão em rascunho
+      createdAt: { gte: dataLimite },
+      status: "PUBLICADO",
     };
 
-    // Aplica a busca por termo no título, caso tenha sido digitada
     if (search.trim()) {
       const termoFormatado = search.trim().split(/\s+/).join(" | ");
-
       filtrosWhere.OR = [
         { title: { search: termoFormatado } },
         { content: { search: termoFormatado } },
@@ -95,7 +200,6 @@ export const getPublicPortalNews = async (req, res) => {
       ];
     }
 
-    // Aplica o filtro de categorias da AMC salvos na string keywords
     if (category !== "TODAS") {
       filtrosWhere.keywords = {
         contains: category,
@@ -103,22 +207,16 @@ export const getPublicPortalNews = async (req, res) => {
       };
     }
 
-    // Executa a busca paginada no banco
     const noticias = await prisma.news.findMany({
       where: filtrosWhere,
       skip: skip,
       take: limit,
       include: {
-        author: {
-          select: { name: true }, // Traz o nome do autor associado
-        },
+        author: { select: { name: true } },
       },
-      orderBy: {
-        createdAt: "desc", // Notícias fresquinhas primeiro
-      },
+      orderBy: { createdAt: "desc" },
     });
 
-    // Conta o total de posts válidos (dentro dos filtros) para controlar a paginação no front
     const totalNoticias = await prisma.news.count({ where: filtrosWhere });
     const totalPaginas = Math.ceil(totalNoticias / limit);
 
@@ -137,18 +235,12 @@ export const getPublicPortalNews = async (req, res) => {
 
 export const getAdminNews = async (req, res) => {
   try {
-    //const userId = req.userId;
-
     const dataLimite = new Date();
     dataLimite.setFullYear(dataLimite.getFullYear() - 2);
 
     const noticiasAdmin = await prisma.news.findMany({
-      where: {
-        createdAt: { gte: dataLimite },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+      where: { createdAt: { gte: dataLimite } },
+      orderBy: { createdAt: "desc" },
     });
 
     return res.status(200).json(noticiasAdmin);
@@ -160,72 +252,12 @@ export const getAdminNews = async (req, res) => {
   }
 };
 
-export const updateNews = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { titulo, corpo, banner, palavrasChave } = req.body;
-    const newsId = Number(id);
-
-    // 1. Validação de segurança do ID passado na URL
-    if (isNaN(newsId)) {
-      return res
-        .status(400)
-        .json({ error: "ID de notícia inválido para atualização." });
-    }
-
-    // 2. Validação de campos obrigatórios
-    if (!titulo || !corpo || corpo === "<p></p>") {
-      return res
-        .status(400)
-        .json({
-          error: "O título e o conteúdo da notícia não podem ficar vazios.",
-        });
-    }
-
-    // 3. Atualização exclusiva na tabela News
-    const noticiaAtualizada = await prisma.news.update({
-      where: {
-        id: newsId,
-      },
-      data: {
-        title: titulo,
-        content: corpo,
-        banner: banner || null,
-        keywords: palavrasChave || null,
-        // Opcional: status: status || 'PUBLICADO' (se quiser permitir alterar para rascunho)
-      },
-    });
-
-    return res.status(200).json({
-      message: "Notícia atualizada com sucesso!",
-      news: noticiaAtualizada,
-    });
-  } catch (error) {
-    console.error("Erro ao atualizar notícia:", error);
-
-    // Tratamento de erro caso a notícia tenha sido excluída por outro admin simultaneamente
-    if (error.code === "P2025") {
-      return res
-        .status(404)
-        .json({
-          error: "Erro ao atualizar: Registro de notícia não encontrado.",
-        });
-    }
-
-    return res
-      .status(500)
-      .json({ error: "Erro interno do servidor ao processar a atualização." });
-  }
-};
-
 export const getNewsById = async (req, res) => {
   try {
     const { id } = req.params;
     const noticia = await prisma.news.findUnique({
       where: { id: Number(id) },
-      include: {
-        author: { select: { name: true } },
-      },
+      include: { author: { select: { name: true } } },
     });
 
     if (!noticia) {
@@ -276,4 +308,4 @@ export const updateStatusNews = async (req, res) => {
     console.error("Erro ao atualizar status da notícia:", error);
     return res.status(500).json({ error: "Erro interno no servidor." });
   }
-}
+};

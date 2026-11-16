@@ -12,11 +12,14 @@ import MathExtension from '@aarkue/tiptap-math-extension';
 import { 
   Bold, Italic, Underline as UnderlineIcon, Quote, Code, List, 
   ListOrdered, AlignLeft, AlignCenter, AlignRight, AlignJustify, 
-  Link as LinkIcon, Video, Image as ImageIcon, Upload, Sigma, ArrowLeft 
+  Link as LinkIcon, Video, Image as ImageIcon, Upload, Sigma, ArrowLeft,
+  FileText // Adicionado icone para PDF
 } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import './CriarNoticia.css';
+
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 // Componente Interno: Barra de Ferramentas do Editor Tiptap
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
@@ -98,11 +101,17 @@ const MenuBar = ({ editor }) => {
 export default function CriarNoticia({ voltarParaLista }) {
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
-  const [banner, setBanner] = useState('');
+  
+  // Estados para suportar os Arquivos (File Objects)
+  const [bannerUrl, setBannerUrl] = useState('');
+  const [bannerFile, setBannerFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
+
   const [categoria, setCategoria] = useState('CIÊNCIA'); // Categoria padrão AMC
   const [tagsExtras, setTagsExtras] = useState('');
 
   const bannerInputRef = useRef(null);
+  const pdfInputRef = useRef(null); // Ref para o arquivo PDF
 
   const editor = useEditor({
     extensions: [
@@ -119,9 +128,20 @@ export default function CriarNoticia({ voltarParaLista }) {
   const handleBannerUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => setBanner(e.target.result); // Converte para string Base64
-      reader.readAsDataURL(file);
+      setBannerFile(file);
+      setBannerUrl(''); 
+    }
+  };
+
+  const handleBannerUrlChange = (e) => {
+    setBannerUrl(e.target.value);
+    if (bannerFile) setBannerFile(null);
+  };
+
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPdfFile(file); // Salva o arquivo real PDF para envio
     }
   };
 
@@ -131,27 +151,34 @@ export default function CriarNoticia({ voltarParaLista }) {
       return;
     }
 
-    // Formata a string final que irá para a coluna keywords: "CATEGORIA, TAG1, TAG2"
     const palavrasChaveFinais = tagsExtras.trim() 
       ? `${categoria}, ${tagsExtras.trim().toUpperCase()}`
       : categoria;
 
-    const payload = {
-      titulo,
-      corpo: conteudo,
-      banner,
-      palavrasChave: palavrasChaveFinais
-    };
+    // Criando o FormData (Necessário para enviar arquivos e texto juntos)
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('corpo', conteudo);
+    formData.append('palavrasChave', palavrasChaveFinais);
+
+    // Se o usuário selecionou um arquivo, anexa no FormData. O backend (Multer) pega daqui.
+    if (bannerFile) {
+      formData.append('banner', bannerFile);
+    }
+    if (pdfFile) {
+      formData.append('pdf', pdfFile);
+    }
 
     try {
       const token = localStorage.getItem('token');
+      // Ajuste na rota POST caso seja diferente: POST /api/admin/news 
       const response = await fetch(`${apiURL}/api/news/register`, {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
+          // ATENÇÃO: NÃO definimos 'Content-Type' aqui. O Fetch com FormData calcula o "boundary" automaticamente.
         },
-        body: JSON.stringify(payload)
+        body: formData
       }); 
 
       if (response.ok) {
@@ -190,23 +217,63 @@ export default function CriarNoticia({ voltarParaLista }) {
             onChange={(e) => setTitulo(e.target.value)} 
           />
 
-          {/* Upload e URL do Banner */}
-          <div className='opcoes-extras banner-area'>
+          {/* Upload OU URL do Banner + Upload de PDF */}
+          <div className='opcoes-extras banner-area' style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <input 
               type="text" 
               className="input-extra" 
-              placeholder="Cole a URL da Imagem de Capa (Banner)..." 
-              value={banner} 
-              onChange={(e) => setBanner(e.target.value)} 
+              style={{ flex: 2, minWidth: '220px' }}
+              placeholder={bannerFile ? `Arquivo selecionado: ${bannerFile.name}` : "Cole a URL da Capa ou carregue um arquivo 👉"} 
+              value={bannerUrl} 
+              onChange={handleBannerUrlChange} 
+              disabled={!!bannerFile}
             />
+            
             <button type="button" className="btn-upload-banner" onClick={() => bannerInputRef.current.click()}>
-              <Upload size={16} /> Carregar Arquivo
+              <Upload size={16} /> {bannerFile ? 'Trocar Capa' : 'Subir Capa'}
             </button>
+            {bannerFile && (
+              <button 
+                type="button" 
+                onClick={() => setBannerFile(null)} 
+                style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '0 10px', cursor: 'pointer' }}
+                title="Remover arquivo de capa"
+              >
+                ✕
+              </button>
+            )}
             <input 
               type="file" 
               accept="image/*" 
               ref={bannerInputRef} 
               onChange={handleBannerUpload} 
+              style={{ display: 'none' }} 
+            />
+
+            {/* Botão para Anexar PDF (Opcional) */}
+            <button 
+              type="button" 
+              className="btn-upload-banner" 
+              onClick={() => pdfInputRef.current.click()}
+              style={{ backgroundColor: pdfFile ? '#16a34a' : '#475569' }}
+            >
+              <FileText size={16} /> {pdfFile ? `PDF: ${pdfFile.name}` : 'Anexar PDF (Opcional)'}
+            </button>
+            {pdfFile && (
+              <button 
+                type="button" 
+                onClick={() => setPdfFile(null)} 
+                style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', padding: '0 10px', cursor: 'pointer' }}
+                title="Remover PDF"
+              >
+                ✕
+              </button>
+            )}
+            <input 
+              type="file" 
+              accept="application/pdf" 
+              ref={pdfInputRef} 
+              onChange={handlePdfUpload} 
               style={{ display: 'none' }} 
             />
           </div>
