@@ -19,5 +19,4 @@ router.delete('/posts/:id', isAdmin, deletePostAdmin);
 router.post('/members', isAdmin, uploadAvatar.single('foto'), criarMembroAdmin);
 router.patch('/members/:id', isAdmin, uploadAvatar.single('foto'), atualizarMembroAdmin);
 router.delete('/member/:id',isAdmin, verifyToken, deleteMember);
-router.get('/logs', verifyToken, getActionsLog);
 export default router;

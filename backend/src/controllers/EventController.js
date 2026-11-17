@@ -127,6 +127,7 @@ export const deleteEvent = async (req, res) => {
       req.userId,
       'DELETE',
       'Event',
+      null,
       {title: 'Evento deletado'}
     )
 
