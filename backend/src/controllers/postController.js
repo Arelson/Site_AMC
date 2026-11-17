@@ -146,6 +146,7 @@ export const deletePost = async (req, res) => {
       req.userId,
       'DELETE',
       'Post',
+      null,
       {title: 'Post deletado'}
     )
 

@@ -6,8 +6,9 @@ import userRoutes from './routes/userRoutes.js';
 import postVlogRoutes from './routes/postVlogRoutes.js';
 import inviteRoutes from './routes/inviteRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
-import eventRoutes from './routes/eventRoutes.js'
-import articleRoutes from './routes/articleRoutes.js'
+import eventRoutes from './routes/eventRoutes.js';
+import articleRoutes from './routes/articleRoutes.js';
+import logRoutes from './routes/logRoutes.js';
 import path from 'path';
 
 const app = express();
@@ -32,5 +33,6 @@ app.use('/api/invites', inviteRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/article', articleRoutes);
+app.use('/api/logs', logRoutes);
 
 export default app;

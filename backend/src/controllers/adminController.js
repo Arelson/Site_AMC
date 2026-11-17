@@ -55,6 +55,7 @@ export const deleteInvite = async (req, res) => {
       req.userId,
       'DELETE',
       'InviteCode',
+      null,
       {title: 'Convite deletado'}
     )
 
@@ -172,6 +173,7 @@ export const deletePostAdmin = async (req, res) => {
       req.userId,
       'DELETE',
       'Post',
+      null,
       {title: 'Post deletado'}
     )
     
@@ -272,7 +274,7 @@ export const atualizarMembroAdmin = async (req, res) => {
     await logAction(
       req.userId,
       'UPDATE',
-      'Membro',
+      'Member',
       membroAtualizado.id,
       {title: 'Membro atualizado'}
     )
@@ -299,7 +301,8 @@ export const deleteMember = async (req, res) => {
     await logAction(
       req.userId,
       'DELETE',
-      'Membro',
+      'Member',
+      null,
       {title: 'Membro deletado'}
     )
 

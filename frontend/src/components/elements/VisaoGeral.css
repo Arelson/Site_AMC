@@ -1,37 +1,201 @@
+/* src/pages/VisaoGeral.css */
+
 .visao-geral {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 60px;
-} 
+  gap: 2rem;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* --- CARDS DO TOPO --- */
 .visao-geral-generalinfo {
-  display: flex;
-  height: 200px;
-  width: 100%;
-  gap: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1rem;
 }
-.visao-geral-generalinfo div {
-  background-color: white;
-  display: flex;
-  flex-direction: row;
-  width: 100%; 
-  border-radius: 20px;
-  box-shadow: -2px 2px 11px rgba(0, 0, 0, 0.2); 
+
+.card-info {
+  background-color: #ffffff;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  min-height: 130px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.card-info:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.card-info:nth-child(1)::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background-color: #3b82f6; }
+.card-info:nth-child(2)::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background-color: #10b981; }
+.card-info:nth-child(3)::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background-color: #f59e0b; }
+.card-info:nth-child(4)::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background-color: #8b5cf6; }
+
+
+/* --- TABELA DE HISTÓRICO --- */
 .visao-geral-recentactivity {
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
-  gap: 22px;
-  box-shadow: -2px 2px 11px rgba(0, 0, 0, 0.2); 
-  padding: 30px;
 }
-.visao-geral-recentactivity-title {
-  color: black; 
-  font-size: 26px;
+
+.historico-titulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
 }
-.visao-geral-recentactivity-content {
-  background-color: rgb(246, 0, 0);
+
+.table-container {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+  overflow-x: auto; /* Permite scroll horizontal no telemóvel */
+}
+
+.historico-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+/* Cabeçalho */
+.historico-table th {
+  padding: 1rem;
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Linhas e Células */
+.historico-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.historico-table tr:hover td {
+  background-color: #f9fafb;
+}
+
+.table-empty {
+  text-align: center;
+  padding: 2rem !important;
+  color: #6b7280;
+}
+
+.col-data {
+  white-space: nowrap;
+}
+
+/* --- ESTILOS DO UTILIZADOR (AVATAR) --- */
+.usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.usuario-textos {
   display: flex;
   flex-direction: column;
-  height: 80px;
+}
+
+.usuario-nome {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.usuario-cargo {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* --- BADGES (CRACHÁS COLORIDOS DE AÇÃO) --- */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+
+.badge-create {
+  background-color: #d1fae5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.badge-update {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.badge-delete {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.badge-default {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+/* --- TEXTOS AUXILIARES --- */
+.item-nome {
+  font-weight: 500;
+  color: #374151;
+}
+
+.item-id {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  margin-left: 0.25rem;
+}
+
+.detalhe-texto {
+  font-style: italic;
+}
+
+.detalhe-vazio {
+  color: #9ca3af;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+  .visao-geral { padding: 1rem; }
+  .visao-geral-generalinfo { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .visao-geral-generalinfo { grid-template-columns: 1fr; }
 }
