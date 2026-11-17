@@ -314,6 +314,7 @@ export const deleteArticle = async (req, res) => {
       req.userId,
       'DELETE',
       'Article',
+      null,
       {title: 'Artigo deletado'}
     )
 

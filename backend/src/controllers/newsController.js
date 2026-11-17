@@ -114,6 +114,7 @@ export const deleteNews = async (req, res) => {
       req.userId,
       'DELETE',
       'News',
+      null,
       {title: 'Noticia deletada'}
     )
 
@@ -307,7 +308,7 @@ export const updateNews = async (req, res) => {
       req.userId,
       'UPDATE',
       'News',
-      noticiaAtualizada.id
+      noticiaAtualizada.id,
       {title: 'Noticia atualizada'}
     )
 
