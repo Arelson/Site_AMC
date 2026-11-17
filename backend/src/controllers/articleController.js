@@ -1,5 +1,6 @@
 import prisma from "../database/prisma.js";
 import { fromPath } from "pdf2pic";
+import { logAction } from "../utils/logger.js";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -72,6 +73,14 @@ export const criarArtigo = async (req, res) => {
         authorId: authorId,
       },
     });
+
+    await logAction(
+      authorId,
+      'CREATE',
+      'Article',
+      novoArtigo.id,
+      {title: 'Artigo publicado'}
+    )
 
     return res.status(201).json({
       mensagem: "Artigo publicado",
@@ -248,6 +257,14 @@ export const updateArticle = async (req, res) => {
       }
     }
 
+    await logAction(
+      req.userId,
+      'UPDATE',
+      'Article',
+      updatedArticle.id,
+      {title: 'Artigo atualizado'}
+    )
+
     return res.status(200).json({
       message: "Artigo atualizado com sucesso",
       artigo: updatedArticle,
@@ -292,6 +309,13 @@ export const deleteArticle = async (req, res) => {
     const artigo = await prisma.article.delete({
       where: { id: Number(id) },
     });
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'Article',
+      {title: 'Artigo deletado'}
+    )
 
     return res.status(200).json({ message: "Artigo deletado com sucesso" });
   } catch (error) {
