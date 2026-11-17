@@ -65,6 +65,14 @@ export const createNews = async (req, res) => {
       },
     });
 
+    await logAction(
+      req.userId,
+      'CREATE',
+      'News',
+      novaNoticia.id,
+      {title: 'Noticia criada'}
+    )
+
     return res.status(201).json({
       message: "Notícia criada com sucesso!",
       news: novaNoticia,
@@ -101,6 +109,13 @@ export const deleteNews = async (req, res) => {
     await prisma.news.delete({
       where: { id: newsId },
     });
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'News',
+      {title: 'Noticia deletada'}
+    )
 
     return res.status(200).json({
       message: "Notícia excluída permanentemente do portal da AMC.",
@@ -249,6 +264,72 @@ export const getAdminNews = async (req, res) => {
     return res
       .status(500)
       .json({ error: "Erro interno ao processar a lista de gestão." });
+  }
+};
+
+export const updateNews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, corpo, banner, palavrasChave } = req.body;
+    const newsId = Number(id);
+
+    // 1. Validação de segurança do ID passado na URL
+    if (isNaN(newsId)) {
+      return res
+        .status(400)
+        .json({ error: "ID de notícia inválido para atualização." });
+    }
+
+    // 2. Validação de campos obrigatórios
+    if (!titulo || !corpo || corpo === "<p></p>") {
+      return res
+        .status(400)
+        .json({
+          error: "O título e o conteúdo da notícia não podem ficar vazios.",
+        });
+    }
+
+    // 3. Atualização exclusiva na tabela News
+    const noticiaAtualizada = await prisma.news.update({
+      where: {
+        id: newsId,
+      },
+      data: {
+        title: titulo,
+        content: corpo,
+        banner: banner || null,
+        keywords: palavrasChave || null,
+        // Opcional: status: status || 'PUBLICADO' (se quiser permitir alterar para rascunho)
+      },
+    });
+
+    await logAction(
+      req.userId,
+      'UPDATE',
+      'News',
+      noticiaAtualizada.id
+      {title: 'Noticia atualizada'}
+    )
+
+    return res.status(200).json({
+      message: "Notícia atualizada com sucesso!",
+      news: noticiaAtualizada,
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar notícia:", error);
+
+    // Tratamento de erro caso a notícia tenha sido excluída por outro admin simultaneamente
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .json({
+          error: "Erro ao atualizar: Registro de notícia não encontrado.",
+        });
+    }
+
+    return res
+      .status(500)
+      .json({ error: "Erro interno do servidor ao processar a atualização." });
   }
 };
 

@@ -1,4 +1,5 @@
 import prisma from "../database/prisma.js";
+import { logAction } from "../utils/logger.js";
 
 // CREATE - Criar um novo evento
 export const createEvent = async (req, res) => {
@@ -21,6 +22,14 @@ export const createEvent = async (req, res) => {
         location,
       },
     });
+
+    await logAction(
+      req.userId,
+      'CREATE',
+      'Event',
+      newEvent.id,
+      {title: 'Novo evento publicado'}
+    )
 
     // 4. Devolvemos o evento recém-criado com status 201 (Created)
     return res.status(201).json(newEvent);
@@ -86,6 +95,14 @@ export const updateEvent = async (req, res) => {
       },
     });
 
+    await logAction(
+      req.userId,
+      'UPDATE',
+      'Event',
+      updatedEvent.id,
+      {title: 'Evento atualizado'}
+    )
+
     return res.status(200).json(updatedEvent);
   } catch (error) {
     console.error('Erro ao atualizar evento:', error);
@@ -105,6 +122,13 @@ export const deleteEvent = async (req, res) => {
     await prisma.events.delete({
       where: { id },
     });
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'Event',
+      {title: 'Evento deletado'}
+    )
 
     return res.status(200).json({ message: 'Evento deletado com sucesso.' });
   } catch (error) {
