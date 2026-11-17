@@ -10,7 +10,11 @@ export default function VisaoGeral() {
   const [logs, setLogs] = useState([])
 
   useEffect(() => {
-    fetch(`${apiURL}/api/admin/logs`).then(res => res.json()).then(data => setLogs(data)).catch(err => console.error("Erro ao carregar os logs", err))
+    fetch(`${apiURL}/api/admin/logs`, {
+      headers:{
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    }).then(res => res.json()).then(data => setLogs(data)).catch(err => console.error("Erro ao carregar os logs", err))
   }, []);
   
   return (
@@ -52,7 +56,7 @@ export default function VisaoGeral() {
                 </td>
                 <td className="p-4 font-medium">{log.user?.name}</td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${acoesTraduzidas[log.action]?.cor || 'bg-gray-100 text-gray-800'}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${log.action?.cor || 'bg-gray-100 text-gray-800'}`}>
                     {log.action?.texto || log.action}
                   </span>
                 </td>

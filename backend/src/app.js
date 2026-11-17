@@ -15,7 +15,7 @@ const origin = process.env.CORS_LINK
 
 app.use(
   cors({
-    origin: `${origin}`,
+    origin: 'http://localhost:5173',
   }),
 );
 

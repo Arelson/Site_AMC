@@ -1,4 +1,5 @@
 import prisma from "../database/prisma.js";
+import { logAction } from "../utils/logger.js";
 
 export const createPost = async (req, res) => {
   try {
@@ -21,6 +22,14 @@ export const createPost = async (req, res) => {
         authorId: userId,
       },
     });
+
+    await logAction(
+      req.userId,
+      'CREATE',
+      'Post',
+      newPost.id,
+      {title: 'Post criado'}
+    )
 
     return res
       .status(201)
@@ -106,6 +115,14 @@ export const updatePost = async (req, res) => {
       },
     });
 
+    await logAction(
+      req.userId,
+      'UPDATE',
+      'Post',
+      updatedPost.id,
+      {title: 'Post atualizado'}
+    )
+
     return res
       .status(200)
       .json({ message: "Postagem atualizada!", post: updatedPost });
@@ -124,6 +141,13 @@ export const deletePost = async (req, res) => {
     await prisma.post.delete({
       where: { id: Number(id) },
     });
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'Post',
+      {title: 'Post deletado'}
+    )
 
     return res.status(200).json({ message: "Postagem deletada com sucesso!" });
   } catch (error) {

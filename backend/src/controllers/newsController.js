@@ -1,4 +1,5 @@
 import prisma from "../database/prisma.js";
+import { logAction } from "../utils/logger.js";
 
 export const createNews = async (req, res) => {
   try {
@@ -24,6 +25,14 @@ export const createNews = async (req, res) => {
       },
     });
 
+    await logAction(
+      req.userId,
+      'CREATE',
+      'News',
+      novaNoticia.id,
+      {title: 'Noticia criada'}
+    )
+
     return res.status(201).json({
       message: "Notícia criada com sucesso!",
       news: novaNoticia,
@@ -45,6 +54,13 @@ export const deleteNews = async (req, res) => {
     await prisma.news.delete({
       where: { id: newsId },
     });
+
+    await logAction(
+      req.userId,
+      'DELETE',
+      'News',
+      {title: 'Noticia deletada'}
+    )
 
     return res.status(200).json({
       message: "Notícia excluída permanentemente do portal da AMC.",
@@ -195,6 +211,14 @@ export const updateNews = async (req, res) => {
         // Opcional: status: status || 'PUBLICADO' (se quiser permitir alterar para rascunho)
       },
     });
+
+    await logAction(
+      req.userId,
+      'UPDATE',
+      'News',
+      noticiaAtualizada.id
+      {title: 'Noticia atualizada'}
+    )
 
     return res.status(200).json({
       message: "Notícia atualizada com sucesso!",
