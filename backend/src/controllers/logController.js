@@ -1,6 +1,5 @@
 import prisma from "../database/prisma.js";
 
-
 export const getActionsLog = async (req, res) => {
     try{
         const logs = await prisma.actionLog.findMany({
@@ -15,6 +14,6 @@ export const getActionsLog = async (req, res) => {
 
         return res.status(200).json(logs);
     } catch (error){
-        return res.status(500).json({error: 'Erro na busga dos logs'});
+        return res.status(500).json({error: 'Erro na busca dos logs'});
     }
 }

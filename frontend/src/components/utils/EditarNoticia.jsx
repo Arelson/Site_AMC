@@ -17,16 +17,15 @@ import {
   List, ListOrdered, Quote, Code, Sigma, Link as LinkIcon, Video, Image as ImageIcon 
 } from 'lucide-react';
 
-// Importação do arquivo de estilos (ajuste o caminho se necessário)
 import './EditarNoticia.css'; 
 
 const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
   return (
     <div className="tiptap-toolbar">
-      
       <div className="toolbar-group">
         <select className="toolbar-select" onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}>
           <option value="Inter">Fonte Padrão</option>
@@ -67,7 +66,6 @@ const MenuBar = ({ editor }) => {
         <button className="toolbar-btn" onClick={() => { const url = window.prompt('URL do vídeo do YouTube:'); if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run(); }}><Video size={18} /></button>
         <button className="toolbar-btn" onClick={() => { const url = window.prompt('URL da Imagem:'); if (url) editor.chain().focus().setImage({ src: url }).run(); }}><ImageIcon size={18} /></button>
       </div>
-      
     </div>
   );
 };
@@ -75,10 +73,18 @@ const MenuBar = ({ editor }) => {
 export default function EditarNoticia({ postId, voltarParaLista }) {
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
-  const [banner, setBanner] = useState('');
   const [palavrasChave, setPalavrasChave] = useState('');
   const [categoria, setCategoria] = useState('CIÊNCIA');
+  
+  // Estados para gerir ficheiros físicos e URLs existentes
+  const [bannerUrl, setBannerUrl] = useState('');
+  const [bannerFile, setBannerFile] = useState(null);
+  
+  const [pdfExistente, setPdfExistente] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);
+
   const bannerInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
 
   const editor = useEditor({
     extensions: [
@@ -92,6 +98,7 @@ export default function EditarNoticia({ postId, voltarParaLista }) {
     onUpdate: ({ editor }) => setConteudo(editor.getHTML()),
   });
 
+  // Carregar os dados atuais da notícia
   useEffect(() => {
     const carregarNoticia = async () => {
       if (!postId || postId === "undefined") return;
@@ -102,9 +109,11 @@ export default function EditarNoticia({ postId, voltarParaLista }) {
           const post = await response.json();
           setTitulo(post.title || '');
           setConteudo(post.content || '');
-          setBanner(post.banner || '');
           setPalavrasChave(post.keywords || '');
           setCategoria(post.category || 'CIÊNCIA');
+          
+          setBannerUrl(post.banner || '');
+          setPdfExistente(post.pdf || ''); 
           
           if (editor) {
             editor.commands.setContent(post.content);
@@ -117,24 +126,78 @@ export default function EditarNoticia({ postId, voltarParaLista }) {
     carregarNoticia();
   }, [postId, editor]);
 
+  const handleBannerUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setBannerFile(file);
+      setBannerUrl(''); // Limpa a URL se o utilizador escolher um ficheiro físico
+    }
+  };
+
+  const handleBannerUrlChange = (e) => {
+    setBannerUrl(e.target.value);
+    if (bannerFile) setBannerFile(null);
+  };
+
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPdfFile(file);
+    }
+  };
+
   const handleAtualizar = async () => {
     if (!titulo || !conteudo || conteudo === '<p></p>') {
       alert("Título e conteúdo são obrigatórios.");
       return;
     }
+    
     try {
       const token = localStorage.getItem('token');
+      const formData = new FormData();
+
+      const palavrasChaveFinais = palavrasChave.trim() 
+      ? `${categoria}, ${palavrasChave.trim().toUpperCase()}`
+      : categoria;
+      
+      formData.append('titulo', titulo);
+      formData.append('corpo', conteudo);
+      formData.append('PalavrasChave', palavrasChaveFinais);
+
+      // Gestão do Banner: Envia o ficheiro físico ou a URL atual/editada
+      if (bannerFile) {
+        formData.append('banner', bannerFile);
+      } else if (bannerUrl) {
+        formData.append('bannerUrl', bannerUrl); 
+      }
+
+      // Gestão do PDF
+      if (pdfFile) {
+        formData.append('pdf', pdfFile);
+      }
+
       const response = await fetch(`${apiURL}/api/news/${postId}`, {
         method: 'PUT',
-        headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ titulo, corpo: conteudo, banner, palavrasChave, categoria }) 
+        headers: { 
+          'Authorization': `Bearer ${token}` 
+          // ⚠️ ATENÇÃO: Nunca defina 'Content-Type' manualmente ao usar FormData!
+          // O navegador calcula o "boundary" do multipart automaticamente.
+        },
+        body: formData 
       });
+
+      console.log(formData);
+
       if (response.ok) {
         alert('Notícia atualizada com sucesso!');
         voltarParaLista();
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao atualizar: ${errorData.error || 'Erro desconhecido'}`);
       }
     } catch (error) {
       console.error(error);
+      alert('Erro de conexão ao atualizar a notícia.');
     }
   };
 
@@ -160,18 +223,31 @@ export default function EditarNoticia({ postId, voltarParaLista }) {
           placeholder="Digite o título da notícia..." 
         />
         
+        {/* ÁREA DA IMAGEM DE CAPA */}
         <div className="banner-area">
           <input 
             type="text" 
             className="input-form"
-            value={banner} 
-            onChange={(e) => setBanner(e.target.value)} 
+            value={bannerUrl} 
+            onChange={handleBannerUrlChange} 
             placeholder="Cole a URL da Imagem de Capa (Banner)..." 
+            disabled={!!bannerFile}
           />
           <button className="btn-upload" onClick={() => bannerInputRef.current.click()}>
-            <Upload size={16} /> Carregar Arquivo
+            <Upload size={16} /> {bannerFile ? bannerFile.name : 'Substituir Imagem'}
           </button>
-          <input type="file" accept="image/*" ref={bannerInputRef} style={{ display: 'none' }} />
+          <input type="file" accept="image/*" ref={bannerInputRef} onChange={handleBannerUpload} style={{ display: 'none' }} />
+        </div>
+
+        {/* ÁREA DO PDF (NOVA) */}
+        <div className="banner-area" style={{ marginTop: '10px', backgroundColor: '#f9fafb', padding: '10px', borderRadius: '8px' }}>
+          <span className="label-form" style={{ display: 'flex', alignItems: 'center', flex: 1, color: '#4b5563', marginBottom: 0 }}>
+             {pdfFile ? `Novo PDF: ${pdfFile.name}` : pdfExistente ? `PDF Atual: ${pdfExistente.split('/').pop()}` : 'Nenhum PDF anexado.'}
+          </span>
+          <button className="btn-upload" style={{ backgroundColor: '#dc2626' }} onClick={() => pdfInputRef.current.click()}>
+            <Upload size={16} /> {pdfExistente ? 'Substituir PDF' : 'Anexar Novo PDF'}
+          </button>
+          <input type="file" accept="application/pdf" ref={pdfInputRef} onChange={handlePdfUpload} style={{ display: 'none' }} />
         </div>
 
         <div className="categoria-tags-area">

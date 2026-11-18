@@ -9,8 +9,16 @@ const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 export default function VisaoGeral() {
   const [logs, setLogs] = useState([])
 
+  
   useEffect(() => {
-    fetch(`${apiURL}/api/admin/logs`).then(res => res.json()).then(data => setLogs(data)).catch(err => console.error("Erro ao carregar os logs", err))
+    const token = localStorage.getItem("token");
+
+    fetch(`${apiURL}/api/admin/logs`, {
+      method: "GET",
+      headers: {
+         'Authorization': `Bearer ${token}`
+      }
+    }).then(res => res.json()).then(data => setLogs(data)).catch(err => console.error("Erro ao carregar os logs", err))
   }, []);
   
   return (
@@ -52,7 +60,7 @@ export default function VisaoGeral() {
                 </td>
                 <td className="p-4 font-medium">{log.user?.name}</td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${acoesTraduzidas[log.action]?.cor || 'bg-gray-100 text-gray-800'}`}>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${log.action?.cor || 'bg-gray-100 text-gray-800'}`}>
                     {log.action?.texto || log.action}
                   </span>
                 </td>

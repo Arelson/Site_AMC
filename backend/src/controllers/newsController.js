@@ -16,7 +16,7 @@ const apagarArquivoFisico = (caminhoRelativo) => {
   try {
     // Remove a barra inicial se existir (Ex: "/uploads/news/arquivo.jpg" vira "uploads/news/arquivo.jpg")
     const urlLimpa = caminhoRelativo.replace(/^\//, "");
-    const caminhoAbsoluto = path.resolve(__dirname, "..", urlLimpa);
+    const caminhoAbsoluto = path.resolve(__dirname, "..", '..', '..', urlLimpa);
 
     if (fs.existsSync(caminhoAbsoluto)) {
       fs.unlinkSync(caminhoAbsoluto);
