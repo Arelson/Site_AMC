@@ -1,21 +1,59 @@
 import prisma from "../database/prisma.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const apagarArquivoFisico = (caminhoRelativo) => {
+
+  if (!caminhoRelativo || !caminhoRelativo.startsWith("/uploads")) return;
+  
+  if (!caminhoRelativo) return;
+  try {
+    // Remove a barra inicial se existir (Ex: "/uploads/news/arquivo.jpg" vira "uploads/news/arquivo.jpg")
+    const urlLimpa = caminhoRelativo.replace(/^\//, "");
+    const caminhoAbsoluto = path.resolve(__dirname, "..", '..', '..', urlLimpa);
+
+    if (fs.existsSync(caminhoAbsoluto)) {
+      fs.unlinkSync(caminhoAbsoluto);
+      console.log(`🗑️ Arquivo apagado do servidor: ${caminhoAbsoluto}`);
+    }
+  } catch (error) {
+    console.error(`Erro ao tentar apagar o arquivo ${caminhoRelativo}:`, error);
+  }
+};
 
 export const createPost = async (req, res) => {
   try {
-    const { titulo, corpo, banner, palavrasChave } = req.body;
+    const { titulo, corpo, banner, palavrasChave, bannerUrl } = req.body;
     const userId = req.userId;
 
-    if (!titulo || !corpo) {
+    if (!titulo || !corpo || corpo === "<p></p>") {
       return res
         .status(400)
         .json({ error: "O título e o conteúdo são obrigatórios." });
+    }
+
+    let bannerPath = bannerUrl ? bannerUrl.trim() : null;
+    let pdfPath = null;
+
+    if (req.files) {
+      if (req.files.banner && req.files.banner.length > 0) {
+        bannerPath = `/uploads/post/${userId}/${req.files.banner[0].filename}`;
+      }
+      if (req.files.pdf && req.files.pdf.length > 0) {
+        pdfPath = `/uploads/post/${userId}/${req.files.pdf[0].filename}`;
+      }
     }
 
     const newPost = await prisma.post.create({
       data: {
         title: titulo,
         content: corpo,
-        banner: banner || null,
+        banner: bannerPath,
+        pdfUrl: pdfPath,
         keywords: palavrasChave || null,
         status: "PUBLICADO",
         authorId: userId,
@@ -96,12 +134,29 @@ export const updatePost = async (req, res) => {
         .json({ error: "O título e o conteúdo são obrigatórios." });
     }
 
+    // Inicia os caminhos com o que já existe no banco
+    let bannerPath = noticiaAntiga.banner;
+    let pdfPath = noticiaAntiga.pdfUrl;
+
+    // 2. Se um NOVO banner for enviado, apaga o velho e substitui pelo novo
+    if (req.files && req.files.banner && req.files.banner.length > 0) {
+      if (noticiaAntiga.banner) apagarArquivoFisico(noticiaAntiga.banner);
+      bannerPath = `/uploads/news/${req.files.banner[0].filename}`;
+    }
+
+    // 3. Se um NOVO PDF for enviado, apaga o velho e substitui pelo novo
+    if (req.files && req.files.pdf && req.files.pdf.length > 0) {
+      if (noticiaAntiga.pdfUrl) apagarArquivoFisico(noticiaAntiga.pdfUrl);
+      pdfPath = `/uploads/news/${req.files.pdf[0].filename}`;
+    }
+
     const updatedPost = await prisma.post.update({
       where: { id: Number(id) },
       data: {
         title: titulo,
         content: corpo,
-        banner: banner || null,
+        banner: bannerPath,
+        pdfUrl: pdfPath,
         keywords: palavrasChave || null,
       },
     });

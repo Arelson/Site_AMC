@@ -60,6 +60,7 @@ model Post {
   title     String
   content   String   @db.Text
   banner    String?
+  pdfUrl    String?
   keywords  String?
   status    String   @default("RASCUNHO")
   createdAt DateTime @default(now())

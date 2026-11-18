@@ -94,3 +94,36 @@ export const uploadNews = multer({
   fileFilter: filterNews,
   limits: { fileSize: 10 * 1024 * 1024 } // Limite de 10MB (para comportar PDFs maiores se necessário)
 });
+
+const pathPost = path.resolve(__dirname, "..", "..", "..", "uploads", "posts");
+if (!fs.existsSync(pathNews)) fs.mkdirSync(pathNews, { recursive: true });
+
+// 2. Regras de armazenamento
+const storagePost = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, pathPost),
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    // Usa um prefixo 'news-' para facilitar a identificação física do arquivo
+    cb(null, "post-" + uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+// 3. Filtro de segurança para as notícias
+const filterPost = (req, file, cb) => {
+  // Aceita Imagens (jpg, png, webp) para o banner E PDF para anexos/documentos da notícia
+  if (
+    file.mimetype.startsWith("image/") ||
+    file.mimetype === "application/pdf"
+  ) {
+    cb(null, true);
+  } else {
+    cb(new Error("Formato inválido. Envie imagens ou arquivos PDF."), false);
+  }
+};
+
+// 4. Exporta o middleware para usar no routes.js
+export const uploadPost = multer({
+  storage: storagePost,
+  fileFilter: filterPost,
+  limits: { fileSize: 10 * 1024 * 1024 }, // Limite de 10MB (para comportar PDFs maiores se necessário)
+});

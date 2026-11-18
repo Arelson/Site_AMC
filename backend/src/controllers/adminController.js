@@ -1,8 +1,14 @@
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import prisma from '../database/prisma.js';
+import path from 'path';
+import { fileURLToPath } from "url";
 import { logAction } from '../utils/logger.js';
+import fs from "fs";
 import jwt from 'jsonwebtoken';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const generateInviteCode = async (req, res) => {
   try {
