@@ -240,7 +240,7 @@ export const getPublicPortalNews = async (req, res) => {
       skip: skip,
       take: limit,
       include: {
-        author: { select: { name: true } },
+        author: { select: { name: true, avatarUrl: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -285,7 +285,7 @@ export const getNewsById = async (req, res) => {
     const { id } = req.params;
     const noticia = await prisma.news.findUnique({
       where: { id: Number(id) },
-      include: { author: { select: { name: true } } },
+      include: { author: { select: { name: true, avatarUrl: true } } },
     });
 
     if (!noticia) {

@@ -1,5 +1,5 @@
 import express from "express";
-import { generateInviteCode, getInvites, deleteInvite, updateUser, getAllPostsAdmin, updatePostStatusAdmin, deletePostAdmin, criarMembroAdmin, atualizarMembroAdmin, deleteMember } from "../controllers/adminController.js";
+import { generateInviteCode, getInvites, deleteInvite, updateUser, getAllPostsAdmin, updatePostStatusAdmin, deletePostAdmin, criarMembroAdmin, atualizarMembroAdmin, deleteMember, getMe } from "../controllers/adminController.js";
 import { verifyToken, isAdmin} from "../middlewares/authmiddleware.js";
 import { uploadAvatar } from "../middlewares/uploadMiddleware.js";
 import { getActionsLog } from "../controllers/logController.js";
@@ -12,11 +12,12 @@ router.use(isAdmin); // Aplica o middleware de verificação de admin a todas as
 router.post('/invites', generateInviteCode);
 router.get('/invites', getInvites);
 router.delete('/invites/:id', deleteInvite);
-router.patch('/update', updateUser);
+router.patch('/update', uploadAvatar.single('foto'), updateUser);
 router.get('/posts', isAdmin, getAllPostsAdmin);
 router.patch('/posts/:id/status', isAdmin, updatePostStatusAdmin);
 router.delete('/posts/:id', isAdmin, deletePostAdmin);
 router.post('/members', isAdmin, uploadAvatar.single('foto'), criarMembroAdmin);
 router.patch('/members/:id', isAdmin, uploadAvatar.single('foto'), atualizarMembroAdmin);
-router.delete('/member/:id',isAdmin, verifyToken, deleteMember);
+router.delete('/member/:id', isAdmin, verifyToken, deleteMember);
+router.get('/me', verifyToken, getMe);
 export default router;

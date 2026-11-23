@@ -123,7 +123,11 @@ export default function NoticiaPage() {
 
         {/* Informações do Autor e Data */}
         <div className="noticia-autor-area">
-          <div className="autor-avatar">{inicialAutor}</div>
+          <div className="autor-avatar">
+            {noticia.author?.avatarUrl ? (
+                <img className='autor-avatar' src={`${apiURL}${noticia.author?.avatarUrl}`} alt={noticia.author.name} />
+            ): ( {inicialAutor} )}
+          </div>
           <div className="autor-infos">
             <span className="autor-nome">{nomeAutor}</span>
             <span className="autor-data">{dataFormatada} - Leitura Rápida</span>

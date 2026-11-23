@@ -130,7 +130,8 @@ export const getMe = async (req, res) => {
         id: true,
         email: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        name: true,
       }
     })
     if (!user) {

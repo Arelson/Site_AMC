@@ -1,17 +1,17 @@
 import './DashboardAdminBody.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import VisaoGeral from './elements/VisaoGeral';
 import GestaoConteudo from './elements/GestaoConteudo';
 import MinhaConta from './elements/MinhaConta';
 
-
+const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export default function DashboardAdminBody() {
   const [visaoGeral, setVisaoGeral] = useState(true);
   const [gestaoConteudo, setGestaoConteudo] = useState(false);
   const [minhaConta, setMinhaConta] = useState(false);
-
-
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [nome, setNome] = useState('');
 
   const handleVisaoGeral = (e) => {
     e.preventDefault();
@@ -34,12 +34,40 @@ export default function DashboardAdminBody() {
     setMinhaConta(true);
   }
 
+  useEffect(() => {
+    const dadosAdmin = async () => {
+      try {
+        const response = await fetch(`${apiURL}/api/admin/me`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (response.ok) {
+          const dados = await response.json();
+
+          setNome(dados.nome)
+
+          if (dados.avatarUrl) {
+            setAvatarUrl(dados.avatarUrl);
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao buscar a foto do usuario.", error);
+      }
+    };
+
+    dadosAdmin();
+  });
+
   return (
     <div className="dashboard-adm-container">
       <aside className="dashboard-adm-aside">
         <div className="dashboard-adm-aside-title">
           <div className="dashboard-adm-aside-title-logo">
-            A
+            {avatarUrl ? (
+              <img src={`${apiURL}${avatarUrl}`} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (nome.charAt(0).toUpperCase)}
           </div>
           <div className='dashboard-adm-aside-title-content'>
             <strong className='dashboard-adm-aside-title-content-name'>Administrador AMC</strong>

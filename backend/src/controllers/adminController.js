@@ -73,41 +73,106 @@ export const deleteInvite = async (req, res) => {
 }
 
 export const updateUser = async (req, res) => {
-  const { email, password } = req.body;
-  const userId = req.userId;
-
   try {
-    const dataForSave = {};
-    if (email) dataForSave.email = email;
-    if (password) {
-      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-      if (!passwordRegex.test(password)){
-        return res.status(400).json({
-          message: 'A senha deve ter no mínimo 8 caracteres, incluindo letras, numeros e simbolos.'
-        })
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      dataForSave.password = hashedPassword;
-    }
-    if (Object.keys(dataForSave).length === 0) {
-      return res.status(400).json({ error: 'Nenhuma informação para atualizar' });
-    }
+    const userId = req.userId; // Vem do token JWT
+    const { name, email, password } = req.body; // Texto
 
-    const userUpdated = await prisma.user.update({
+    // 1. Busca os dados atuais
+    const userAtual = await prisma.user.findUnique({
       where: { id: userId },
-      data: dataForSave
     });
 
-    return res.status(200).json({
-      message: 'Dados atualizados com sucesso!',
-    })
-  } catch (error) {
-    console.error('Erro ao atualizar credenciais com Prisma:', error);
-
-    if (error.code === 'P2002') {
-      return res.status(409).json({ message: 'E-mail ja cadastrado' });
+    if (!userAtual) {
+      return res.status(404).json({ error: "Usuário não encontrado." });
     }
-    return res.status(500).json({ message: 'Erro interno do servidor' });
+
+    const dataToUpdate = {};
+
+    // 2. Textos (Nome, Email, Senha) - Mesma lógica de antes
+    if (name && name.trim() !== "") dataToUpdate.name = name.trim();
+
+    if (email && email.trim() !== "" && email !== userAtual.email) {
+      const emailEmUso = await prisma.user.findUnique({
+        where: { email: email.trim() },
+      });
+      if (emailEmUso)
+        return res
+          .status(400)
+          .json({ error: "Este e-mail já está sendo usado." });
+      dataToUpdate.email = email.trim();
+    }
+
+    if (password && password.trim() !== "") {
+      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({ error: "Senha muito fraca." });
+      }
+      dataToUpdate.password = await bcrypt.hash(password, 10);
+    }
+
+    // 3. FOTO DE PERFIL (Se o usuário anexou um arquivo novo)
+    let deletarFotoVelha = false;
+
+    if (req.file) {
+      // Pega o caminho do Multer
+      dataToUpdate.avatarUrl = `/uploads/images/avatars/${req.file.filename}`;
+      deletarFotoVelha = true;
+    }
+
+    // Se não mandou nada, retorna erro
+    if (Object.keys(dataToUpdate).length === 0) {
+      return res.status(400).json({ error: "Nenhum dado novo foi enviado." });
+    }
+
+    // 4. ATUALIZA O BANCO
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: dataToUpdate,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+      },
+    });
+
+    // 5. FAXINA FÍSICA: Se anexou foto nova, deleta a antiga
+    if (deletarFotoVelha && userAtual.avatarUrl) {
+      const urlLimpa = userAtual.avatarUrl.replace(/^\//, "");
+      const pathAntigo = path.resolve(__dirname, "..", "..", "..", urlLimpa);
+
+      if (fs.existsSync(pathAntigo)) {
+        fs.unlinkSync(pathAntigo);
+        console.log("🗑️ Avatar antigo deletado!");
+      }
+    }
+
+    // Bônus cascata para a tabela Membro (Nome/Email)
+    if (dataToUpdate.name || dataToUpdate.email) {
+      const membro = await prisma.member.findUnique({
+        where: { userId: userId },
+      });
+      if (membro) {
+        await prisma.member.update({
+          where: { userId: userId },
+          data: {
+            name: dataToUpdate.name || membro.name,
+            email: dataToUpdate.email || membro.email,
+          },
+        });
+      }
+    }
+
+    return res.status(200).json({
+      message: "Conta atualizada com sucesso!",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar a conta:", error);
+    return res
+      .status(500)
+      .json({ error: "Erro interno ao atualizar os dados." });
   }
 }
 
@@ -269,7 +334,7 @@ export const atualizarMembroAdmin = async (req, res) => {
     if (deletarFotoVelha && membroAntigo.avatarUrl) {
       const urlLimpa = membroAntigo.avatarUrl.replace(/^\//, ''); 
       // Ajuste os ".." conforme a profundidade da sua pasta controller
-      const pathAntigo = path.resolve(__dirname, '..', '..', urlLimpa);
+      const pathAntigo = path.resolve(__dirname, '..', '..', '..', urlLimpa);
       
       if (fs.existsSync(pathAntigo)) {
         fs.unlinkSync(pathAntigo);
@@ -318,3 +383,25 @@ export const deleteMember = async (req, res) => {
     return res.status(500).json({error:"Erro no servidor"})
   }
 }
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+        createdAt: true,
+      },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "Usuário não encontrado" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};

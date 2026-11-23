@@ -16,6 +16,7 @@ export default function MeuPerfil() {
   const [fotoPreview, setFotoPreview] = useState(''); // A URL para mostrar na tela
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // Dispara assim que a tela abre
   useEffect(() => {
@@ -78,6 +79,13 @@ export default function MeuPerfil() {
     
     // Só envia a senha se o usuário digitou uma nova
     if (senha) formData.append('password', senha);
+
+    if (senha || confirmPassword) {
+      if (senha !== confirmPassword) {
+        alert('As senhas não coincidem. Tente novamente!');
+        return;
+      }
+    }
     
     // Só anexa a foto se ele selecionou uma nova
     if (fotoFile) formData.append('foto', fotoFile);
@@ -85,34 +93,6 @@ export default function MeuPerfil() {
     if (Object.keys(dataForUpdate).length === 0) {
       alert('Preencha pelo menos um campo para atualizar o perfil');
       return;
-    }
-
-    try {
-      // Ajuste a rota para a sua rota de atualização de membro no backend
-      const response = await fetch(`${apiURL}/api/auth/profile`, {
-        method: 'PATCH',
-        headers: {
-          'content-type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(dataForUpdate)
-      });
-
-      if (response.ok) {
-        alert('Perfil público atualizado com sucesso!');
-        // Limpa os campos após o sucesso
-        // setNome('');
-        // setCargo('');
-        // setCadeiraOcupacao('');
-        // setLinkLattes('');
-        // setBio('');
-      } else {
-        const errorData = await response.json();
-        alert(`Erro: ${errorData.message || 'Não foi possível atualizar o perfil'}`);
-      }
-    } catch (error) {
-      console.error("Erro na requisição:", error.message);
-      alert(`Erro de conexão com o servidor. ${error.message}`);
     }
 
     try {
@@ -317,6 +297,20 @@ export default function MeuPerfil() {
           <small style={{ color: '#888', marginTop: '5px', display: 'block' }}>
             Deixe em branco para manter a senha atual. Se for alterar, use no mínimo 8 caracteres com letras, números e símbolos.
           </small>
+            </div>
+            
+        <div className='conta-content-form-item'>
+              <label htmlFor="confirmPassword">CONFIRMAR SENHA</label>
+              <div className='conta-content-form-input'>
+                <span className='conta-content-form-input-icon'>🔐</span>
+                <input
+                  type="password"
+                  id='confirmPassword'
+                  placeholder='Repita a senha'
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)} 
+                />
+              </div>
         </div>
         
         <button type='submit' className='conta-content-form-button' style={{ marginTop: '20px' }}> 
