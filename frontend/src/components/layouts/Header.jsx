@@ -14,11 +14,14 @@ export default function Header({ botaoAmarelo = true,  backgroundScroll = true }
   const primeiroNome =nomeCompleto? nomeCompleto.split(' ')[0]: '';  
   //endregion
 
+  const userId = localStorage.getItem('userId');
+
   //region FUNÇÃO LOGOUT
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('nomeCompleto');
+    localStorage.removeItem('userId');
     navigate('/');
   }
 
@@ -39,6 +42,7 @@ export default function Header({ botaoAmarelo = true,  backgroundScroll = true }
     
     // Função de limpeza (remove o listener quando o componente sair da tela ou mudar)
     return () => window.removeEventListener('scroll', handleScroll); 
+
     
   }, [backgroundScroll]); // <-- O Hook fica "vigiando" essa variável
 
@@ -87,7 +91,7 @@ export default function Header({ botaoAmarelo = true,  backgroundScroll = true }
 
         {token ? (
           <div className='user-logged-area'>
-            <button className='btn-portal-header amarelo' onClick={() => role === 'ADMIN'? navigate('/dashboard/admin') : navigate('/dashboard/member')}>
+            <button className='btn-portal-header amarelo' onClick={() => role === 'ADMIN'? navigate(`/dashboard/admin/`) : navigate(`/dashboard/member/${userId}`)}>
               <svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
                 <path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'></path>
                 <circle cx='12' cy='7' r='4'></circle>

@@ -23,7 +23,7 @@ import {
 
 import 'katex/dist/katex.min.css';
 
-// --- COMPONENTE DA BARRA DE FERRAMENTAS (Igual ao CriarPost) ---
+// --- COMPONENTE DA BARRA DE FERRAMENTAS ---
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
@@ -136,10 +136,16 @@ const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 export default function EditarPost({ postId, voltarParaLista }) {
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
-  const [banner, setBanner] = useState('');
   const [palavrasChave, setPalavrasChave] = useState('');
   
+  // Estados para gerir os ficheiros físicos e URLs existentes
+  const [bannerUrl, setBannerUrl] = useState('');
+  const [bannerFile, setBannerFile] = useState(null);
+  const [pdfExistente, setPdfExistente] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);
+
   const bannerInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
 
   // Inicializa o Tiptap Editor
   const editor = useEditor({
@@ -154,7 +160,7 @@ export default function EditarPost({ postId, voltarParaLista }) {
       Youtube.configure({ width: 640, height: 480 }),
       MathExtension.configure({ evaluation: false }),
     ],
-    content: '', // Inicia vazio
+    content: '',
     onUpdate: ({ editor }) => {
       setConteudo(editor.getHTML());
     },
@@ -174,14 +180,14 @@ export default function EditarPost({ postId, voltarParaLista }) {
           const post = await response.json();
           setTitulo(post.title);
           setConteudo(post.content);
-          setBanner(post.banner || '');
           setPalavrasChave(post.keywords || '');
+          
+          setBannerUrl(post.banner || '');
+          setPdfExistente(post.pdf || ''); 
 
-          // INJEÇÃO CRUCIAL: Atualiza o conteúdo do Tiptap após o fetch
           if (editor) {
             editor.commands.setContent(post.content);
           }
-
         } else {
           alert('Erro ao carregar o post para edição.');
           voltarParaLista({ preventDefault: () => {} });
@@ -192,14 +198,26 @@ export default function EditarPost({ postId, voltarParaLista }) {
       }
     };
     buscarDadosDoPost();
-  }, [postId, voltarParaLista, editor]); // Refaz a injeção se o editor demorar para carregar
+  }, [postId, voltarParaLista, editor]);
 
+  // Funções de manipulação de upload
   const handleBannerUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => setBanner(e.target.result);
-      reader.readAsDataURL(file);
+      setBannerFile(file);
+      setBannerUrl(''); // Limpa a URL se anexar um ficheiro
+    }
+  };
+
+  const handleBannerUrlChange = (e) => {
+    setBannerUrl(e.target.value);
+    if (bannerFile) setBannerFile(null);
+  };
+
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPdfFile(file);
     }
   };
 
@@ -209,17 +227,31 @@ export default function EditarPost({ postId, voltarParaLista }) {
       return;
     }
 
-    const payload = { titulo, corpo: conteudo, banner, palavrasChave };
+    // Usar FormData para permitir envio de arquivos
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('corpo', conteudo);
+    formData.append('palavrasChave', palavrasChave);
+
+    if (bannerFile) {
+      formData.append('banner', bannerFile);
+    } else if (bannerUrl) {
+      formData.append('bannerUrl', bannerUrl);
+    }
+
+    if (pdfFile) {
+      formData.append('pdf', pdfFile);
+    }
 
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${apiURL}/api/posts/${postId}`, {
         method: 'PUT',
         headers: { 
-          'content-type': 'application/json',
           'Authorization': `Bearer ${token}`
+          // Omitir o Content-Type para o FormData funcionar
         },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       if (response.ok) {
@@ -239,7 +271,7 @@ export default function EditarPost({ postId, voltarParaLista }) {
     <div className='postagem-container'>
       <main className='conteudo-principal'>
         <header className='header-postagem'>
-          <h1>Editar Postagem de Vlog</h1>
+          <h1>Editar Postagem do Blog</h1>
           <button className='btn-publicar' onClick={handleAtualizar}>
             Atualizar Post
           </button>
@@ -254,22 +286,41 @@ export default function EditarPost({ postId, voltarParaLista }) {
             onChange={(e) => setTitulo(e.target.value)}
           />
 
+          {/* ÁREA DA IMAGEM DE CAPA */}
           <div className='opcoes-extras banner-area'>
             <input
               type="text"
               className="input-extra"
               placeholder="URL da Imagem de Capa (Banner)..."
-              value={banner}
-              onChange={(e) => setBanner(e.target.value)} 
+              value={bannerUrl}
+              onChange={handleBannerUrlChange} 
+              disabled={!!bannerFile}
             />
             <button className="btn-upload-banner" onClick={() => bannerInputRef.current.click()}>
-              <Upload size={18} /> Upload Banner
+              <Upload size={18} /> {bannerFile ? bannerFile.name : 'Substituir Imagem'}
             </button>
             <input 
               type="file" 
               accept="image/*" 
               ref={bannerInputRef} 
               onChange={handleBannerUpload} 
+              style={{ display: 'none' }} 
+            />
+          </div>
+
+          {/* ÁREA DO PDF (NOVA) */}
+          <div className='opcoes-extras banner-area' style={{ backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+            <span className="input-extra" style={{ display: 'flex', alignItems: 'center', color: '#4b5563', border: 'none', background: 'transparent' }}>
+               {pdfFile ? `Novo PDF: ${pdfFile.name}` : pdfExistente ? `PDF Atual: ${pdfExistente.split('/').pop()}` : 'Nenhum PDF anexado.'}
+            </span>
+            <button className="btn-upload-banner" style={{ backgroundColor: '#dc2626' }} onClick={() => pdfInputRef.current.click()}>
+              <Upload size={18} /> {pdfExistente ? 'Substituir PDF' : 'Anexar Novo PDF'}
+            </button>
+            <input 
+              type="file" 
+              accept="application/pdf" 
+              ref={pdfInputRef} 
+              onChange={handlePdfUpload} 
               style={{ display: 'none' }} 
             />
           </div>

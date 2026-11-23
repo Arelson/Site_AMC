@@ -95,7 +95,10 @@ export default function Blog() {
             <div className='blog-card-body'>
               <div className='blog-author-area'>
                 <div className='blog-avatar-fake'>
-                  {post.author?.name ? post.author.name.charAt(0).toUpperCase() : 'A'}
+                  {post.author?.avatarUrl ? (
+                    <img className="autor-avatar-img" src={`${apiURL}${post.author?.avatarUrl}`
+                } alt={post.author?.name } />
+              ) : (post.author?.name.charAt(0).toUpperCase())}
                 </div>
                 <div className='blog-author-info'>
                   <span className='lbl-publicado'>PUBLICADO POR</span>

@@ -121,7 +121,7 @@ export const listarArtigos = async (req, res) => {
         orderBy: { createdAt: "desc" },
         include: {
           author: {
-            select: { name: true },
+            select: { name: true, avatarUrl: true },
           },
         },
       }),
@@ -148,7 +148,7 @@ export const getArtigoById = async (req, res) => {
     const artigo = await prisma.article.findUnique({
       where: { id: Number(id) },
       include: {
-        author: { select: { name: true } },
+        author: { select: { name: true, avatarUrl: true } },
       },
     });
 

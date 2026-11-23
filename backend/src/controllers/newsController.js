@@ -133,7 +133,7 @@ export const deleteNews = async (req, res) => {
 export const updateNews = async (req, res) => {
   try {
     const { id } = req.params;
-    const { titulo, corpo, palavrasChave } = req.body;
+    const { titulo, corpo, palavrasChave, bannerUrl } = req.body;
     const newsId = Number(id);
 
     if (isNaN(newsId)) return res.status(400).json({ error: "ID inválido." });
@@ -159,6 +159,13 @@ export const updateNews = async (req, res) => {
     if (req.files && req.files.banner && req.files.banner.length > 0) {
       if (noticiaAntiga.banner) apagarArquivoFisico(noticiaAntiga.banner);
       bannerPath = `/uploads/news/${req.files.banner[0].filename}`;
+    } else if (bannerUrl !== undefined && bannerUrl !== noticiaAntiga.banner) {
+      // Se a imagem antiga era um arquivo físico, precisamos apagá-la para liberar espaço no VPS
+      if (noticiaAntiga.banner && noticiaAntiga.banner.startsWith("/uploads/")) {
+        apagarArquivoFisico(noticiaAntiga.banner);
+      }
+      // O novo caminho passa a ser o link da web
+      bannerPath = bannerUrl;
     }
 
     // 3. Se um NOVO PDF for enviado, apaga o velho e substitui pelo novo

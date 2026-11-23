@@ -45,7 +45,6 @@ const MenuBar = ({ editor }) => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Cria uma URL local temporária para a imagem (Base64)
       const reader = new FileReader();
       reader.onload = (e) => {
         editor.chain().focus().setImage({ src: e.target.result }).run();
@@ -108,7 +107,6 @@ const MenuBar = ({ editor }) => {
       <div className="toolbar-group">
         <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive('bulletList') ? 'is-active' : ''} title="Lista Pontos"><List size={18} /></button>
         <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive('orderedList') ? 'is-active' : ''} title="Lista Numérica"><ListOrdered size={18} /></button>
-        {/* Usando blockquote para simular recuo de texto se não for lista */}
         <button onClick={() => editor.chain().focus().sinkListItem('listItem').run()} title="Aumentar Recuo (Listas)"><IndentIncrease size={18} /></button>
         <button onClick={() => editor.chain().focus().liftListItem('listItem').run()} title="Diminuir Recuo (Listas)"><IndentDecrease size={18} /></button>
       </div>
@@ -143,10 +141,15 @@ const MenuBar = ({ editor }) => {
 export default function CriarPost({ voltarParaLista }) {
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
-  const [banner, setBanner] = useState('');
   const [palavrasChave, setPalavrasChave] = useState('');
   
+  // Estados para gerir os ficheiros físicos
+  const [bannerUrl, setBannerUrl] = useState('');
+  const [bannerFile, setBannerFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
+
   const bannerInputRef = useRef(null);
+  const pdfInputRef = useRef(null);
 
   const editor = useEditor({
     extensions: [
@@ -166,13 +169,24 @@ export default function CriarPost({ voltarParaLista }) {
     },
   });
 
-  // Função para upload do Banner
+  // Funções para capturar os ficheiros físicos
   const handleBannerUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => setBanner(e.target.result); // Salva a prévia em Base64
-      reader.readAsDataURL(file);
+      setBannerFile(file);
+      setBannerUrl(''); // Limpa a URL se o utilizador anexar um ficheiro
+    }
+  };
+
+  const handleBannerUrlChange = (e) => {
+    setBannerUrl(e.target.value);
+    if (bannerFile) setBannerFile(null);
+  };
+
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPdfFile(file);
     }
   };
 
@@ -182,18 +196,37 @@ export default function CriarPost({ voltarParaLista }) {
       return;
     }
 
-    const payload = { titulo, corpo: conteudo, banner, palavrasChave, data: new Date().toISOString() };
+    // Criar o FormData em vez do JSON
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('corpo', conteudo);
+    formData.append('palavrasChave', palavrasChave);
+
+    if (bannerFile) {
+      formData.append('banner', bannerFile);
+    } else if (bannerUrl) {
+      formData.append('bannerUrl', bannerUrl);
+    }
+
+    if (pdfFile) {
+      formData.append('pdf', pdfFile);
+    }
 
     try {
       const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
       const token = localStorage.getItem('token');
+      
       const response = await fetch(`${apiURL}/api/posts/register`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(payload)
+        headers: { 
+          'Authorization': `Bearer ${token}` 
+          // Omitir o 'Content-Type'. O navegador adiciona automaticamente o multipart/form-data e o boundary
+        },
+        body: formData
       }); 
       
       if (response.ok) {
+        alert('Postagem criada com sucesso!');
         voltarParaLista({ preventDefault: () => {} });
       } else {
         const errorData = await response.json();
@@ -222,23 +255,41 @@ export default function CriarPost({ voltarParaLista }) {
             onChange={(e) => setTitulo(e.target.value)} 
           />
 
-          {/* Área do Banner com botões mesclados */}
+          {/* ÁREA DA IMAGEM DE CAPA */}
           <div className='opcoes-extras banner-area'>
             <input 
               type="text" 
               className="input-extra" 
               placeholder="URL da Imagem de Capa (Banner)..." 
-              value={banner} 
-              onChange={(e) => setBanner(e.target.value)} 
+              value={bannerUrl} 
+              onChange={handleBannerUrlChange} 
+              disabled={!!bannerFile}
             />
             <button className="btn-upload-banner" onClick={() => bannerInputRef.current.click()}>
-              <Upload size={18} /> Upload Banner
+              <Upload size={18} /> {bannerFile ? bannerFile.name : 'Upload Banner'}
             </button>
             <input 
               type="file" 
               accept="image/*" 
               ref={bannerInputRef} 
               onChange={handleBannerUpload} 
+              style={{ display: 'none' }} 
+            />
+          </div>
+
+          {/* ÁREA DO PDF (NOVA) */}
+          <div className='opcoes-extras banner-area' style={{ backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+            <span className="input-extra" style={{ display: 'flex', alignItems: 'center', color: '#4b5563', border: 'none', background: 'transparent' }}>
+               {pdfFile ? `PDF selecionado: ${pdfFile.name}` : 'Nenhum PDF anexado (Opcional)'}
+            </span>
+            <button className="btn-upload-banner" style={{ backgroundColor: '#dc2626' }} onClick={() => pdfInputRef.current.click()}>
+              <Upload size={18} /> {pdfFile ? 'Substituir PDF' : 'Anexar PDF'}
+            </button>
+            <input 
+              type="file" 
+              accept="application/pdf" 
+              ref={pdfInputRef} 
+              onChange={handlePdfUpload} 
               style={{ display: 'none' }} 
             />
           </div>

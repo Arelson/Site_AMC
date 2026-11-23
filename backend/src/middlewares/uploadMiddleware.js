@@ -95,12 +95,31 @@ export const uploadNews = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // Limite de 10MB (para comportar PDFs maiores se necessário)
 });
 
-const pathPost = path.resolve(__dirname, "..", "..", "..", "uploads", "posts");
-if (!fs.existsSync(pathNews)) fs.mkdirSync(pathNews, { recursive: true });
+
 
 // 2. Regras de armazenamento
 const storagePost = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, pathPost),
+  destination: (req, file, cb) => {
+    
+    const userId = req.userId;
+
+    if (!userId) {
+      return cb(new Error("Usuário não autenticado"));
+    }
+
+    const pathPost = path.resolve(
+      __dirname,
+      "..",
+      "..",
+      "..",
+      "uploads",
+      "posts",
+      String(userId)
+    );
+    if (!fs.existsSync(pathPost)) fs.mkdirSync(pathPost, { recursive: true });
+    
+    cb(null, pathPost)
+  },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     // Usa um prefixo 'news-' para facilitar a identificação física do arquivo

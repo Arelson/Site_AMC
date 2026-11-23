@@ -99,7 +99,10 @@ export default function ArtigosFeed() {
             <div className='blog-card-body'>
               <div className='blog-author-area'>
                 <div className='blog-avatar-fake'>
-                  {artigo.author?.name ? artigo.author.name.charAt(0).toUpperCase() : 'A'}
+                  {artigo.author?.avatarUrl ? (
+                    <img className="autor-avatar-img" src={`${apiURL}${artigo.author?.avatarUrl}`
+                } alt={artigo.author?.name } />
+                  ) : (artigo.author?.name.charAt(0).toUpperCase())}
                 </div>
                 <div className='blog-author-info'>
                   <span className='lbl-publicado'>PESQUISADOR</span>

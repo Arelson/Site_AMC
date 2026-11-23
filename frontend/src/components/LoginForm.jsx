@@ -27,6 +27,7 @@ export default function LoginForm() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.user.role);
         localStorage.setItem('nomeCompleto', data.user.name);
+        localStorage.setItem('userId', data.user.id);
         console.log(data);
         if (data.user.role === 'ADMIN') {
           navigate('/dashboard/admin');

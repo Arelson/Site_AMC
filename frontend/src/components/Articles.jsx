@@ -69,7 +69,10 @@ export default function Artigo() {
             {/* Box do Autor */}
             <div className="autor-info-box">
                 <div className="autor-avatar">
-                {artigo.author?.name?.charAt(0).toUpperCase() || 'A'}
+                {artigo.author?.avatarUrl ? (
+                    <img className="autor-avatar-img" src={`${apiURL}${artigo.author?.avatarUrl}`
+                } alt={artigo.author?.name } />
+              ) : (artigo.author?.name.charAt(0).toUpperCase())}
                 </div>
                 <div className="autor-detalhes">
                 <strong>Dr(a). {artigo.author?.name || 'Autor Desconhecido'}</strong>

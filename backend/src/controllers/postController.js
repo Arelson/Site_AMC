@@ -2,6 +2,7 @@ import prisma from "../database/prisma.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { logAction } from "../utils/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,10 +42,10 @@ export const createPost = async (req, res) => {
 
     if (req.files) {
       if (req.files.banner && req.files.banner.length > 0) {
-        bannerPath = `/uploads/post/${userId}/${req.files.banner[0].filename}`;
+        bannerPath = `/uploads/posts/${userId}/${req.files.banner[0].filename}`;
       }
       if (req.files.pdf && req.files.pdf.length > 0) {
-        pdfPath = `/uploads/post/${userId}/${req.files.pdf[0].filename}`;
+        pdfPath = `/uploads/posts/${userId}/${req.files.pdf[0].filename}`;
       }
     }
 
@@ -91,6 +92,7 @@ export const readPosts = async (req, res) => {
             id: true,
             name: true,
             email: true,
+            avatarUrl: true,
           },
         },
       },
@@ -115,6 +117,7 @@ export const getPostById = async (req, res) => {
         author: {
           select: {
             name: true,
+            avatarUrl: true,
           },
         },
       },
@@ -134,7 +137,9 @@ export const getPostById = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { titulo, corpo, banner, palavrasChave } = req.body;
+    const userId = req.userId;
+    // IMPORTANTE: Adicionei o bannerUrl aqui para capturar o link que vem do FormData
+    const { titulo, corpo, palavrasChave, bannerUrl } = req.body;
 
     if (!titulo || !corpo) {
       return res
@@ -142,22 +147,48 @@ export const updatePost = async (req, res) => {
         .json({ error: "O título e o conteúdo são obrigatórios." });
     }
 
-    // Inicia os caminhos com o que já existe no banco
-    let bannerPath = noticiaAntiga.banner;
-    let pdfPath = noticiaAntiga.pdfUrl;
+    const postAtual = await prisma.post.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
 
-    // 2. Se um NOVO banner for enviado, apaga o velho e substitui pelo novo
+    if (!postAtual) {
+      return res.status(404).json({ error: "Postagem não encontrada." });
+    }
+
+    // 1. Inicia os caminhos com o que já existe no banco
+    let bannerPath = postAtual.banner;
+    let pdfPath = postAtual.pdfUrl;
+
+    // 2. Se um NOVO ARQUIVO FÍSICO de banner for enviado
     if (req.files && req.files.banner && req.files.banner.length > 0) {
-      if (noticiaAntiga.banner) apagarArquivoFisico(noticiaAntiga.banner);
-      bannerPath = `/uploads/news/${req.files.banner[0].filename}`;
+      // Apaga o antigo apenas se era um arquivo do servidor (evita tentar apagar links externos)
+      if (postAtual.banner && postAtual.banner.startsWith("/uploads/")) {
+        apagarArquivoFisico(postAtual.banner);
+      }
+      bannerPath = `/uploads/post/${userId}/${req.files.banner[0].filename}`;
+    }
+    // 3. Se não veio arquivo, MAS veio uma URL nova da web
+    else if (bannerUrl !== undefined && bannerUrl !== postAtual.banner) {
+      // Se a imagem antiga era um arquivo físico, precisamos apagá-la para liberar espaço no VPS
+      if (postAtual.banner && postAtual.banner.startsWith("/uploads/")) {
+        apagarArquivoFisico(postAtual.banner);
+      }
+      // O novo caminho passa a ser o link da web
+      bannerPath = bannerUrl;
     }
 
-    // 3. Se um NOVO PDF for enviado, apaga o velho e substitui pelo novo
+    // 4. Se um NOVO PDF for enviado, apaga o velho e substitui pelo novo
     if (req.files && req.files.pdf && req.files.pdf.length > 0) {
-      if (noticiaAntiga.pdfUrl) apagarArquivoFisico(noticiaAntiga.pdfUrl);
-      pdfPath = `/uploads/news/${req.files.pdf[0].filename}`;
+      if (postAtual.pdfUrl) {
+        // Corrigido de noticiaAntiga para postAtual
+        apagarArquivoFisico(postAtual.pdfUrl);
+      }
+      pdfPath = `/uploads/posts/${userId}/${req.files.pdf[0].filename}`;
     }
 
+    // 5. Atualiza no banco de dados
     const updatedPost = await prisma.post.update({
       where: { id: Number(id) },
       data: {
@@ -169,13 +200,10 @@ export const updatePost = async (req, res) => {
       },
     });
 
-    await logAction(
-      req.userId,
-      'UPDATE',
-      'Post',
-      updatedPost.id,
-      {title: 'Post atualizado'}
-    )
+    // 6. Regista no Histórico de Ações do Administrador
+    await logAction(req.userId, "UPDATE", "Post", updatedPost.id, {
+      title: updatedPost.title,
+    });
 
     return res
       .status(200)
@@ -191,6 +219,19 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const postAtual = await prisma.post.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!postAtual) {
+      return res.status(404).json({ error: "Postagem não encontrada." });
+    }
+
+    apagarArquivoFisico(postAtual.banner)
+    apagarArquivoFisico(postAtual.pdfUrl)
 
     await prisma.post.delete({
       where: { id: Number(id) },
@@ -246,6 +287,7 @@ export const getPublicFeed = async (req, res) => {
         author: {
           select: {
             name: true,
+            avatarUrl: true,
           },
         },
       },

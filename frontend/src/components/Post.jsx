@@ -4,7 +4,7 @@ import './Post.css';
 
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
-import hljs from 'highlight.js';
+// import hljs from 'highlight.js';
 // Tema escuro e moderno para o código:
 import 'highlight.js/styles/atom-one-dark.css'; 
 
@@ -91,6 +91,8 @@ export default function Post() {
   if (erro) return <div className='loading'>Postagem não encontrada.</div>;
   if (!post) return <div className='loading'>Carregando postagem...</div>;
 
+  const urlPdf = `${apiURL}${post.pdfUrl}`;
+
   return (
     <div className='leitura-container'>
       <Link to="/post" className="btn-voltar">
@@ -100,7 +102,9 @@ export default function Post() {
       <article className='post-artigo'>
         {post.banner && (
           <div className='post-capa'>
-            <img src={post.banner} alt="Banner da postagem"/>
+            <img src={post.banner?.startsWith('http')
+              ? post.banner : `${apiURL}${post.banner}`
+            } alt="Banner da postagem"/>
           </div>
         )}
 
@@ -121,7 +125,10 @@ export default function Post() {
 
           <div className="autor-info-box">
             <div className="autor-avatar">
-              {post.author?.name?.charAt(0).toUpperCase()}
+              {post.author?.avatarUrl ? (
+                <img className="autor-avatar-img" src={`${apiURL}${post.author?.avatarUrl}`
+                } alt={post.author?.name } />
+              ) : (post.author?.name.charAt(0).toUpperCase())}
             </div>
             <div className="autor-detalhes">
               <strong>{post.author?.name}</strong>
@@ -138,6 +145,21 @@ export default function Post() {
           className="post-conteudo-html"
           dangerouslySetInnerHTML={{ __html: conteudoFormatado }}
         />
+
+        {post.pdfUrl && (
+          <>
+          <h3 style={{ color: '#0f172a', marginBottom: '15px' }}>Documento Completo</h3>
+            <div className="pdf-viewer-container">
+                <iframe className="pdf-iframe"
+                    src={`${urlPdf}#view=FitH`}                                                         
+                    width="100%" 
+                    height="100%" 
+                    title="Visualizador do Artigo"
+                    allowFullScreen
+                    />
+            </div>
+          </>
+        )}
 
         <footer className="post-footer">
           <div className="tags-container">
