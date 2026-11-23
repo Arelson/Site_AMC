@@ -19,7 +19,7 @@ export const getActionsLog = async (req, res) => {
             take: 80,
             include:{
                 user:{
-                    select: { name: true, email: true }
+                    select: { name: true, email: true, avatarUrl: true }
                 }
             }
         })

@@ -93,7 +93,9 @@ export default function VisaoGeral() {
                     <td className="col-usuario">
                       <div className="usuario-info">
                         <div className="avatar">
-                          {log.user?.name ? log.user.name.charAt(0).toUpperCase() : 'U'}
+                          {log.user?.avatarUrl ? (
+                            <img className='avatar' src={`${apiURL}${log.user.avatarUrl}`} alt="" />
+                          ):(log.user.name.charAt(0).toUpperCase())}
                         </div>
                         <div className="usuario-textos">
                           <span className="usuario-nome">{log.user?.name || 'Usuário Desconhecido'}</span>

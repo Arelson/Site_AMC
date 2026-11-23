@@ -115,6 +115,7 @@
   border-radius: 50%;
   background-color: #e0e7ff;
   color: #4338ca;
+  object-fit: cover;
   display: flex;
   align-items: center;
   justify-content: center;
