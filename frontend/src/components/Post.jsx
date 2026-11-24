@@ -146,7 +146,8 @@ export default function Post() {
           dangerouslySetInnerHTML={{ __html: conteudoFormatado }}
         />
 
-        {post.pdfUrl && (
+        <div className="pdf-viewer">
+          {post.pdfUrl && (
           <>
           <h3 style={{ color: '#0f172a', marginBottom: '15px' }}>Documento Completo</h3>
             <div className="pdf-viewer-container">
@@ -160,6 +161,7 @@ export default function Post() {
             </div>
           </>
         )}
+        </div>
 
         <footer className="post-footer">
           <div className="tags-container">
