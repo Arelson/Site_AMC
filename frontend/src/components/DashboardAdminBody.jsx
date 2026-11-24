@@ -67,7 +67,7 @@ export default function DashboardAdminBody() {
           <div className="dashboard-adm-aside-title-logo">
             {avatarUrl ? (
               <img src={`${apiURL}${avatarUrl}`} alt="Foto de perfil" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-            ) : (nome.charAt(0).toUpperCase)}
+            ) : (nome ? nome.charAt(0).toUpperCase() : '👤')}
           </div>
           <div className='dashboard-adm-aside-title-content'>
             <strong className='dashboard-adm-aside-title-content-name'>Administrador AMC</strong>
