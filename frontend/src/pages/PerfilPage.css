@@ -276,3 +276,43 @@
 .membro-blog-card-btn:hover {
     color: #ca9a04;
 }
+
+.perfil-meta-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin: 1rem 0 1.5rem 0;
+    padding: 0.9rem 1.1rem;
+    background-color: #f8fafc;
+    border-left: 4px solid #1a1a40;
+    border-radius: 6px;
+}
+
+.perfil-meta-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.perfil-meta-label {
+    font-weight: 700;
+    color: #1a1a40;
+}
+
+.perfil-meta-valor {
+    color: #1f2937;
+}
+
+.perfil-email-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.perfil-email-link:hover {
+    text-decoration: underline;
+}

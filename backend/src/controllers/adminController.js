@@ -257,7 +257,7 @@ export const deletePostAdmin = async (req, res) => {
 
 export const criarMembroAdmin = async (req, res) => {
   try {
-    const { name, cargo, cadeiraOcupacao, linkLattes, bio } = req.body;
+    const { name, cargo, cadeiraOcupacao, linkLattes, bio, patrono, email } = req.body;
 
     if (!name) {
       return res.status(400).json({ error: "O nome do membro é obrigatório." });
@@ -276,6 +276,8 @@ export const criarMembroAdmin = async (req, res) => {
         cadeiraOcupacao: cadeiraOcupacao || null,
         linkLattes: linkLattes || null,
         bio: bio || null,
+        patronoId: patrono,
+        email: email,
         avatarUrl: avatarUrlDb, // 👈 Salva na tabela Member
       },
     });
@@ -298,7 +300,7 @@ export const criarMembroAdmin = async (req, res) => {
 export const atualizarMembroAdmin = async (req, res) => {
   try {
     const { id } = req.params; // ID do membro (na url: /api/members/:id)
-    const { name, cargo, cadeiraOcupacao, linkLattes, bio } = req.body;
+    const { name, cargo, cadeiraOcupacao, linkLattes, bio, patrono, email } = req.body;
 
     const membroAntigo = await prisma.member.findUnique({
       where: { id: Number(id) }
@@ -326,7 +328,9 @@ export const atualizarMembroAdmin = async (req, res) => {
         cadeiraOcupacao: cadeiraOcupacao || null,
         linkLattes: linkLattes || null,
         bio: bio || null,
-        avatarUrl: avatarUrlFinal
+        patronoId: patrono,
+        avatarUrl: avatarUrlFinal,
+        email: email
       }
     });
 

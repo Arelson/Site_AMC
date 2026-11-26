@@ -32,6 +32,7 @@ model Member {
   cargo           String?
   bio             String?
   linkLattes      String?
+  patronoId       String?
   cadeiraOcupacao String?
   avatarUrl       String?
 
@@ -41,11 +42,11 @@ model Member {
   user   User? @relation(fields: [userId], references: [id])
 
   // A MÁGICA 2: Auto-relacionamento (O patrono é outro Membro)
-  patronoId Int?
-  patrono   Member? @relation("PatronoHistorico", fields: [patronoId], references: [id])
+  
+  // patrono   Member? @relation("PatronoHistorico", fields: [patronoId], references: [id])
 
   // O Prisma exige declarar a lista inversa (quem tem esse membro como patrono)
-  afilhados Member[] @relation("PatronoHistorico")
+  // afilhados Member[] @relation("PatronoHistorico")
 }
 
 model InviteCode {

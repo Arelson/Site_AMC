@@ -70,3 +70,29 @@
 .conta-content-form-button:hover {
   background-color: rgb(26, 26, 64, 0.8);
 }
+
+.conta-select-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding-right: 8px;
+}
+
+.conta-input-prefix-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.conta-input-prefix {
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+  user-select: none;
+  margin-right: 6px;
+  padding-right: 8px;
+  border-right: 1px solid #d1d5db;
+}

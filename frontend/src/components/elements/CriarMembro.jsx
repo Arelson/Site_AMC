@@ -10,6 +10,8 @@ export default function FormCriarMembro({ onVoltar }) {
   const [linkLattes, setLinkLattes] = useState('');
   const [bio, setBio] = useState('');
   const [mensagem, setMensagem] = useState({ texto: '', tipo: '' });
+  const [email, setEmail] = useState('');
+  const [patrono, setPatrono] = useState('');
 
   const [fotoFile, setFotoFile] = useState(null);
   const [fotoPreview, setFotoPreview] = useState('');
@@ -19,25 +21,27 @@ export default function FormCriarMembro({ onVoltar }) {
     setMensagem({ texto: 'Salvando...', tipo: 'loading' });
 
     try {
+      const formData = new FormData();
+      formData.append('name', name);
+      if (cargo) formData.append('cargo', cargo);
+      if (cadeiraOcupacao) formData.append('cadeiraOcupacao', cadeiraOcupacao ? `Cadeira n° ${cadeiraOcupacao.padStart(2, '0')}` : null);
+      if (linkLattes) formData.append('linkLattes', linkLattes);
+      if (bio) formData.append('bio', bio);
+      if (fotoFile) formData.append('foto', fotoFile);
+      if (email) formData.append('email', email);
+      if (patrono) formData.append('patrono', patrono);
+
       const response = await fetch(`${apiURL}/api/admin/members`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ name, cargo, cadeiraOcupacao, linkLattes, bio,})
+        body: JSON.stringify({ name, cargo, cadeiraOcupacao, linkLattes, bio, email, patrono})
       });
 
       if (response.ok) {
         setMensagem({ texto: 'Membro cadastrado com sucesso!', tipo: 'sucesso' });
-        const formData = new FormData();
-          formData.append('name', name);
-          if (cargo) formData.append('cargo', cargo);
-          if (cadeiraOcupacao) formData.append('cadeiraOcupacao', cadeiraOcupacao);
-          if (linkLattes) formData.append('linkLattes', linkLattes);
-          if (bio) formData.append('bio', bio);
-          if (fotoFile) formData.append('foto', fotoFile);
-        
         setTimeout(() => onVoltar(), 1000);
       } else {
         const erroData = await response.json();
@@ -104,14 +108,69 @@ export default function FormCriarMembro({ onVoltar }) {
           <input type="text" value={name} onChange={(e) => setNome(e.target.value)} required />
         </div>
 
+        <div className="form-group">
+          <label htmlFor="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            className="input-form"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="exemplo@amc-ma.org"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="patrono">Nome do Patrono</label>
+          <input
+            id="patrono"
+            type="text"
+            className="input-form"
+            value={patrono}
+            onChange={(e) => setPatrono(e.target.value)}
+            placeholder="Digite o nome completo do patrono..."
+          />
+        </div>
+
         <div className="form-grupo-duplo">
-          <div className="form-grupo">
-            <label>Cargo / Categoria</label>
-            <input type="text" value={cargo} onChange={(e) => setCargo(e.target.value)} style={{ textTransform: 'uppercase' }}/>
+          <div className="form-group">
+            <label htmlFor="cargo">Cargo / Categoria</label>
+            <select
+              id="cargo"
+              className="select-form"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+            >
+              <option value="Membro Titular">Membro Titular</option>
+              <option value="Membro Emérito">Membro Emérito</option>
+              <option value="Membro Correspondente">Membro Correspondente</option>
+              <option value="Membro Honorário">Membro Honorário</option>
+              <option value="Presidente">Presidente</option>
+              <option value="Vice-Presidente">Vice-Presidente</option>
+              <option value="Secretário Geral">Secretário Geral</option>
+              <option value="Tesoureiro">Tesoureiro</option>
+            </select>
           </div>
-          <div className="form-grupo">
-            <label>Cadeira / Função</label>
-            <input type="text" value={cadeiraOcupacao} onChange={(e) => setCadeiraOcupacao(e.target.value)} />
+          <div className="form-group">
+            <label htmlFor="cadeira">Cadeira de Ocupação</label>
+            <div className="input-prefix-group">
+              <span className="input-prefix">Cadeira n°</span>
+              <input
+                id="cadeira"
+                type="text"
+                inputMode="numeric"
+                className="input-com-prefixo"
+                value={cadeiraOcupacao}
+                onChange={(e) => {
+                  // Permite digitar apenas números
+                  const apenasNumeros = e.target.value.replace(/\D/g, '');
+                  setCadeiraOcupacao(apenasNumeros);
+                }}
+                placeholder="Ex: 15"
+                maxLength={3}
+              />
+            </div>
           </div>
         </div>
 

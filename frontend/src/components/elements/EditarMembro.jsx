@@ -9,6 +9,8 @@ export default function FormEditarMembro({ membroId, onVoltar }) {
   const [cadeiraOcupacao, setCadeiraOcupacao] = useState('');
   const [linkLattes, setLinkLattes] = useState('');
   const [bio, setBio] = useState('');
+  const [email, setEmail] = useState('');
+  const [patrono, setPatrono] = useState('');
   
   // Estados para a Foto
   const [fotoFile, setFotoFile] = useState(null);
@@ -28,9 +30,11 @@ export default function FormEditarMembro({ membroId, onVoltar }) {
           const dados = await response.json();
           setNome(dados.name || '');
           setCargo(dados.cargo || '');
-          setCadeiraOcupacao(dados.cadeiraOcupacao || '');
+          setCadeiraOcupacao(dados.cadeiraOcupacao ? dados.cadeiraOcupacao.replace(/\D/g, '') : '');
           setLinkLattes(dados.linkLattes || '');
           setBio(dados.bio || '');
+          setEmail(dados.email || '');
+          setPatrono(dados.patronoId || '');
 
           if (dados.avatarUrl) {
             setFotoPreview(`${apiURL}${dados.avatarUrl}`);
@@ -76,6 +80,8 @@ export default function FormEditarMembro({ membroId, onVoltar }) {
     if (linkLattes) formData.append('linkLattes', linkLattes);
     if (bio) formData.append('bio', bio);
     if (fotoFile) formData.append('foto', fotoFile);
+    if (email) formData.append('email', email);
+    if (patrono) formData.append('patrono', patrono)
 
     try {
       // Usando a rota de PUT que criamos no controlador do Admin
@@ -154,14 +160,69 @@ export default function FormEditarMembro({ membroId, onVoltar }) {
           <input type="text" value={name} onChange={(e) => setNome(e.target.value)} required />
         </div>
 
+        <div className="form-group">
+          <label htmlFor="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            className="input-form"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="exemplo@amc-ma.org"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="patrono">Nome do Patrono</label>
+          <input
+            id="patrono"
+            type="text"
+            className="input-form"
+            value={patrono}
+            onChange={(e) => setPatrono(e.target.value)}
+            placeholder="Digite o nome completo do patrono..."
+          />
+        </div>
+
         <div className="form-grupo-duplo">
-          <div className="form-grupo">
-            <label>Cargo / Categoria</label>
-            <input type="text" value={cargo} onChange={(e) => setCargo(e.target.value)} style={{ textTransform: 'uppercase' }}/>
+          <div className="form-group">
+            <label htmlFor="cargo">Cargo / Categoria</label>
+            <select
+              id="cargo"
+              className="select-form"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+            >
+              <option value="Membro Titular">Membro Titular</option>
+              <option value="Membro Emérito">Membro Emérito</option>
+              <option value="Membro Correspondente">Membro Correspondente</option>
+              <option value="Membro Honorário">Membro Honorário</option>
+              <option value="Presidente">Presidente</option>
+              <option value="Vice-Presidente">Vice-Presidente</option>
+              <option value="Secretário Geral">Secretário Geral</option>
+              <option value="Tesoureiro">Tesoureiro</option>
+            </select>
           </div>
-          <div className="form-grupo">
-            <label>Cadeira / Função</label>
-            <input type="text" value={cadeiraOcupacao} onChange={(e) => setCadeiraOcupacao(e.target.value)} />
+          <div className="form-group">
+            <label htmlFor="cadeira">Cadeira de Ocupação</label>
+            <div className="input-prefix-group">
+              <span className="input-prefix">Cadeira n°</span>
+              <input
+                id="cadeira"
+                type="text"
+                inputMode="numeric"
+                className="input-com-prefixo"
+                value={cadeiraOcupacao}
+                onChange={(e) => {
+                  // Permite digitar apenas números
+                  const apenasNumeros = e.target.value.replace(/\D/g, '');
+                  setCadeiraOcupacao(apenasNumeros);
+                }}
+                placeholder="Ex: 15"
+                maxLength={3}
+              />
+            </div>
           </div>
         </div>
 

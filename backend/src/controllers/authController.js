@@ -147,7 +147,7 @@ export const getMe = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     // req.userId vem do seu middleware de JWT
-    const { name, cargo, cadeiraOcupacao, linkLattes, bio } = req.body;
+    const { name, cargo, cadeiraOcupacao, linkLattes, bio, patrono } = req.body;
 
     // Usamos upsert: Atualiza se existir, Cria se der algum erro no passado e não existir
     const updatedMember = await prisma.member.upsert({
@@ -158,6 +158,7 @@ export const updateProfile = async (req, res) => {
         cadeiraOcupacao,
         linkLattes,
         bio,
+        patronoId
       },
       create: {
         userId: req.userId,
@@ -166,6 +167,7 @@ export const updateProfile = async (req, res) => {
         cadeiraOcupacao,
         linkLattes,
         bio,
+        patronoId
       },
     });
 

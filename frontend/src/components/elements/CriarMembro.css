@@ -104,3 +104,39 @@
     background-color: #e2e3e5;
     color: #383d41;
 }
+
+.input-prefix-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #ffffff;
+    transition: border-color 0.2s ease;
+}
+
+.input-prefix-group:focus-within {
+    border-color: #1a1a40;
+    /* Cor azul marinho da AMC ao focar */
+}
+
+.input-prefix {
+    background-color: #f3f4f6;
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.65rem 0.85rem;
+    border-right: 1px solid #d1d5db;
+    white-space: nowrap;
+    user-select: none;
+    /* Impede de selecionar/apagar o texto fixo */
+}
+
+.input-com-prefixo {
+    border: none;
+    outline: none;
+    padding: 0.65rem 0.85rem;
+    width: 100%;
+    font-size: 0.95rem;
+    color: #1f2937;
+}

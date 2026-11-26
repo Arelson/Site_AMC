@@ -148,7 +148,7 @@ export default function PortalEquipe() {
                 <p className="equipe-card-cargo">{membro.cargo || 'Membro'}</p>
                 
                 {membro.cadeiraOcupacao && (
-                  <span className="equipe-card-cadeira">{membro.cadeiraOcupacao}</span>
+                  <span className="equipe-card-cadeira"> Cadeira n° {membro.cadeiraOcupacao}</span>
                 )}
 
                 {/* Botões de Ação */}
